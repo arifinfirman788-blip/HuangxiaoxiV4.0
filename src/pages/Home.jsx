@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, User, ChevronDown, MessageCircle, Star, Coffee, Building, Landmark, Mic, Plus, Home as HomeIcon, Compass, UserCircle, X, Check, Bell, Languages, Volume2, ArrowUpRight, Plane, Clock, Sparkles, Camera, Car, Play, Calendar as CalendarIcon, Ticket, Hotel, Utensils, RefreshCcw, ArrowRight } from 'lucide-react';
+import { Search, MapPin, User, ChevronDown, MessageCircle, Star, Coffee, Building, Landmark, Mic, Plus, Home as HomeIcon, Compass, UserCircle, X, Check, Bell, Languages, Volume2, ArrowUpRight, Plane, Clock, Sparkles, Camera, Car, Play, Calendar as CalendarIcon, Ticket, Hotel, Utensils, RefreshCcw, ArrowRight, Heart, Send, BadgeCheck, MoreHorizontal } from 'lucide-react';
 import { categories } from '../data/agents';
 import TuoSaiImage from '../image/托腮_1.png';
 import FlipCountdown from '../components/FlipCountdown';
@@ -13,6 +13,7 @@ import PeasantAvatar from '../image/avatars/peasant.png';
 import KnightAvatar from '../image/avatars/knight.png';
 import MageAvatar from '../image/avatars/mage.png';
 import ThreeAgentsImage from '../image/fJOIb6mhE.jpeg';
+import MiaoImage from '../image/2637eb7d29330ff3adc0baaa3799f915.png';
 import MuseumAvatar from '../image/bowuguan.png';
 import WangAyiAvatar from '../image/wangayi.png';
 import LiuDaGeAvatar from '../image/liudage.png';
@@ -37,64 +38,7 @@ const getAiReminder = (node) => {
   return "旅途中遇到美景记得拍照留念，记录下这美好的瞬间～";
 };
 
-const phrases = [
-  "今天想去哪里探索？",
-  "想吃地道的酸汤鱼？",
-  "寻找苗寨的非遗体验？",
-  "安排一次舒适的旅居？",
-  "查询黄果树瀑布门票？"
-];
 
-const TypewriterText = () => {
-  const [text, setText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [loopNum, setLoopNum] = useState(0);
-
-  useEffect(() => {
-    const currentPhrase = phrases[loopNum % phrases.length];
-    
-    const tick = () => {
-      setText(prev => isDeleting 
-        ? prev.slice(0, -1) 
-        : currentPhrase.slice(0, prev.length + 1)
-      );
-    };
-
-    let timerDelay = isDeleting ? 50 : 150;
-
-    if (!isDeleting && text === currentPhrase) {
-      timerDelay = 2000;
-    } else if (isDeleting && text === '') {
-      timerDelay = 500;
-    }
-
-    const timer = setTimeout(() => {
-      if (!isDeleting && text === currentPhrase) {
-        setIsDeleting(true);
-      } else if (isDeleting && text === '') {
-        setIsDeleting(false);
-        setLoopNum(prev => prev + 1);
-      } else {
-        tick();
-      }
-    }, timerDelay);
-
-    return () => clearTimeout(timer);
-  }, [text, isDeleting, loopNum]);
-
-  return (
-    <h2 className="text-2xl font-bold text-slate-800 mb-2 leading-tight h-16 flex items-center justify-center">
-      <span>
-        {text}
-      </span>
-      <motion.span 
-        animate={{ opacity: [1, 0] }}
-        transition={{ repeat: Infinity, duration: 0.8 }}
-        className="inline-block w-0.5 h-6 bg-cyan-500 ml-1 align-middle"
-      />
-    </h2>
-  );
-};
 
 const NewsMarquee = () => {
   const navigate = useNavigate();
@@ -153,9 +97,123 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatInitialContext, setChatInitialContext] = useState(null);
   const [radarBatchIndex, setRadarBatchIndex] = useState(0);
+  const [currentSocialCardIndex, setCurrentSocialCardIndex] = useState(0);
 
   const navigate = useNavigate();
   const location = useLocation(); // Add useLocation hook
+
+  // Mock Agents for Social Card
+  const socialAgents = [
+    {
+      id: 1,
+      name: "黄果树瀑布智能体",
+      type: "scenic",
+      isEnterprise: true,
+      desc: "全天候景区导览",
+      intro: "作为黄果树景区官方智能体，我接入了景区实时监控系统，能为您提供精准的瀑布水量预报、最佳观赏点推荐及客流避峰指南，助您捕捉最壮观的自然瞬间。",
+      likes: "1.2w",
+      avatar: ScenicAvatar,
+      poster: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 2,
+      name: "亚朵酒店管家",
+      type: "hotel",
+      isEnterprise: true,
+      desc: "24h贴心服务",
+      intro: "您的全天候私人管家，不仅可以一键调节客房环境，还能为您预约深夜食堂的暖心夜宵。连接社区文化，为您推荐周边最地道的城市漫步路线。",
+      likes: "8.5k",
+      avatar: HotelAvatar,
+      poster: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 3,
+      name: "王阿姨辣子鸡",
+      type: "food",
+      isEnterprise: false,
+      desc: "地道贵阳味",
+      intro: "专注贵阳老味道三十年，每一锅辣子鸡都坚持手工炒制。我是王阿姨的数字分身，除了帮您预留位置，还能教您地道的吃法，甚至偷偷告诉您这道菜的独家秘方。",
+      likes: "2.3k",
+      avatar: WangAyiAvatar,
+      poster: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 4,
+      name: "金牌地陪小张",
+      type: "scenic",
+      isEnterprise: false,
+      desc: "带你玩转贵州",
+      intro: "土生土长的贵州通，不带您走马观花，只带您深入苗寨深处、探寻喀斯特秘境。根据您的体力和兴趣，实时调整行程，让每一次出发都成为独家记忆。",
+      likes: "5.6k",
+      avatar: GuideAvatar,
+      poster: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 6,
+      name: "苗族蜡染传承人",
+      type: "culture",
+      isEnterprise: false,
+      desc: "非遗文化体验",
+      intro: "我是阿朵，生在苗寨长在苗寨。我想带您体验亲手画蜡、浸染的乐趣，听我讲讲那些藏在蓝白花纹里的古老传说，感受指尖上的非遗魅力。",
+      likes: "9.8k",
+      avatar: PeasantAvatar, // Using existing avatar as placeholder
+      poster: MiaoImage
+    },
+    {
+      id: 7,
+      name: "风光摄影师阿杰",
+      type: "photo",
+      isEnterprise: false,
+      desc: "旅拍/无人机跟拍",
+      intro: "专注贵州山水摄影十年，我知道哪里有最美的日出云海，哪里能拍出绝美的梯田光影。带上我，您的朋友圈将被大片刷屏。",
+      likes: "4.5k",
+      avatar: MageAvatar, // Using existing avatar as placeholder
+      poster: "https://images.unsplash.com/photo-1500322969630-a26ab6eb64cc?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 8,
+      name: "侗族大歌传唱人",
+      type: "culture",
+      isEnterprise: false,
+      desc: "聆听天籁之音",
+      intro: "侗族大歌是世界非物质文化遗产，无需指挥，自然和声。来我的家乡，坐在鼓楼下，闭上眼，让我带您聆听这来自灵魂深处的天籁之音。",
+      likes: "7.2k",
+      avatar: KnightAvatar, // Using existing avatar as placeholder
+      poster: "https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=800&h=1200&fit=crop"
+    }
+  ];
+
+  const [direction, setDirection] = useState(1);
+
+  // Stack agents for social card
+  const stackAgents = [];
+  for (let i = 0; i < 3; i++) {
+    const index = (currentSocialCardIndex + i) % socialAgents.length;
+    stackAgents.push({ ...socialAgents[index], offset: i });
+  }
+
+  const handleNextSocialCard = (e) => {
+    if (e) e.stopPropagation();
+    setDirection(prev => prev * -1);
+    setCurrentSocialCardIndex((prev) => (prev + 1) % socialAgents.length);
+  };
+
+  const handleSocialCardClick = (agent) => {
+    const context = {
+        name: agent.name,
+        intro: agent.intro,
+        type: agent.type,
+        fromSquare: true,
+        desc: agent.name,
+        role: agent.type === 'scenic' ? '景区' : agent.type === 'hotel' ? '酒店' : agent.type === 'food' ? '餐饮' : '交通',
+        color: agent.type === 'scenic' ? 'green' : agent.type === 'hotel' ? 'indigo' : agent.type === 'food' ? 'orange' : 'blue',
+        avatar: agent.avatar,
+        services: agent.type === 'scenic' ? ['购票', '导览'] : 
+                 agent.type === 'hotel' ? ['订房', '咨询'] :
+                 agent.type === 'food' ? ['订座', '排队'] : ['用车', '接机']
+    };
+    handleOpenChat(context);
+  };
 
   // Check for openChatWith in location state on mount
   useEffect(() => {
@@ -230,7 +288,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
 
   return (
     <div className="h-full w-full relative">
-      <div className="h-full w-full overflow-y-auto scrollbar-hide pb-24">
+      <div className="h-full w-full overflow-y-auto scrollbar-hide pb-[240px]">
         <div className="px-6 pt-12 relative z-10">
           {/* Header */}
           <header className="flex justify-between items-center mb-6">
@@ -257,174 +315,209 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
 
 
           {/* Typewriter Effect */}
-          <div className="mb-8">
+          <div className="mb-2">
 
           {/* Hero / Chat Section */}
-          <section className="mb-8 mt-24">
+          <section className="mb-0 mt-2">
             <div className="relative">
               {/* Character Image - Positioned behind content, slightly lower to be covered by container */}
-              <div className="absolute -top-16 -right-6 w-40 h-40 pointer-events-none z-0">
+              <div className="absolute -top-12 -right-4 w-36 h-36 pointer-events-none z-0">
                  <img 
                    src={TuoSaiImage} 
                    alt="Character" 
                    className="w-full h-full object-contain drop-shadow-lg"
+                   style={{ objectPosition: 'bottom' }}
                  />
               </div>
-
-              <motion.div 
-                layoutId="chat-container"
-                className="bg-white/40 backdrop-blur-xl border border-white/60 p-5 rounded-blob-1 shadow-float relative z-10 overflow-visible flex flex-col items-center text-center"
-              >
-                <TypewriterText />
-                <p className="text-slate-500 text-xs mb-6">开启一段新的旅程或寻求帮助</p>
-  
-                <div className="w-full">
-                  {/* Functional Agents as Capsule Buttons (Scrollable Row) - Now tightly coupled above input */}
-                  <div className="w-full overflow-x-auto scrollbar-hide mb-3 -mx-2 px-2">
-                    <div className="flex gap-2 min-w-max">
-                      {[
-                        { name: '行程规划', icon: MapPin },
-                        { name: '帮我写游记', icon: HomeIcon },
-                        { name: 'AI伴游', icon: User },
-                      ].map((agent, index) => (
-                        <motion.button 
-                          key={index}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={handleOpenChat}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm border border-slate-100 text-slate-600 whitespace-nowrap"
-                        >
-                          <agent.icon size={14} className="text-cyan-500" />
-                          <span className="text-[10px] font-bold">{agent.name}</span>
-                        </motion.button>
-                      ))}
-                    </div>
-                  </div>
-  
-                  {/* Integrated Chat Input Area */}
-                  <div className="w-full relative">
-                    <motion.div 
-                         layoutId="input-container"
-                         className="bg-white rounded-[2rem] p-3 pr-4 shadow-lg flex items-center gap-2 border border-slate-100 cursor-pointer hover:shadow-xl transition-shadow"
-                         onClick={handleOpenChat}
-                    >
-                      <input 
-                        type="text" 
-                        placeholder="请输入您感兴趣的主题..." 
-                        className="bg-transparent outline-none w-full text-slate-700 placeholder-slate-400 text-sm pl-2 cursor-pointer"
-                        readOnly
-                      />
-                      
-                      <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center shrink-0">
-                        <ArrowUpRight size={18} />
-                      </div>
-                    </motion.div>
-                  </div>
-                </div>
-              </motion.div>
             </div>
           </section>
 
-          {/* Entity Agents Categories (Masonry Style with Images) - REMOVED per request */}
-          {/* <section className="mb-24"> ... </section> */}
+          {/* Functional Agents & Chat Input - Moved to Bottom */}
+          <section className="mb-0">
+             {/* This section is intentionally left empty here as requested, 
+                 but typically this content would be moved to the bottom of the page structure.
+                 I will place it after the Agent Square Entry. */}
+          </section>
           </div>
 
-          {/* Smart Notification Area (Moved) */}
-          <motion.div
+          {/* Smart Notification Area (Moved) - HIDDEN per user request */}
+          {/* <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="w-full mb-8 h-[220px]"
           >
-            {/* Full Width Agent Recommendation Widget */}
             <div className="h-full">
                <AgentListWidget handleOpenChat={handleOpenChat} />
             </div>
-          </motion.div>
+          </motion.div> */}
 
-          {/* Agent Square Entry */}
+          {/* Agent Square Entry - Replaced with Social Card Stack */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="w-full mb-8"
+            className="w-full mb-20 relative -top-10"
           >
-            <button
-              onClick={() => navigate('/agent-square')}
-              className="w-full bg-white rounded-[2rem] p-5 shadow-xl shadow-slate-100 border border-slate-100 relative overflow-hidden group active:scale-98 transition-transform h-56"
-            >
-              {/* Radar Background Effects */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden opacity-100">
-                  {/* Faint Map Background */}
-                  <div className="absolute inset-0 opacity-20" style={{ 
-                      backgroundImage: 'url("https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=600&auto=format&fit=crop")',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      filter: 'grayscale(100%) contrast(1.2)'
-                  }} />
-                  
-                  {/* Radar Scan Animation - Enhanced Visibility */}
-                  <div 
-                    className="absolute w-[400px] h-[400px] rounded-full animate-spin" 
-                    style={{ 
-                        background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, rgba(34, 211, 238, 0.1) 300deg, rgba(34, 211, 238, 0.4) 360deg)',
-                        animationDuration: '4s',
-                        animationTimingFunction: 'linear'
-                    }} 
-                  />
+            <div className="rounded-[2rem] p-5 relative overflow-visible h-[420px] flex flex-col">
+              {/* Header */}
+              <div className="flex justify-between items-center mb-4 relative z-20 shrink-0 px-2">
+                  <div className="text-left w-full">
+                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                      发现身边有趣的智能体
+                    </h3>
+                  </div>
               </div>
 
-              {/* Floating Avatars on Radar - Dynamic Batch */}
-              <AnimatePresence>
-                {radarBatches[radarBatchIndex].map((agent, i) => (
-                  <motion.div
-                    key={`${radarBatchIndex}-${i}`}
-                    initial={{ scale: 0.2, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.2, opacity: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    className={`absolute rounded-full border-2 border-white shadow-md overflow-hidden z-10 ${agent.className}`}
-                  >
-                    <div className="w-full h-full" style={{ animation: `avatar-float 3s ease-in-out infinite ${agent.delay}` }}>
-                       <img src={agent.img} className="w-full h-full object-cover" alt="" />
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+              {/* Stacked Cards Area */}
+              <div className="relative flex-1 w-full flex items-center justify-center">
+                 <div className="relative w-full h-full max-w-[260px] max-h-[360px]">
+                    <AnimatePresence mode="popLayout">
+                      {stackAgents.reverse().map((agent) => {
+                        const isTop = agent.offset === 0;
+                        return (
+                          <motion.div
+                            key={`${agent.id}-${agent.offset}`}
+                            className="absolute inset-0 bg-slate-900 rounded-[2rem] overflow-hidden origin-bottom border-[3px] border-white shadow-2xl"
+                            initial={{ scale: 0.9, y: 50, opacity: 0 }}
+                            animate={{ 
+                              scale: 1 - agent.offset * 0.05, 
+                              y: agent.offset * 20,
+                              x: isTop ? 0 : (agent.offset % 2 === 0 ? 25 : -25), // Horizontal offset
+                              opacity: 1 - agent.offset * 0.1,
+                              zIndex: 100 - agent.offset,
+                              rotate: isTop ? 0 : (agent.offset % 2 === 0 ? 2 : -2)
+                            }}
+                            exit={{ x: direction * 300, opacity: 0, rotate: direction * 20 }}
+                            transition={{ type: "spring", damping: 20, stiffness: 100 }}
+                            drag={isTop ? "x" : false}
+                            dragConstraints={{ left: -100, right: 100 }}
+                            onDragEnd={(e, { offset }) => {
+                              if (Math.abs(offset.x) > 100) {
+                                handleNextSocialCard();
+                              }
+                            }}
+                            onClick={() => isTop && handleSocialCardClick(agent)}
+                          >
+                            {/* Full Card Content */}
+                            <div className="h-full w-full relative cursor-pointer">
+                              {/* Full Background Image */}
+                              <img 
+                                src={agent.poster || agent.avatar} 
+                                alt={agent.name} 
+                                className="w-full h-full object-cover" 
+                              />
+                              
+                              {/* Gradient Overlay for better text visibility */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" />
 
-              <div className="relative z-20 flex flex-col justify-between h-full">
-                <div className="flex justify-between items-start">
-                    <div className="text-left">
-                      <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        智能体广场
-                      </h3>
-                      <p className="text-slate-400 text-xs">
-                        发现身边有趣的智能体
-                      </p>
-                    </div>
-                    <div className="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 group-hover:bg-cyan-50 group-hover:text-cyan-500 transition-colors">
-                      <ArrowRight size={16} />
-                    </div>
-                </div>
+                              {/* Right Side Actions (Visual Only) */}
+                              <div className="absolute right-3 top-[35%] -translate-y-1/2 flex flex-col gap-3 z-20">
+                                 <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+                                    <ArrowRight size={18} className="-rotate-45" />
+                                 </div>
+                                 <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+                                    <MessageCircle size={18} />
+                                 </div>
+                                 <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+                                    <MoreHorizontal size={18} />
+                                 </div>
+                              </div>
 
-                <div className="mt-auto">
-                  <div className="flex items-center gap-2 mb-2">
-                     <span className="text-xs font-bold text-slate-800">附近热议</span>
-                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  </div>
-                  <div className="flex -space-x-2">
-                     {[ScenicAvatar, HotelAvatar, GuideAvatar, WangAyiAvatar, CarAvatar].map((img, i) => (
-                       <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 overflow-hidden shadow-sm">
-                         <img src={img} className="w-full h-full object-cover" alt="" />
-                       </div>
-                     ))}
-                     <div className="w-8 h-8 rounded-full border-2 border-white bg-slate-50 flex items-center justify-center text-[10px] font-bold text-slate-500 shadow-sm">
-                       +99
-                     </div>
-                  </div>
-                </div>
+                              {/* Bottom Glass Overlay Info - Slim Version */}
+                              <div className="absolute bottom-2 left-2 right-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl p-3 text-white shadow-sm z-20">
+                                 {/* Name & Status Row */}
+                                 <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                       <h3 className="text-sm font-bold leading-none text-white shadow-sm">{agent.name}</h3>
+                                       {agent.isEnterprise && <BadgeCheck size={12} className="text-blue-400" fill="currentColor" stroke="white" />}
+                                       <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)]"></div>
+                                    </div>
+                                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                                       <ChevronDown size={12} className="-rotate-90 text-white" />
+                                    </div>
+                                 </div>
+                                 
+                                 {/* Description Line */}
+                                 <p className="text-[10px] text-white/80 font-medium line-clamp-1 mt-1">{agent.desc}</p>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </AnimatePresence>
+                 </div>
               </div>
-            </button>
+
+              {/* Bottom Actions */}
+              <div className="flex items-center justify-center gap-6 absolute -bottom-16 left-0 right-0 z-20">
+                 <button 
+                   className="w-12 h-12 bg-white rounded-full shadow-[0_8px_20px_rgba(200,200,200,0.2)] text-slate-400 flex items-center justify-center hover:scale-110 active:scale-95 transition-all border border-slate-50"
+                   onClick={(e) => {
+                      e.stopPropagation();
+                      // Dislike logic - same effect as next card
+                      handleNextSocialCard();
+                   }}
+                 >
+                    <X size={24} />
+                 </button>
+                 <button 
+                   className="w-12 h-12 bg-white rounded-full shadow-[0_8px_20px_rgba(255,100,100,0.15)] text-red-500 flex items-center justify-center hover:scale-110 active:scale-95 transition-all border border-slate-50"
+                   onClick={(e) => {
+                      e.stopPropagation();
+                      // Like animation or logic here
+                      handleNextSocialCard();
+                   }}
+                 >
+                    <Heart size={24} fill="currentColor" className="text-red-500" />
+                 </button>
+              </div>
+            </div>
           </motion.div>
         </div>
+      </div>
+
+      {/* Chat Input & Functional Agents - Fixed to Bottom */}
+      <div className="absolute bottom-24 left-0 right-0 z-30 px-6 pointer-events-none">
+         {/* Functional Agents as Capsule Buttons (Scrollable Row) */}
+         <div className="w-full overflow-x-auto scrollbar-hide mb-3 -mx-2 px-2 pointer-events-auto">
+           <div className="flex gap-2 min-w-max justify-center">
+             {[
+               { name: '行程规划', icon: MapPin },
+               { name: '帮我写游记', icon: HomeIcon },
+               { name: 'AI伴游', icon: User },
+             ].map((agent, index) => (
+               <motion.button 
+                 key={index}
+                 whileTap={{ scale: 0.95 }}
+                 onClick={handleOpenChat}
+                 className="flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-slate-100 text-slate-600 whitespace-nowrap"
+               >
+                 <agent.icon size={12} className="text-cyan-500" />
+                 <span className="text-[10px] font-bold">{agent.name}</span>
+               </motion.button>
+             ))}
+           </div>
+         </div>
+
+         {/* Integrated Chat Input Area */}
+         <div className="w-full relative flex justify-center pointer-events-auto">
+           <motion.div 
+                layoutId="input-container"
+                className="bg-white/95 backdrop-blur-md rounded-full py-2.5 px-4 shadow-xl shadow-slate-200/40 flex items-center gap-3 border border-slate-50 cursor-pointer hover:shadow-2xl transition-shadow w-full max-w-[320px]"
+                onClick={handleOpenChat}
+           >
+             <input 
+               type="text" 
+               placeholder="请输入您感兴趣的主题..." 
+               className="bg-transparent outline-none w-full text-slate-700 placeholder-slate-400 text-sm pl-1 cursor-pointer"
+               readOnly
+             />
+             
+             <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-md">
+               <ArrowUpRight size={16} />
+             </div>
+           </motion.div>
+         </div>
       </div>
 
       {/* Role Selector Action Sheet - Fixed to Viewport */}

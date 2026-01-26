@@ -101,9 +101,9 @@ const BottomNav = ({ onAdoptTrip, isAuthenticated, hasTrip }) => {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`absolute bottom-6 left-4 right-4 z-40 transition-all duration-300 ${guideStep === 1 ? 'scale-105' : ''}`}
+        className={`absolute bottom-0 left-0 right-0 z-40 transition-all duration-300 ${guideStep === 1 ? 'scale-105' : ''}`}
       >
-        <div className={`backdrop-blur-xl border shadow-2xl rounded-2xl px-2 py-3 flex justify-around items-center relative overflow-hidden ${guideStep === 1 ? 'bg-transparent border-white/20' : 'bg-white/80 border-white/50'}`}>
+        <div className={`backdrop-blur-xl border-t border-slate-100 shadow-[0_-5px_20px_rgba(0,0,0,0.03)] px-6 pt-2 pb-6 flex justify-between items-center relative ${guideStep === 1 ? 'bg-transparent border-white/20' : 'bg-white/95'}`}>
           
           {/* Inner Overlay for Guide Step 1 to dim other icons */}
           {guideStep === 1 && (
@@ -133,16 +133,13 @@ const BottomNav = ({ onAdoptTrip, isAuthenticated, hasTrip }) => {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={toggleMenu}
-              className={`w-14 h-14 rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(6,182,212,0.4)] border-4 transition-all duration-300 relative ${isMenuOpen ? 'bg-slate-800 text-white border-slate-50' : 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white border-white/20'} ${guideStep === 1 ? 'ring-8 ring-cyan-400/30 animate-pulse scale-110' : ''}`}
-              style={{
-                boxShadow: isMenuOpen ? '0 10px 25px -5px rgba(15, 23, 42, 0.5)' : '0 10px 25px -5px rgba(6, 182, 212, 0.5), inset 0 2px 5px rgba(255,255,255,0.3)',
-              }}
+              className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 relative ${isMenuOpen ? 'bg-slate-800 text-white' : 'bg-slate-900 text-white'} ${guideStep === 1 ? 'ring-4 ring-cyan-400/30 animate-pulse scale-110' : ''}`}
             >
               <motion.div
                 animate={{ rotate: isMenuOpen ? 45 : 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
-                <Plus size={28} strokeWidth={2.5} className="drop-shadow-md" />
+                <Plus size={20} strokeWidth={2} />
               </motion.div>
             </motion.button>
           </div>
