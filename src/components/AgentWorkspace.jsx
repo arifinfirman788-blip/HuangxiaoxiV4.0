@@ -5,13 +5,16 @@ import {
   Check, AlertTriangle, User, MapPin, ChevronRight, 
   Store, Calendar, MessageSquare, Phone, ShieldCheck, 
   Home, Bell, Clock, CheckCircle, XCircle, Zap,
-  TrendingUp, Users, Activity
+  TrendingUp, Users, Activity, Play, FileCheck
 } from 'lucide-react';
+import ReservationLetterCard from './ReservationLetterCard';
+import ReservationVideo from '../video/03d28efefa5d12a142ffcf8e57225ede.mp4';
 
 const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerchantReply, isHumanMode, onToggleHumanMode }) => {
   const [activeRequest, setActiveRequest] = useState(null);
   const [aiInsight, setAiInsight] = useState(null);
   const [processingState, setProcessingState] = useState('idle'); // idle, analyzing, ready, completed
+  const [showReservationPreview, setShowReservationPreview] = useState(false); // New state for preview
   const hasInitialized = useRef(false);
   const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, messages
   // const [isHumanMode, setIsHumanMode] = useState(false); // Managed by parent
@@ -86,26 +89,43 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
   };
 
   const handleAction = (action) => {
+    if (action === 'accept') {
+        // Intercept accept to show reservation letter preview
+        setShowReservationPreview(true);
+        return;
+    }
+
     setProcessingState('completed');
     
     // Notify the main app (Huang Xiaoxi) of the result
     if (onFeedback) {
         let feedbackText = '';
-        if (action === 'accept') {
-            feedbackText = `【${agent?.name}】已接单。我们将尽快为您安排服务，请留意短信通知。`;
-        } else if (action === 'ai_suggest') {
+        if (action === 'ai_suggest') {
             feedbackText = `【${agent?.name}】反馈：${aiInsight?.actionSuggestion || '建议调整行程'}。`;
         } else {
             feedbackText = `【${agent?.name}】暂时无法接单，建议更换其他服务商。`;
         }
-        
         onFeedback({
-            agentName: agent?.name,
-            action: action,
             text: feedbackText,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            timestamp: new Date()
         });
     }
+  };
+
+  const confirmReservation = () => {
+      setProcessingState('completed');
+      setShowReservationPreview(false);
+      
+      if (onFeedback) {
+          onFeedback({
+              text: `【${agent?.name}】已接单。我们将尽快为您安排服务，请留意短信通知。`,
+              type: 'reservation_letter',
+              data: {
+                  videoUrl: ReservationVideo
+              },
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          });
+      }
   };
 
   const handleSendReply = () => {
@@ -457,6 +477,63 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
       </div>
       </>
       )}
+      {/* Reservation Letter Preview Modal */}
+      <AnimatePresence>
+        {showReservationPreview && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl"
+            >
+              <div className="p-4 border-b border-slate-100 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center">
+                    <Zap size={14} />
+                  </div>
+                  <span className="font-bold text-slate-800 text-sm">AI 自动生成预订函</span>
+                </div>
+                <button onClick={() => setShowReservationPreview(false)}>
+                  <XCircle size={20} className="text-slate-400" />
+                </button>
+              </div>
+              
+              <div className="p-6 flex flex-col items-center gap-4">
+                <p className="text-xs text-slate-500 text-center">
+                  根据用户预订信息，AI 已自动生成专属预订函视频。
+                  <br/>请确认效果无误后发送给用户。
+                </p>
+                
+                {/* Card Preview */}
+                <div className="w-full transform scale-90">
+                   <ReservationLetterCard />
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 flex gap-3">
+                <button 
+                  onClick={() => setShowReservationPreview(false)}
+                  className="flex-1 py-3 text-xs font-bold text-slate-600 border border-slate-200 rounded-xl"
+                >
+                  重新生成
+                </button>
+                <button 
+                  onClick={confirmReservation}
+                  className="flex-1 py-3 text-xs font-bold text-white bg-slate-900 rounded-xl shadow-lg shadow-slate-200"
+                >
+                  确认并发送
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

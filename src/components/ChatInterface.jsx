@@ -1,8 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Send, Mic, Plane, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, Star, Info, Car, Camera, Hotel, Loader2, Wand2, RefreshCcw, ArrowRight, Bed, MapPin, X, ZoomIn, ZoomOut, MessageSquare, Phone } from 'lucide-react';
+import { ArrowLeft, Send, Mic, Plane, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, Star, Info, Car, Camera, Hotel, Loader2, Wand2, RefreshCcw, ArrowRight, Bed, MapPin, X, ZoomIn, ZoomOut, MessageSquare, Phone, BadgeCheck, MoreHorizontal, MessageCircle } from 'lucide-react';
 import TuoSaiImage from '../image/托腮_1.png';
 import { getPlaceholder } from '../utils/imageUtils';
+import ReservationLetterCard from './ReservationLetterCard';
+import MuseumAvatar from '../image/bowuguan.png';
+import WangAyiAvatar from '../image/wangayi.png';
+import LiuDaGeAvatar from '../image/liudage.png';
+import HotelAvatar from '../image/jiudian.png';
+import GuideAvatar from '../image/daoyou.png';
+import ScenicAvatar from '../image/huangguoshu.png';
+import PeasantAvatar from '../image/avatars/peasant.png';
+import CarAvatar from '../image/zhuanche.png';
 
 const mockUser = {
     name: "陈小明",
@@ -16,6 +25,31 @@ const getAutoFilledValue = (req) => {
     if (req.includes('身份证') || req.includes('证件')) return mockUser.idCard;
     return '';
 };
+
+const VideoPlayerModal = ({ videoUrl, onClose }) => (
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 z-[200] bg-black flex items-center justify-center"
+    onClick={onClose}
+  >
+    <div className="relative w-full h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+        <video 
+            src={videoUrl} 
+            className="w-full h-full object-contain" 
+            controls 
+            autoPlay
+        />
+        <button 
+            onClick={onClose}
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-black/50 text-white rounded-full backdrop-blur-md hover:bg-black/70 transition-colors z-50"
+        >
+            <X size={20} />
+        </button>
+    </div>
+  </motion.div>
+);
 
 const ImageViewer = ({ imageUrl, onClose }) => {
     const [scale, setScale] = useState(1);
@@ -276,6 +310,68 @@ const DiningServiceCard = ({ title, requirements, onSubmit, onViewImage }) => {
     );
 };
 
+const AgentRecommendationCard = ({ title, agents, onConnect }) => {
+    return (
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 space-y-3 w-full">
+            <h4 className="font-bold text-sm text-slate-800 flex items-center gap-2">
+                <Sparkles size={16} className="text-cyan-500" />
+                {title}
+            </h4>
+            
+            <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1 scrollbar-hide">
+                {agents.map(agent => (
+                    <div 
+                        key={agent.id}
+                        className="shrink-0 w-48 h-64 rounded-[1.5rem] overflow-hidden relative border-[3px] border-white shadow-lg cursor-pointer group bg-slate-900"
+                        onClick={() => onConnect(agent)}
+                    >
+                        {/* Full Background Image */}
+                        <img 
+                            src={agent.avatar} 
+                            alt={agent.name} 
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                        />
+                        
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" />
+
+                        {/* Right Side Actions (Visual Only) */}
+                        <div className="absolute right-3 top-[35%] -translate-y-1/2 flex flex-col gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                             <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+                                <ArrowRight size={14} className="-rotate-45" />
+                             </div>
+                             <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+                                <MessageCircle size={14} />
+                             </div>
+                             <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+                                <MoreHorizontal size={14} />
+                             </div>
+                        </div>
+
+                        {/* Bottom Glass Overlay Info */}
+                        <div className="absolute bottom-2 left-2 right-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl p-3 text-white shadow-sm z-20">
+                             {/* Name & Status Row */}
+                             <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                   <h3 className="text-xs font-bold leading-none text-white shadow-sm truncate">{agent.name}</h3>
+                                   {agent.type === 'enterprise' && <BadgeCheck size={12} className="text-blue-400 shrink-0" fill="currentColor" stroke="white" />}
+                                   <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)] shrink-0"></div>
+                                </div>
+                                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                                   <ChevronDown size={10} className="-rotate-90 text-white" />
+                                </div>
+                             </div>
+                             
+                             {/* Description Line */}
+                             <p className="text-[9px] text-white/80 font-medium line-clamp-1 mt-1">{agent.desc}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
 const ScenicServiceCard = ({ title, requirements, onSubmit, onViewImage }) => {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [formData, setFormData] = useState(() => {
@@ -527,43 +623,54 @@ const InfoRequirementCard = ({ title, requirements, onSubmit }) => {
 
 const AgentGeneratedCard = ({ agent, onConnect }) => {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-indigo-100 w-full">
-      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-4 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4">
-           <Wand2 size={100} />
-        </div>
-        <div className="flex items-center gap-3 relative z-10">
-           <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border-2 border-white/30">
-              <Sparkles size={24} className="text-yellow-300" />
-           </div>
-           <div>
-              <div className="text-xs font-bold text-indigo-100 uppercase tracking-wider mb-0.5">AI Generated Agent</div>
-              <h3 className="font-bold text-lg">{agent.name}</h3>
-           </div>
-        </div>
+    <div className="bg-slate-900 rounded-[1.5rem] overflow-hidden shadow-lg border-[3px] border-white w-full max-w-sm relative group">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 to-purple-900">
+         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay" />
+         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
       </div>
-      
-      <div className="p-4 space-y-4">
-         <div className="flex gap-2">
-            <span className="px-2 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-bold rounded-lg border border-indigo-100">
-               {agent.type === 'scenic' ? '景区服务' : agent.type === 'hotel' ? '酒店服务' : agent.type === 'food' ? '餐饮服务' : '生活服务'}
-            </span>
-            <span className="px-2 py-1 bg-slate-50 text-slate-500 text-[10px] font-bold rounded-lg border border-slate-100">
-               智能体V3.0
-            </span>
-         </div>
-         
-         <p className="text-xs text-slate-600 leading-relaxed">
-            {agent.description || '该智能体由AI自动生成，已接入相关服务数据，可为您提供专业的咨询与服务。'}
-         </p>
 
-         <div className="pt-2">
-            <button 
-              onClick={onConnect}
-              className="w-full py-3 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-slate-200 active:scale-95 transition-all"
-            >
-               <MessageSquare size={16} /> 立即对话
-            </button>
+      {/* Floating Sparkles Icon */}
+      <div className="absolute top-4 right-4 animate-pulse">
+         <Wand2 size={24} className="text-white/50" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-20 pt-28 p-4">
+         <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-xl p-4 text-white shadow-sm space-y-3">
+             {/* Header */}
+             <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center border border-white/20 shadow-inner">
+                   <Sparkles size={20} className="text-white" />
+                </div>
+                <div>
+                   <div className="text-[9px] font-bold text-indigo-200 uppercase tracking-wider">AI Generated</div>
+                   <h3 className="font-bold text-lg text-white leading-none">{agent.name}</h3>
+                </div>
+             </div>
+
+             {/* Tags */}
+             <div className="flex gap-2">
+                <span className="px-2 py-0.5 bg-indigo-500/30 text-indigo-100 text-[9px] font-bold rounded-md border border-indigo-500/30">
+                   {agent.type === 'scenic' ? '景区服务' : agent.type === 'hotel' ? '酒店服务' : agent.type === 'food' ? '餐饮服务' : '生活服务'}
+                </span>
+                <span className="px-2 py-0.5 bg-white/10 text-white/70 text-[9px] font-bold rounded-md border border-white/10">
+                   智能体V3.0
+                </span>
+             </div>
+             
+             {/* Description */}
+             <p className="text-[10px] text-white/80 font-medium leading-relaxed">
+                {agent.description || '该智能体由AI自动生成，已接入相关服务数据，可为您提供专业的咨询与服务。'}
+             </p>
+    
+             {/* Action Button */}
+             <button 
+               onClick={onConnect}
+               className="w-full py-2.5 rounded-xl bg-white text-indigo-900 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-900/20 active:scale-95 transition-all hover:bg-indigo-50"
+             >
+                <MessageSquare size={14} /> 立即对话
+             </button>
          </div>
       </div>
     </div>
@@ -576,7 +683,7 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
     {
       id: 1,
       sender: 'agent',
-      text: '你好！我是你的智能行程规划师。请告诉我你想去哪里，玩几天，有什么偏好？',
+      text: '你好！我是黄小西。不仅仅是行程规划，关于贵州旅游的一切，例如景点推荐、美食打卡、酒店预订等，您都可以问我哦！',
       time: '10:00'
     }
   ]);
@@ -584,9 +691,10 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
   const [isTyping, setIsTyping] = useState(false);
   const [currentTrip, setCurrentTrip] = useState(null);
   const [activeAgent, setActiveAgent] = useState(null);
-  const [currentNode, setCurrentNode] = useState(null);
-  const [planningContext, setPlanningContext] = useState(null);
+  const [currentNode, setCurrentNode] = useState('root');
+    const [planningContext, setPlanningContext] = useState(null);
   const [viewingImage, setViewingImage] = useState(null);
+  const [viewingVideoUrl, setViewingVideoUrl] = useState(null);
 
   // Helper to get agent info based on type
   const getAgentInfo = (type) => {
@@ -691,7 +799,11 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
             id: Date.now(),
             sender: 'agent',
             text: agentFeedback.text,
-            time: agentFeedback.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            type: agentFeedback.type,
+            data: agentFeedback.data,
+            time: typeof agentFeedback.timestamp === 'string' 
+                ? agentFeedback.timestamp 
+                : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages(prev => [...prev, feedbackMsg]);
         
@@ -831,6 +943,64 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
             setMessages(prev => [...prev, planMsg]);
+
+            // Follow-up with service recommendation
+            setTimeout(() => {
+                const followUpMsg = {
+                    id: 4,
+                    sender: 'agent',
+                    text: '为了让您的行程更顺畅，我为您精选了以下配套服务智能体，您可以直接联系他们安排细节。',
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                };
+                setMessages(prev => [...prev, followUpMsg]);
+
+                const serviceAgents = [
+                    {
+                        id: 301,
+                        name: '出行调度智能体',
+                        desc: '提供专车接送、包车服务',
+                        avatar: CarAvatar,
+                        type: 'enterprise',
+                        role: 'transport',
+                        rating: 4.9,
+                        details: { name: '出行调度智能体', desc: '专属司机' },
+                        color: 'blue'
+                    },
+                    {
+                        id: 102,
+                        name: '金牌导游小张',
+                        desc: '十年贵州通，带你玩转地道贵州',
+                        avatar: GuideAvatar,
+                        type: 'personal',
+                        role: 'scenic',
+                        rating: 4.8,
+                        details: { name: '金牌导游小张', desc: '金牌地陪' },
+                        color: 'green'
+                    },
+                    {
+                        id: 202,
+                        name: '美食达人王阿姨',
+                        desc: '深巷美食挖掘机，跟着吃不踩雷',
+                        avatar: WangAyiAvatar,
+                        type: 'personal',
+                        role: 'food',
+                        rating: 4.9,
+                        details: { name: '美食达人王阿姨', desc: '美食达人' },
+                        color: 'orange'
+                    }
+                ];
+
+                const recMsg = {
+                    id: 5,
+                    sender: 'agent',
+                    type: 'agent_recommendation',
+                    title: '行程配套服务推荐',
+                    agents: serviceAgents,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                };
+                setMessages(prev => [...prev, recMsg]);
+            }, 1000);
+
         }, 2000);
 
     } else {
@@ -1061,6 +1231,8 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
           detectedEntity = { name: '黄果树瀑布智能体', desc: '黄果树瀑布' };
       } else if (content.includes('亚朵')) {
           detectedEntity = { name: '亚朵酒店服务智能体', desc: '亚朵酒店' };
+      } else if (content.includes('贵州饭店') || content.includes('迎宾楼')) {
+          detectedEntity = { name: '贵州饭店智能体', desc: '贵州饭店迎宾楼' };
       } else if (content.includes('全聚德')) {
           detectedEntity = { name: '全聚德服务智能体', desc: '全聚德' };
       } else if (content.includes('神州')) {
@@ -1298,12 +1470,12 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
           return;
       }
       
-      if (content.includes('点餐') || content.includes('订座')) {
+      if (content.includes('点餐') || content.includes('订座') || content.includes('订包房')) {
           const infoMsg = {
               id: Date.now() + 1,
               sender: 'agent',
               type: 'dining_card',
-              title: '预订座位所需信息',
+              title: content.includes('订包房') ? '预订包房所需信息' : '预订座位所需信息',
               requirements: ['预订人姓名', '联系电话', '用餐时间', '用餐人数', '包间需求'],
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               entityContext: detectedEntity,
@@ -1347,6 +1519,226 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
               entityContext: detectedEntity
           };
           dispatchAiResponse(infoMsg);
+          return;
+      }
+
+      // 8. View Environment (Guizhou Hotel)
+      if (content.includes('看环境')) {
+          const envMsg = {
+             id: Date.now() + 1,
+             sender: 'agent',
+             text: '为您展示贵州饭店迎宾楼的优雅环境。我们拥有多个风格迥异的豪华包房，大厅宽敞明亮，充满浓郁的文化气息。',
+             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          dispatchAiResponse(envMsg);
+          return;
+      }
+
+      // 9. Recommendation Logic (Fun/Food)
+      if (content.includes('好玩') || content.includes('景点') || content.includes('玩什么')) {
+          const enterpriseAgents = [
+              {
+                  id: 101,
+                  name: '黄果树瀑布智能体',
+                  desc: '亚洲第一大瀑布，壮观宏伟',
+                  avatar: ScenicAvatar,
+                  type: 'enterprise',
+                  role: 'scenic',
+                  rating: 4.9,
+                  details: { name: '黄果树瀑布智能体', desc: '黄果树瀑布' },
+                  color: 'green'
+              },
+              {
+                  id: 103,
+                  name: '省博物馆智能体',
+                  desc: '探寻古夜郎文化的奥秘',
+                  avatar: MuseumAvatar,
+                  type: 'enterprise',
+                  role: 'scenic',
+                  rating: 4.7,
+                  details: { name: '省博物馆智能体', desc: '省博物馆' },
+                  color: 'green'
+              }
+          ];
+
+          const recMsg = {
+              id: Date.now() + 1,
+              sender: 'agent',
+              type: 'agent_recommendation',
+              title: '推荐热门景区',
+              agents: enterpriseAgents,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          dispatchAiResponse(recMsg);
+
+          // Direct Recommendation of Personal Agents
+          setTimeout(() => {
+              const introMsg = {
+                  id: Date.now() + 2,
+                  sender: 'agent',
+                  text: '为了给您提供更深度的游玩体验，我为您精选了以下几类专业服务人员，您可以按需选择：',
+                  time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              };
+              dispatchAiResponse(introMsg);
+
+              // Chain the next recommendations
+              setTimeout(() => {
+                  // 1. Professional Guides
+                  const guides = [
+                      {
+                          id: 102,
+                          name: '金牌导游小张',
+                          desc: '十年贵州通，带你玩转地道贵州',
+                          avatar: GuideAvatar,
+                          type: 'personal',
+                          role: 'scenic',
+                          rating: 4.8,
+                          details: { name: '金牌导游小张', desc: '金牌地陪' },
+                          color: 'green'
+                      },
+                      {
+                          id: 105,
+                          name: '资深导游王姐',
+                          desc: '专注人文历史讲解，风趣幽默',
+                          avatar: WangAyiAvatar, 
+                          type: 'personal',
+                          role: 'scenic',
+                          rating: 4.9,
+                          details: { name: '资深导游王姐', desc: '人文讲解' },
+                          color: 'green'
+                      }
+                  ];
+                  const guideCard = {
+                      id: Date.now() + 3,
+                      sender: 'agent',
+                      type: 'agent_recommendation',
+                      title: '金牌导游推荐',
+                      agents: guides,
+                      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  };
+                  dispatchAiResponse(guideCard);
+
+                  // 2. Local Companions & Experts
+                  setTimeout(() => {
+                      const locals = [
+                          {
+                              id: 104,
+                              name: '摄影师小李',
+                              desc: '专业跟拍，记录旅行美好瞬间',
+                              avatar: PeasantAvatar,
+                              type: 'personal',
+                              role: 'scenic',
+                              rating: 4.9,
+                              details: { name: '摄影师小李', desc: '旅拍服务' },
+                              color: 'green'
+                          },
+                          {
+                              id: 302,
+                              name: '包车师傅老陈',
+                              desc: '十五年驾龄，熟悉各种小众路线',
+                              avatar: LiuDaGeAvatar, 
+                              type: 'personal',
+                              role: 'transport',
+                              rating: 4.8,
+                              details: { name: '包车师傅老陈', desc: '老司机' },
+                              color: 'blue'
+                          }
+                      ];
+                      const localCard = {
+                          id: Date.now() + 4,
+                          sender: 'agent',
+                          type: 'agent_recommendation',
+                          title: '地陪与特色服务推荐',
+                          agents: locals,
+                          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      };
+                      dispatchAiResponse(localCard);
+                  }, 800);
+
+              }, 800);
+
+          }, 1000);
+          
+          return;
+      }
+
+      // Removed interactive logic for guide selection since we push directly now
+
+      if (content.includes('好吃') || content.includes('美食') || content.includes('吃什么')) {
+          // 1. Formal Dining (Enterprise)
+          const formalDining = [
+              {
+                  id: 201,
+                  name: '全聚德服务智能体',
+                  desc: '百年老字号，正宗烤鸭',
+                  avatar: HotelAvatar, // Reusing hotel avatar as generic formal dining for now
+                  type: 'enterprise',
+                  role: 'food',
+                  rating: 4.8,
+                  details: { name: '全聚德服务智能体', desc: '全聚德' },
+                  color: 'orange'
+              },
+              {
+                  id: 204,
+                  name: '雅园餐厅智能体',
+                  desc: '精致黔菜，商务宴请首选',
+                  avatar: ScenicAvatar, // Placeholder
+                  type: 'enterprise',
+                  role: 'food',
+                  rating: 4.9,
+                  details: { name: '雅园餐厅智能体', desc: '雅园' },
+                  color: 'orange'
+              }
+          ];
+
+          const formalMsg = {
+              id: Date.now() + 1,
+              sender: 'agent',
+              type: 'agent_recommendation',
+              title: '正餐推荐',
+              agents: formalDining,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          dispatchAiResponse(formalMsg);
+
+          setTimeout(() => {
+              // 2. Local Specialties & Snacks (Personal/Small Biz)
+              const localFood = [
+                  {
+                      id: 202,
+                      name: '美食达人王阿姨',
+                      desc: '深巷美食挖掘机，跟着吃不踩雷',
+                      avatar: WangAyiAvatar,
+                      type: 'personal',
+                      role: 'food',
+                      rating: 4.9,
+                      details: { name: '美食达人王阿姨', desc: '美食达人' },
+                      color: 'orange'
+                  },
+                  {
+                      id: 203,
+                      name: '烤鱼大师刘大哥',
+                      desc: '三十年专注烤鱼，独家秘制酱料',
+                      avatar: LiuDaGeAvatar,
+                      type: 'personal',
+                      role: 'food',
+                      rating: 4.7,
+                      details: { name: '烤鱼大师刘大哥', desc: '烤鱼大师' },
+                      color: 'orange'
+                  }
+              ];
+
+              const localMsg = {
+                  id: Date.now() + 2,
+                  sender: 'agent',
+                  type: 'agent_recommendation',
+                  title: '本地特色与小吃推荐',
+                  agents: localFood,
+                  time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              };
+              dispatchAiResponse(localMsg);
+          }, 800);
+
           return;
       }
 
@@ -1477,6 +1869,64 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
             dispatchAiResponse(cardMsg);
+
+            // Follow-up with service recommendation
+            setTimeout(() => {
+                const followUpMsg = {
+                    id: Date.now() + 3,
+                    sender: 'agent',
+                    text: '为了让您的行程更顺畅，我为您精选了以下配套服务智能体，您可以直接联系他们安排细节。',
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                };
+                dispatchAiResponse(followUpMsg);
+
+                const serviceAgents = [
+                    {
+                        id: 301,
+                        name: '出行调度智能体',
+                        desc: '提供专车接送、包车服务',
+                        avatar: CarAvatar,
+                        type: 'enterprise',
+                        role: 'transport',
+                        rating: 4.9,
+                        details: { name: '出行调度智能体', desc: '专属司机' },
+                        color: 'blue'
+                    },
+                    {
+                        id: 102,
+                        name: '金牌导游小张',
+                        desc: '十年贵州通，带你玩转地道贵州',
+                        avatar: GuideAvatar,
+                        type: 'personal',
+                        role: 'scenic',
+                        rating: 4.8,
+                        details: { name: '金牌导游小张', desc: '金牌地陪' },
+                        color: 'green'
+                    },
+                    {
+                        id: 202,
+                        name: '美食达人王阿姨',
+                        desc: '深巷美食挖掘机，跟着吃不踩雷',
+                        avatar: WangAyiAvatar,
+                        type: 'personal',
+                        role: 'food',
+                        rating: 4.9,
+                        details: { name: '美食达人王阿姨', desc: '美食达人' },
+                        color: 'orange'
+                    }
+                ];
+
+                const recMsg = {
+                    id: Date.now() + 4,
+                    sender: 'agent',
+                    type: 'agent_recommendation',
+                    title: '行程配套服务推荐',
+                    agents: serviceAgents,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                };
+                dispatchAiResponse(recMsg);
+            }, 1000);
+
           }, 600);
       }
     }, 1500);
@@ -1724,6 +2174,46 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
                         onSubmit={(data) => handleServiceCompletion(msg.title, data, msg.entityContext)}
                     />
                 </div>
+              ) : msg.type === 'reservation_letter' ? (
+                <div className="w-full min-w-[300px]">
+                    <ReservationLetterCard
+                        videoUrl={msg.data.videoUrl}
+                        onClick={() => setViewingVideoUrl(msg.data.videoUrl)}
+                    />
+                </div>
+              ) : msg.type === 'agent_recommendation' ? (
+                <div className="w-full min-w-[300px]">
+                   <AgentRecommendationCard 
+                       title={msg.title}
+                       agents={msg.agents}
+                       onConnect={(agent) => {
+                            // Notify App to open workspace
+                            const agentInfo = getAgentInfo(agent.role);
+                            // Override
+                            const targetAgent = {
+                               ...agentInfo,
+                               name: agent.name,
+                               description: agent.desc,
+                               avatar: agent.avatar
+                            };
+                            
+                            if (onConnectAgent) {
+                                onConnectAgent(targetAgent);
+                            }
+
+                            setTimeout(() => {
+                               const connectedMsg = {
+                                   id: Date.now(),
+                                   sender: 'agent',
+                                   text: `已为您成功接入${agent.name}，现在您可以直接与它对话了。`,
+                                   time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                               };
+                               setMessages(prev => [...prev, connectedMsg]);
+                               setActiveAgent(targetAgent);
+                            }, 1500);
+                       }}
+                   />
+               </div>
               ) : msg.type === 'chips' ? (
                 <div className="flex flex-wrap gap-2 my-1">
                   {msg.chips.map((chip, idx) => (
@@ -1783,12 +2273,15 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
         {viewingImage && (
           <ImageViewer imageUrl={viewingImage} onClose={() => setViewingImage(null)} />
         )}
+        {viewingVideoUrl && (
+          <VideoPlayerModal videoUrl={viewingVideoUrl} onClose={() => setViewingVideoUrl(null)} />
+        )}
       </AnimatePresence>
 
       {/* Input Area */}
       <motion.div 
         layoutId={initialContext?.fromSquare ? undefined : "input-container"}
-        className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]"
+        className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t border-slate-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50"
       >
           <div className="flex items-center gap-2 bg-slate-100 rounded-full p-1.5 pl-4">
             <input 
@@ -2052,66 +2545,76 @@ const ServiceAgentCard = ({ node, agentInfo, onConnect, autoConnect }) => {
   };
 
   return (
-    <div className={`bg-white rounded-2xl overflow-hidden shadow-md border ${agentInfo.border}`}>
-       {/* Header */}
-       <div className={`${agentInfo.headerBg} p-4 flex items-center gap-3 border-b ${agentInfo.border}`}>
-         <div className={`w-10 h-10 rounded-full ${agentInfo.bgColor} flex items-center justify-center shrink-0 overflow-hidden`}>
-           {agentInfo.avatar ? (
-             <img src={agentInfo.avatar} alt={agentInfo.name} className="w-full h-full object-cover" />
-           ) : (
-             <agentInfo.icon size={20} className={agentInfo.iconColor} />
-           )}
+    <div className="bg-slate-900 rounded-[1.5rem] overflow-hidden shadow-lg border-[3px] border-white w-full max-w-sm relative group">
+       {/* Full Background Image */}
+       {agentInfo.avatar ? (
+         <img 
+           src={agentInfo.avatar} 
+           alt={agentInfo.name} 
+           className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+         />
+       ) : (
+         <div className={`absolute inset-0 w-full h-full ${agentInfo.bgColor} flex items-center justify-center`}>
+            <agentInfo.icon size={64} className={`${agentInfo.iconColor} opacity-50`} />
          </div>
-         <div className="flex-1">
-           <h3 className={`font-bold text-sm ${agentInfo.color}`}>{agentInfo.name}</h3>
-           <p className={`text-[10px] font-bold ${agentInfo.iconColor} opacity-80`}>{agentInfo.tag}</p>
-         </div>
+       )}
+       
+       {/* Gradient Overlay */}
+       <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/80" />
+
+       {/* Right Side Actions (Visual Only) */}
+       <div className="absolute right-3 top-4 flex flex-col gap-2 z-20">
+            <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+               <ArrowRight size={14} className="-rotate-45" />
+            </div>
        </div>
 
        {/* Content */}
-       <div className="p-4">
-         <div className="mb-4">
-           <p className="text-xs text-slate-500 leading-relaxed mb-2">{agentInfo.description}</p>
-           <div className="bg-slate-50 rounded-lg p-2 flex items-center gap-2">
-             <div className="w-8 h-8 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0">
-                {node.type === 'scenic' ? <Camera size={14} className="text-slate-400"/> : 
-                 node.type === 'hotel' ? <Hotel size={14} className="text-slate-400"/> :
-                 <Info size={14} className="text-slate-400"/>}
+       <div className="relative z-20 pt-32 p-4">
+         <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-xl p-4 text-white shadow-sm space-y-3">
+             {/* Name & Status Row */}
+             <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 min-w-0">
+                   <h3 className="text-sm font-bold leading-none text-white shadow-sm truncate">{agentInfo.name}</h3>
+                   <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)] shrink-0"></div>
+                </div>
+                <div className="px-2 py-0.5 rounded-full bg-white/20 text-[9px] font-bold border border-white/20">
+                   {agentInfo.tag}
+                </div>
              </div>
-             <div className="flex-1 min-w-0">
-               <div className="text-xs font-bold text-slate-800 truncate">{node.title || node.details?.name}</div>
-               <div className="text-[10px] text-slate-400 truncate">{node.details?.desc}</div>
-             </div>
-           </div>
+             
+             {/* Description Line */}
+             <p className="text-[10px] text-white/80 font-medium leading-relaxed line-clamp-2">{agentInfo.description}</p>
+             
+             {/* Action Button */}
+             <button
+               onClick={handleConnect}
+               disabled={status !== 'idle'}
+               className={`w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                 status === 'idle' 
+                   ? 'bg-white text-slate-900 hover:bg-slate-100 active:scale-95 shadow-lg' 
+                   : status === 'connecting'
+                     ? 'bg-white/50 text-white cursor-wait'
+                     : 'bg-green-500 text-white border border-green-400 cursor-default'
+               }`}
+             >
+               {status === 'idle' && (
+                 <>
+                   <Sparkles size={14} className="text-cyan-500" /> 接入服务
+                 </>
+               )}
+               {status === 'connecting' && (
+                 <>
+                   <Loader2 size={14} className="animate-spin" /> 正在接入...
+                 </>
+               )}
+               {status === 'connected' && (
+                 <>
+                   <Check size={14} /> 已接入
+                 </>
+               )}
+             </button>
          </div>
-
-         <button
-           onClick={handleConnect}
-           disabled={status !== 'idle'}
-           className={`w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
-             status === 'idle' 
-               ? `${agentInfo.btnBg} text-white hover:opacity-90 active:scale-95 shadow-lg shadow-blue-100` 
-               : status === 'connecting'
-                 ? 'bg-slate-100 text-slate-400 cursor-wait'
-                 : 'bg-green-50 text-green-600 border border-green-200 cursor-default'
-           }`}
-         >
-           {status === 'idle' && (
-             <>
-               <Sparkles size={14} /> 接入服务
-             </>
-           )}
-           {status === 'connecting' && (
-             <>
-               <Loader2 size={14} className="animate-spin" /> 正在接入...
-             </>
-           )}
-           {status === 'connected' && (
-             <>
-               <Check size={14} /> 已接入
-             </>
-           )}
-         </button>
        </div>
     </div>
   );

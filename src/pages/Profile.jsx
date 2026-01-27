@@ -15,12 +15,29 @@ import {
   FileText, 
   Phone,
   Edit2,
-  LogOut
+  LogOut,
+  Contact
 } from 'lucide-react';
 import avatarImage from '../image/托腮_1.png';
+import BusinessCardModal from '../components/BusinessCardModal';
 
 const Profile = ({ isAuthenticated, onLogout }) => {
   const navigate = useNavigate();
+  const [showCardModal, setShowCardModal] = React.useState(false);
+  const [cardData, setCardData] = React.useState(null);
+
+  // Load card data from local storage on mount
+  React.useEffect(() => {
+    const savedCard = localStorage.getItem('user_business_card');
+    if (savedCard) {
+      setCardData(JSON.parse(savedCard));
+    }
+  }, []);
+
+  const handleSaveCard = (data) => {
+    setCardData(data);
+    localStorage.setItem('user_business_card', JSON.stringify(data));
+  };
 
   // Mock user data
   const userData = {
@@ -62,6 +79,14 @@ const Profile = ({ isAuthenticated, onLogout }) => {
                       </span>
                     ))}
                   </div>
+                  
+                  <button 
+                    onClick={() => setShowCardModal(true)}
+                    className="mt-3 flex items-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1.5 rounded-full shadow-md shadow-cyan-200 active:scale-95 transition-all hover:shadow-lg"
+                  >
+                    <Contact size={14} />
+                    {cardData ? '我的名片' : '新增个人名片'}
+                  </button>
                 </div>
               </div>
             ) : (
@@ -125,6 +150,13 @@ const Profile = ({ isAuthenticated, onLogout }) => {
         <p className="text-[10px] text-slate-400">备案编号：Guizhou-DuoCaiHuangXiaoXiAI-20250724S0002</p>
         <p className="text-[10px] text-slate-400">ICP号：黔ICP备2025044274号-1X</p>
       </div>
+
+      <BusinessCardModal 
+        isOpen={showCardModal} 
+        onClose={() => setShowCardModal(false)} 
+        initialData={cardData}
+        onSave={handleSaveCard}
+      />
     </div>
   );
 };

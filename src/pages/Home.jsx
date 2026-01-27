@@ -105,6 +105,18 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
   // Mock Agents for Social Card
   const socialAgents = [
     {
+      id: 9,
+      name: "贵州饭店迎宾楼",
+      type: "food",
+      isEnterprise: true,
+      desc: "高端商务宴请",
+      intro: "贵州饭店迎宾楼，承载着贵州的历史与荣耀。为您提供私密尊贵的包房服务，地道的黔菜佳肴，是您商务宴请、家庭聚会的首选之地。",
+      likes: "3.8k",
+      avatar: HotelAvatar,
+      poster: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&h=1200&fit=crop",
+      customServices: ['订包房', '看环境']
+    },
+    {
       id: 1,
       name: "黄果树瀑布智能体",
       type: "scenic",
@@ -208,9 +220,9 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
         role: agent.type === 'scenic' ? '景区' : agent.type === 'hotel' ? '酒店' : agent.type === 'food' ? '餐饮' : '交通',
         color: agent.type === 'scenic' ? 'green' : agent.type === 'hotel' ? 'indigo' : agent.type === 'food' ? 'orange' : 'blue',
         avatar: agent.avatar,
-        services: agent.type === 'scenic' ? ['购票', '导览'] : 
+        services: agent.customServices || (agent.type === 'scenic' ? ['购票', '导览'] : 
                  agent.type === 'hotel' ? ['订房', '咨询'] :
-                 agent.type === 'food' ? ['订座', '排队'] : ['用车', '接机']
+                 agent.type === 'food' ? ['订座', '排队'] : ['用车', '接机'])
     };
     handleOpenChat(context);
   };
