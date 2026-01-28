@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, MapPin, User, ChevronDown, MessageCircle, Star, Coffee, Building, Landmark, Mic, Plus, Home as HomeIcon, Compass, UserCircle, X, Check, Bell, Languages, Volume2, ArrowUpRight, Plane, Clock, Sparkles, Camera, Car, Play, Calendar as CalendarIcon, Ticket, Hotel, Utensils, RefreshCcw, ArrowRight, Heart, Send, BadgeCheck, MoreHorizontal } from 'lucide-react';
 import { categories } from '../data/agents';
-import TuoSaiImage from '../image/托腮_1.png';
+import TuoSaiImage from '../image/huangxiaoxi_new.png';
 import FlipCountdown from '../components/FlipCountdown';
 import ChatInterface from '../components/ChatInterface';
 import { getPlaceholder } from '../utils/imageUtils';
@@ -88,6 +88,43 @@ const NewsMarquee = () => {
   );
 };
 
+const TypewriterText = ({ text, className, delay = 0 }) => {
+  const [displayedText, setDisplayedText] = useState('');
+
+  useEffect(() => {
+    // Reset immediately when text prop changes
+    setDisplayedText('');
+    
+    // Create a local variable to track the current text content to avoid closure staleness issues
+    // although with dependency array [text], the effect re-runs, so index reset is key.
+    let currentIndex = 0;
+    const currentText = text;
+    
+    const timer = setTimeout(() => {
+      const interval = setInterval(() => {
+        // Use functional update to append next character safely
+        setDisplayedText((prev) => {
+           // If we've reached full length, clear interval and return current
+           if (prev.length >= currentText.length) {
+              clearInterval(interval);
+              return prev;
+           }
+           // Otherwise add the character at the current length position
+           // This is safer than relying on an external 'index' variable in some React versions/modes
+           return currentText.substring(0, prev.length + 1);
+        });
+      }, 100);
+      
+      // Cleanup interval on unmount or dependency change
+      return () => clearInterval(interval);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [text, delay]);
+
+  return <span className={className}>{displayedText}</span>;
+};
+
 const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onServiceSubmit, onConnectAgent, agentFeedback, merchantMessage, onUserMessage, isHumanMode }) => {
   const [activeRole, setActiveRole] = useState('黄小西');
   const [showRoleSelector, setShowRoleSelector] = useState(false);
@@ -101,6 +138,43 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
 
   const navigate = useNavigate();
   const location = useLocation(); // Add useLocation hook
+
+  const [randomThought, setRandomThought] = useState('');
+
+  // Random thoughts for the bubble
+  const thoughts = [
+    "今天去哪儿玩呢？",
+    "附近有什么吃的呢？",
+    "这家店的招牌菜是什么？",
+    "有没有当地人带我玩？",
+    "帮我找一家性价比高的酒店",
+    "黄果树瀑布现在人多吗？",
+    "推荐一个适合拍照的景点",
+    "我想找个安静的地方喝咖啡"
+  ];
+
+  useEffect(() => {
+    // Pick a random thought on mount
+    const randomIndex = Math.floor(Math.random() * thoughts.length);
+    setRandomThought(thoughts[randomIndex]);
+    
+    // Optional: Change thought periodically
+    const interval = setInterval(() => {
+      // Use functional update to ensure we have access to current randomThought if needed,
+      // but here we just pick a random one. To ensure it changes, we can retry if same.
+      let nextIndex = Math.floor(Math.random() * thoughts.length);
+      // Ensure we don't pick the same one twice in a row for better UX
+      setRandomThought(prev => {
+         const currentIndex = thoughts.indexOf(prev);
+         while (nextIndex === currentIndex && thoughts.length > 1) {
+            nextIndex = Math.floor(Math.random() * thoughts.length);
+         }
+         return thoughts[nextIndex];
+      });
+    }, 8000); // Change every 8 seconds
+
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array is correct as thoughts is constant (defined inside component but effectively constant)
 
   // Mock Agents for Social Card
   const socialAgents = [
@@ -329,21 +403,6 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
           {/* Typewriter Effect */}
           <div className="mb-2">
 
-          {/* Hero / Chat Section */}
-          <section className="mb-0 mt-2">
-            <div className="relative">
-              {/* Character Image - Positioned behind content, slightly lower to be covered by container */}
-              <div className="absolute -top-12 -right-4 w-36 h-36 pointer-events-none z-0">
-                 <img 
-                   src={TuoSaiImage} 
-                   alt="Character" 
-                   className="w-full h-full object-contain drop-shadow-lg"
-                   style={{ objectPosition: 'bottom' }}
-                 />
-              </div>
-            </div>
-          </section>
-
           {/* Functional Agents & Chat Input - Moved to Bottom */}
           <section className="mb-0">
              {/* This section is intentionally left empty here as requested, 
@@ -371,18 +430,55 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
             className="w-full mb-20 relative -top-10"
           >
             <div className="rounded-[2rem] p-5 relative overflow-visible h-[420px] flex flex-col">
-              {/* Header */}
+              {/* Header with Visual Icons (No Text) */}
               <div className="flex justify-between items-center mb-4 relative z-20 shrink-0 px-2">
-                  <div className="text-left w-full">
-                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                      发现身边有趣的智能体
-                    </h3>
+                  {/* Comic Cloud Bubble Container */}
+                   <div className="relative z-30 -translate-x-12 -translate-y-6 scale-90 origin-right">
+                     {/* SVG Cloud Shape */}
+                     <div className="absolute inset-0 -top-6 -left-6 w-[240px] h-[180px] z-0 pointer-events-none">
+                        <svg viewBox="0 0 220 160" className="w-full h-full drop-shadow-xl">
+                          <path 
+                            d="M45,85 C25,85 15,65 35,45 C35,25 65,5 95,25 C125,5 155,25 155,45 C185,45 195,75 175,95 C185,115 165,135 135,125 L165,155 L125,135 C95,145 65,135 55,115 C35,125 15,105 45,85 Z" 
+                            fill="white" 
+                            stroke="#334155" 
+                            strokeWidth="3" 
+                            strokeLinejoin="round" 
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                     </div>
+                     
+                     {/* Bubble Content */}
+                       <div className="relative z-10 px-8 py-6 flex items-center justify-center min-w-[160px] min-h-[80px]">
+                          <h3 className="text-lg font-bold text-slate-800 text-center leading-snug max-w-[180px] -translate-x-4 whitespace-pre-wrap break-words">
+                            <TypewriterText key={randomThought} text={randomThought} />
+                          </h3>
+                       </div>
+                    
+                    {/* Thought Dots connecting to character */}
+                    <div className="absolute -right-2 top-0 flex flex-col items-center gap-1 translate-x-full translate-y-2">
+                       <div className="w-2 h-2 bg-white rounded-full shadow-sm border border-slate-100"></div>
+                       <div className="w-1.5 h-1.5 bg-white rounded-full shadow-sm border border-slate-100 translate-x-1"></div>
+                       <div className="w-1 h-1 bg-white rounded-full shadow-sm border border-slate-100 translate-x-2"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Character Image - Anchored to the right */}
+                   <div className="relative w-0 h-0">
+                     <div className="absolute -top-28 -right-4 w-48 h-48 pointer-events-none z-[120]">
+                        <img 
+                          src={TuoSaiImage} 
+                         alt="Character" 
+                         className="w-full h-full object-contain drop-shadow-lg"
+                         style={{ objectPosition: 'bottom' }}
+                       />
+                    </div>
                   </div>
               </div>
 
               {/* Stacked Cards Area */}
               <div className="relative flex-1 w-full flex items-center justify-center">
-                 <div className="relative w-full h-full max-w-[260px] max-h-[360px]">
+                 <div className="relative w-full h-full max-w-[260px] max-h-[360px] mt-14">
                     <AnimatePresence mode="popLayout">
                       {stackAgents.reverse().map((agent) => {
                         const isTop = agent.offset === 0;
@@ -461,7 +557,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
               </div>
 
               {/* Bottom Actions */}
-              <div className="flex items-center justify-center gap-6 absolute -bottom-16 left-0 right-0 z-20">
+              <div className="flex items-center justify-center gap-6 absolute -bottom-24 left-0 right-0 z-20">
                  <button 
                    className="w-12 h-12 bg-white rounded-full shadow-[0_8px_20px_rgba(200,200,200,0.2)] text-slate-400 flex items-center justify-center hover:scale-110 active:scale-95 transition-all border border-slate-50"
                    onClick={(e) => {
