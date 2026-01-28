@@ -16,27 +16,64 @@ import {
   Phone,
   Edit2,
   LogOut,
-  Contact
+  Contact,
+  Plus
 } from 'lucide-react';
 import avatarImage from '../image/托腮_1.png';
 import BusinessCardModal from '../components/BusinessCardModal';
+import CreateAgentModal from '../components/CreateAgentModal';
 
 const Profile = ({ isAuthenticated, onLogout }) => {
   const navigate = useNavigate();
   const [showCardModal, setShowCardModal] = React.useState(false);
+  const [showCreateAgentModal, setShowCreateAgentModal] = React.useState(false);
   const [cardData, setCardData] = React.useState(null);
+  const [myAgents, setMyAgents] = React.useState([]);
 
-  // Load card data from local storage on mount
+  // Load card data and agents from local storage on mount
   React.useEffect(() => {
     const savedCard = localStorage.getItem('user_business_card');
     if (savedCard) {
       setCardData(JSON.parse(savedCard));
+    }
+    
+    const savedAgents = localStorage.getItem('my_created_agents');
+    if (savedAgents) {
+      setMyAgents(JSON.parse(savedAgents));
     }
   }, []);
 
   const handleSaveCard = (data) => {
     setCardData(data);
     localStorage.setItem('user_business_card', JSON.stringify(data));
+  };
+
+  const handleSaveAgent = (agentData) => {
+    const newAgent = {
+      ...agentData,
+      id: Date.now().toString(),
+      isPushed: false,
+      createdAt: new Date().toISOString()
+    };
+    
+    const updatedAgents = [newAgent, ...myAgents];
+    setMyAgents(updatedAgents);
+    localStorage.setItem('my_created_agents', JSON.stringify(updatedAgents));
+    setShowCreateAgentModal(false);
+  };
+
+  const handlePushToHome = (agentId) => {
+    const updatedAgents = myAgents.map(agent => 
+      agent.id === agentId ? { ...agent, isPushed: !agent.isPushed } : agent
+    );
+    setMyAgents(updatedAgents);
+    localStorage.setItem('my_created_agents', JSON.stringify(updatedAgents));
+  };
+
+  const handleDeleteAgent = (agentId) => {
+    const updatedAgents = myAgents.filter(agent => agent.id !== agentId);
+    setMyAgents(updatedAgents);
+    localStorage.setItem('my_created_agents', JSON.stringify(updatedAgents));
   };
 
   // Mock user data
@@ -110,6 +147,64 @@ const Profile = ({ isAuthenticated, onLogout }) => {
         </div>
       </div>
 
+      {/* My Agents Section */}
+      <div className="px-6 mb-6">
+        <h3 className="text-base font-bold text-slate-800 mb-4 px-1">我的智能体</h3>
+        <div className="space-y-3">
+          {myAgents.map((agent) => (
+            <div key={agent.id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full overflow-hidden border border-slate-100 flex-shrink-0">
+                <img src={agent.bgImage || agent.avatar} alt={agent.name} className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h4 className="text-sm font-bold text-slate-800 truncate">{agent.name}</h4>
+                  {agent.isPushed && (
+                    <span className="px-1.5 py-0.5 bg-cyan-100 text-cyan-600 text-[10px] rounded-md font-bold whitespace-nowrap border border-cyan-200">
+                      已推送
+                    </span>
+                  )}
+                  <span className="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded-md font-medium whitespace-nowrap">
+                    {agent.selectedType}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 truncate">{agent.intro}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => handlePushToHome(agent.id)}
+                  title={agent.isPushed ? "取消推送" : "推送到广场"}
+                  className={`p-2 rounded-full transition-colors ${
+                    agent.isPushed 
+                      ? 'bg-cyan-50 text-cyan-500' 
+                      : 'bg-slate-50 text-slate-400 hover:text-cyan-500'
+                  }`}
+                >
+                  <Map size={16} className={agent.isPushed ? "fill-cyan-500" : ""} />
+                </button>
+                <button 
+                  onClick={() => handleDeleteAgent(agent.id)}
+                  title="删除智能体"
+                  className="p-2 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                >
+                  <LogOut size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+          
+          <button 
+            onClick={() => setShowCreateAgentModal(true)}
+            className="w-full h-24 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-cyan-400 hover:text-cyan-500 transition-colors bg-slate-50/50"
+          >
+            <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center border border-slate-100">
+              <Plus size={20} />
+            </div>
+            <span className="text-xs font-bold">创建个人智能体</span>
+          </button>
+        </div>
+      </div>
+
       {/* My Orders Section */}
       <div className="px-6 mb-6">
         <h3 className="text-base font-bold text-slate-800 mb-4 px-1">我的订单</h3>
@@ -156,6 +251,12 @@ const Profile = ({ isAuthenticated, onLogout }) => {
         onClose={() => setShowCardModal(false)} 
         initialData={cardData}
         onSave={handleSaveCard}
+      />
+      
+      <CreateAgentModal
+        isOpen={showCreateAgentModal}
+        onClose={() => setShowCreateAgentModal(false)}
+        onSave={handleSaveAgent}
       />
     </div>
   );

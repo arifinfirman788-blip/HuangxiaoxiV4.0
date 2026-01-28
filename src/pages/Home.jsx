@@ -215,7 +215,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
   }, []); // thoughts is now a module-level constant, but including it wouldn't hurt if we want to support HMR updates better
 
   // Mock Agents for Social Card
-  const socialAgents = [
+  const [socialAgents, setSocialAgents] = useState([
     {
       id: 9,
       name: "贵州饭店迎宾楼",
@@ -262,7 +262,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
     {
       id: 104,
       name: "王阿姨辣子鸡",
-      type: "food",
+      type: "personal",
       cardType: "video",
       videoTitle: "正宗贵阳辣子鸡制作过程",
       duration: "0:30",
@@ -276,7 +276,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
     {
       id: 103,
       name: "金牌地陪小张",
-      type: "scenic",
+      type: "personal",
       cardType: "video",
       videoTitle: "沉浸式苗寨一日游",
       duration: "0:45",
@@ -314,7 +314,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
     {
       id: 3,
       name: "王阿姨辣子鸡",
-      type: "food",
+      type: "personal",
       cardType: "agent",
       isEnterprise: false,
       desc: "地道贵阳味",
@@ -326,7 +326,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
     {
       id: 4,
       name: "金牌地陪小张",
-      type: "scenic",
+      type: "personal",
       cardType: "agent",
       isEnterprise: false,
       desc: "带你玩转贵州",
@@ -371,7 +371,36 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
       avatar: KnightAvatar, // Using existing avatar as placeholder
       poster: "https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=800&h=1200&fit=crop"
     }
-  ];
+  ]);
+
+  useEffect(() => {
+    // Load pushed agents from localStorage
+    const savedAgents = localStorage.getItem('my_created_agents');
+    if (savedAgents) {
+        const parsedAgents = JSON.parse(savedAgents);
+        const pushedAgents = parsedAgents.filter(a => a.isPushed).map(a => ({
+            id: a.id,
+            name: a.name,
+            type: 'personal', // Assume personal for created agents
+            cardType: 'agent',
+            isEnterprise: false,
+            desc: a.selectedType + ' | ' + ((a.intro || '').substring(0, 10) + '...'),
+            intro: a.intro || '',
+            likes: '0',
+            avatar: a.avatar,
+            poster: a.bgImage || "https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=800&h=1200&fit=crop" // Fallback poster
+        }));
+        
+        if (pushedAgents.length > 0) {
+            // Check if already added to avoid duplicates
+            setSocialAgents(prev => {
+                const existingIds = new Set(prev.map(a => a.id));
+                const newAgents = pushedAgents.filter(a => !existingIds.has(a.id));
+                return [...newAgents, ...prev];
+            });
+        }
+    }
+  }, []);
 
   const [direction, setDirection] = useState(1);
 
@@ -389,20 +418,12 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
   };
 
   const handleSocialCardClick = (agent) => {
-    const context = {
-        name: agent.name,
-        intro: agent.intro,
-        type: agent.type,
-        fromSquare: true,
-        desc: agent.name,
-        role: agent.type === 'scenic' ? '景区' : agent.type === 'hotel' ? '酒店' : agent.type === 'food' ? '餐饮' : '交通',
-        color: agent.type === 'scenic' ? 'green' : agent.type === 'hotel' ? 'indigo' : agent.type === 'food' ? 'orange' : 'blue',
-        avatar: agent.avatar,
-        services: agent.customServices || (agent.type === 'scenic' ? ['购票', '导览'] : 
-                 agent.type === 'hotel' ? ['订房', '咨询'] :
-                 agent.type === 'food' ? ['订座', '排队'] : ['用车', '接机'])
-    };
-    handleOpenChat(context);
+    let route = `/agent/personal/${agent.id}`;
+    if (agent.type === 'hotel') route = `/agent/hotel/${agent.id}`;
+    else if (agent.type === 'scenic') route = `/agent/scenic/${agent.id}`;
+    else if (agent.type === 'food') route = `/agent/food/${agent.id}`;
+    
+    navigate(route);
   };
 
   // Check for openChatWith in location state on mount

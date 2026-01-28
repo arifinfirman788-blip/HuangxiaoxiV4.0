@@ -18,6 +18,10 @@ import TripCompare from './pages/TripCompare';
 import Login from './pages/Login';
 import AgentSquare from './pages/AgentSquare';
 import AgentWorkspace from './components/AgentWorkspace';
+import HotelAgent from './pages/agent/HotelAgent';
+import ScenicAgent from './pages/agent/ScenicAgent';
+import FoodAgent from './pages/agent/FoodAgent';
+import PersonalAgent from './pages/agent/PersonalAgent';
 
 // Auth Guard Component
 const RequireAuth = ({ children, isAuthenticated }) => {
@@ -211,6 +215,10 @@ function App() {
               <Profile isAuthenticated={isAuthenticated} onLogout={handleLogout} />
             } />
             <Route path="/category/:id" element={<AgentCategoryList />} />
+            <Route path="/agent/hotel/:id" element={<HotelAgent />} />
+            <Route path="/agent/scenic/:id" element={<ScenicAgent />} />
+            <Route path="/agent/food/:id" element={<FoodAgent />} />
+            <Route path="/agent/personal/:id" element={<PersonalAgent />} />
           </Route>
           
           <Route path="/message" element={
