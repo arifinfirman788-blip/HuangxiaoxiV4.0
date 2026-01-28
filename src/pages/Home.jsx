@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, User, ChevronDown, MessageCircle, Star, Coffee, Building, Landmark, Mic, Plus, Home as HomeIcon, Compass, UserCircle, X, Check, Bell, Languages, Volume2, ArrowUpRight, Plane, Clock, Sparkles, Camera, Car, Play, Calendar as CalendarIcon, Ticket, Hotel, Utensils, RefreshCcw, ArrowRight, Heart, Send, BadgeCheck, MoreHorizontal } from 'lucide-react';
+import { Search, MapPin, User, ChevronDown, MessageCircle, Star, Coffee, Building, Landmark, Mic, Plus, Home as HomeIcon, Compass, UserCircle, X, Check, Bell, Languages, Volume2, ArrowUpRight, Plane, Clock, Sparkles, Camera, Car, Play, Calendar as CalendarIcon, Ticket, Hotel, Utensils, RefreshCcw, ArrowRight, Heart, Send, BadgeCheck, MoreHorizontal, ShoppingBag, Tag } from 'lucide-react';
 import { categories } from '../data/agents';
 import TuoSaiImage from '../image/huangxiaoxi_new.png';
 import FlipCountdown from '../components/FlipCountdown';
@@ -21,6 +21,8 @@ import HotelAvatar from '../image/jiudian.png';
 import GuideAvatar from '../image/daoyou.png';
 import CarAvatar from '../image/zhuanche.png';
 import ScenicAvatar from '../image/huangguoshu.png';
+import SpicyChickenVideo from '../video/老奶奶制作辣子鸡视频.mp4';
+import MiaoGirlVideo from '../video/苗寨美女打卡视频生成.mp4';
 
 const iconMap = {
   Landmark: Landmark,
@@ -136,6 +138,43 @@ const TypewriterText = ({ text, className, delay = 0 }) => {
   return <span className={className}>{displayedText}</span>;
 };
 
+const CouponCountdown = () => {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    // Set target to end of current day
+    const now = new Date();
+    const target = new Date(now);
+    target.setHours(23, 59, 59, 999);
+
+    const updateTimer = () => {
+      const current = new Date();
+      const diff = target - current;
+      
+      if (diff <= 0) {
+        setTimeLeft('00:00:00');
+        return;
+      }
+
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+
+      setTimeLeft(
+        `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+      );
+    };
+
+    updateTimer(); // Initial call
+    const timer = setInterval(updateTimer, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <span className="font-mono tabular-nums tracking-tight ml-1">{timeLeft}</span>
+  );
+};
+
 const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onServiceSubmit, onConnectAgent, agentFeedback, merchantMessage, onUserMessage, isHumanMode }) => {
   const [activeRole, setActiveRole] = useState('黄小西');
   const [showRoleSelector, setShowRoleSelector] = useState(false);
@@ -180,7 +219,8 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
     {
       id: 9,
       name: "贵州饭店迎宾楼",
-      type: "food",
+      type: "hotel",
+      cardType: "agent",
       isEnterprise: true,
       desc: "高端商务宴请",
       intro: "贵州饭店迎宾楼，承载着贵州的历史与荣耀。为您提供私密尊贵的包房服务，地道的黔菜佳肴，是您商务宴请、家庭聚会的首选之地。",
@@ -190,9 +230,68 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
       customServices: ['订包房', '看环境']
     },
     {
+      id: 101,
+      name: "老凯里酸汤鱼",
+      type: "food",
+      cardType: "product",
+      isEnterprise: true,
+      productName: "招牌酸汤鱼双人餐",
+      price: "168",
+      originalPrice: "288",
+      desc: "酸辣鲜香 地道风味",
+      intro: "精选野生江团，搭配秘制红酸汤，酸爽开胃，鱼肉鲜嫩滑爽。套餐包含：酸汤鱼1份、时蔬拼盘1份、主要特色小吃2份。",
+      likes: "500+",
+      avatar: HotelAvatar,
+      poster: "https://images.unsplash.com/photo-1555126634-323283e090fa?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 102,
+      name: "黄果树瀑布智能体",
+      type: "scenic",
+      cardType: "coupon",
+      isEnterprise: true,
+      discount: "8.5折",
+      condition: "门票+观光车套票",
+      validity: "有效期至2024-12-31",
+      desc: "限时特惠 畅游景区",
+      intro: "领取优惠券，一站式搞定门票和观光车，省心又省钱。适用范围：黄果树大瀑布景区、陡坡塘景区、天星桥景区。",
+      likes: "2.1k",
+      avatar: ScenicAvatar,
+      poster: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 104,
+      name: "王阿姨辣子鸡",
+      type: "food",
+      cardType: "video",
+      videoTitle: "正宗贵阳辣子鸡制作过程",
+      duration: "0:30",
+      videoUrl: SpicyChickenVideo,
+      desc: "看王阿姨如何炒制地道辣子鸡",
+      intro: "选用跑山鸡，搭配独家秘制糍粑辣椒，大火爆炒，香辣入味。每一口都是老贵阳的记忆。",
+      likes: "3.2k",
+      avatar: WangAyiAvatar,
+      poster: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 103,
+      name: "金牌地陪小张",
+      type: "scenic",
+      cardType: "video",
+      videoTitle: "沉浸式苗寨一日游",
+      duration: "0:45",
+      videoUrl: MiaoGirlVideo,
+      desc: "带你走进苗寨深处",
+      intro: "跟随镜头，一起走进西江千户苗寨，感受吊脚楼的建筑智慧，体验长桌宴的热情，聆听芦笙场的悠扬旋律。",
+      likes: "1.5w",
+      avatar: GuideAvatar,
+      poster: "https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=800&h=1200&fit=crop"
+    },
+    {
       id: 1,
       name: "黄果树瀑布智能体",
       type: "scenic",
+      cardType: "agent",
       isEnterprise: true,
       desc: "全天候景区导览",
       intro: "作为黄果树景区官方智能体，我接入了景区实时监控系统，能为您提供精准的瀑布水量预报、最佳观赏点推荐及客流避峰指南，助您捕捉最壮观的自然瞬间。",
@@ -204,6 +303,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
       id: 2,
       name: "亚朵酒店管家",
       type: "hotel",
+      cardType: "agent",
       isEnterprise: true,
       desc: "24h贴心服务",
       intro: "您的全天候私人管家，不仅可以一键调节客房环境，还能为您预约深夜食堂的暖心夜宵。连接社区文化，为您推荐周边最地道的城市漫步路线。",
@@ -215,6 +315,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
       id: 3,
       name: "王阿姨辣子鸡",
       type: "food",
+      cardType: "agent",
       isEnterprise: false,
       desc: "地道贵阳味",
       intro: "专注贵阳老味道三十年，每一锅辣子鸡都坚持手工炒制。我是王阿姨的数字分身，除了帮您预留位置，还能教您地道的吃法，甚至偷偷告诉您这道菜的独家秘方。",
@@ -226,6 +327,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
       id: 4,
       name: "金牌地陪小张",
       type: "scenic",
+      cardType: "agent",
       isEnterprise: false,
       desc: "带你玩转贵州",
       intro: "土生土长的贵州通，不带您走马观花，只带您深入苗寨深处、探寻喀斯特秘境。根据您的体力和兴趣，实时调整行程，让每一次出发都成为独家记忆。",
@@ -237,6 +339,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
       id: 6,
       name: "苗族蜡染传承人",
       type: "culture",
+      cardType: "agent",
       isEnterprise: false,
       desc: "非遗文化体验",
       intro: "我是阿朵，生在苗寨长在苗寨。我想带您体验亲手画蜡、浸染的乐趣，听我讲讲那些藏在蓝白花纹里的古老传说，感受指尖上的非遗魅力。",
@@ -248,6 +351,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
       id: 7,
       name: "风光摄影师阿杰",
       type: "photo",
+      cardType: "agent",
       isEnterprise: false,
       desc: "旅拍/无人机跟拍",
       intro: "专注贵州山水摄影十年，我知道哪里有最美的日出云海，哪里能拍出绝美的梯田光影。带上我，您的朋友圈将被大片刷屏。",
@@ -259,6 +363,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
       id: 8,
       name: "侗族大歌传唱人",
       type: "culture",
+      cardType: "agent",
       isEnterprise: false,
       desc: "聆听天籁之音",
       intro: "侗族大歌是世界非物质文化遗产，无需指挥，自然和声。来我的家乡，坐在鼓楼下，闭上眼，让我带您聆听这来自灵魂深处的天籁之音。",
@@ -506,16 +611,29 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                             onClick={() => isTop && handleSocialCardClick(agent)}
                           >
                             {/* Full Card Content */}
-                            <div className="h-full w-full relative cursor-pointer">
-                              {/* Full Background Image */}
+                            <div className="h-full w-full relative cursor-pointer overflow-hidden rounded-[2rem]">
+                              {/* Base Background Image (Always rendered as fallback) */}
                               <img 
                                 src={agent.poster || agent.avatar} 
                                 alt={agent.name} 
-                                className="w-full h-full object-cover" 
+                                className="w-full h-full object-cover absolute inset-0" 
                               />
+
+                              {/* Video Overlay (Only if applicable) */}
+                              {agent.cardType === 'video' && agent.videoUrl && isTop && (
+                                 <video
+                                    src={agent.videoUrl}
+                                    className="w-full h-full object-cover absolute inset-0 z-10"
+                                    autoPlay
+                                    muted
+                                    loop
+                                    playsInline
+                                    onError={(e) => e.currentTarget.style.display = 'none'}
+                                 />
+                              )}
                               
                               {/* Gradient Overlay for better text visibility */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 z-10" />
 
                               {/* Right Side Actions (Visual Only) */}
                               <div className="absolute right-3 top-[35%] -translate-y-1/2 flex flex-col gap-3 z-20">
@@ -530,22 +648,140 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                                  </div>
                               </div>
 
-                              {/* Bottom Glass Overlay Info - Slim Version */}
+                              {/* Bottom Glass Overlay Info - Dynamic Version */}
                               <div className="absolute bottom-2 left-2 right-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl p-3 text-white shadow-sm z-20">
-                                 {/* Name & Status Row */}
-                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                       <h3 className="text-sm font-bold leading-none text-white shadow-sm">{agent.name}</h3>
-                                       {agent.isEnterprise && <BadgeCheck size={12} className="text-blue-400" fill="currentColor" stroke="white" />}
-                                       <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)]"></div>
-                                    </div>
-                                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                                       <ChevronDown size={12} className="-rotate-90 text-white" />
-                                    </div>
-                                 </div>
                                  
-                                 {/* Description Line */}
-                                 <p className="text-[10px] text-white/80 font-medium line-clamp-1 mt-1">{agent.desc}</p>
+                                 {/* Product Card Layout */}
+                                 {agent.cardType === 'product' ? (
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex items-center gap-2">
+                                           <div className="bg-orange-500/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                                             <ShoppingBag size={10} />
+                                             <span className="tracking-wide">人气推荐</span>
+                                           </div>
+                                        </div>
+                                        
+                                        <div className="flex flex-col gap-0.5">
+                                            <h3 className="text-lg font-bold leading-tight text-white shadow-sm line-clamp-1 tracking-tight">{agent.productName}</h3>
+                                            <p className="text-[10px] text-white/70 line-clamp-1">{agent.desc}</p>
+                                        </div>
+
+                                        <div className="flex items-end justify-between mt-1">
+                                            <div className="flex flex-col">
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-xs text-orange-200 font-bold">¥</span>
+                                                    <span className="text-2xl font-extrabold text-white leading-none tracking-tight">{agent.price}</span>
+                                                    <span className="text-[10px] text-white/50 line-through decoration-white/50 ml-0.5">¥{agent.originalPrice}</span>
+                                                </div>
+                                            </div>
+                                            <motion.button 
+                                                whileTap={{ scale: 0.95 }}
+                                                className="px-4 py-1.5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold rounded-full shadow-lg border border-white/20 flex items-center gap-1"
+                                            >
+                                                立即抢购
+                                                <ArrowRight size={10} />
+                                            </motion.button>
+                                        </div>
+                                        
+                                        <div className="flex items-center gap-1.5 pt-2 border-t border-white/10 mt-1">
+                                            <div className="w-5 h-5 rounded-full overflow-hidden border border-white/30 shrink-0">
+                                                <img src={agent.avatar} alt="" className="w-full h-full object-cover" />
+                                            </div>
+                                            <span className="text-[10px] text-white/80 font-medium truncate">{agent.name}</span>
+                                            <div className="ml-auto flex items-center gap-1 text-[10px] text-orange-200">
+                                                <Star size={8} fill="currentColor" />
+                                                <span>4.9</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                 ) : agent.cardType === 'coupon' ? (
+                                    /* Coupon Card Layout */
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex items-center gap-2">
+                                           <div className="bg-red-500/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                                             <Clock size={10} />
+                                             <span className="tracking-wide">距结束</span>
+                                             <CouponCountdown />
+                                           </div>
+                                        </div>
+
+                                        <div className="relative bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-lg border border-red-200/30 overflow-hidden">
+                                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500/50"></div>
+                                            <div className="flex items-center justify-between p-3 relative">
+                                                {/* Left Punch Hole */}
+                                                <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-slate-900 rounded-full"></div>
+                                                {/* Right Punch Hole */}
+                                                <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-slate-900 rounded-full"></div>
+                                                
+                                                <div className="flex flex-col gap-0.5 pl-2">
+                                                    <div className="flex items-baseline gap-1">
+                                                        <span className="text-2xl font-extrabold text-white tracking-tight">{agent.discount}</span>
+                                                        <span className="text-[10px] text-white/80 font-medium">折扣券</span>
+                                                    </div>
+                                                    <span className="text-[10px] text-white/60">{agent.condition}</span>
+                                                </div>
+                                                
+                                                <motion.button 
+                                                    whileTap={{ scale: 0.95 }}
+                                                    className="px-3 py-1 bg-white text-red-600 text-[10px] font-bold rounded-full shadow-sm"
+                                                >
+                                                    一键领取
+                                                </motion.button>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-1.5 pt-1">
+                                            <div className="w-5 h-5 rounded-full overflow-hidden border border-white/30 shrink-0">
+                                                <img src={agent.avatar} alt="" className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex flex-col overflow-hidden">
+                                                <span className="text-[10px] text-white/90 font-bold truncate">{agent.name}</span>
+                                                <span className="text-[9px] text-white/50 truncate">{agent.validity}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                 ) : agent.cardType === 'video' ? (
+                                    /* Video Card Layout */
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-2 mb-1">
+                                           <div className="bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 border border-white/20">
+                                             <Play size={8} fill="currentColor" />
+                                             {agent.duration}
+                                           </div>
+                                           <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)]"></div>
+                                        </div>
+                                        <h3 className="text-sm font-bold leading-tight text-white shadow-sm line-clamp-2 mb-1">{agent.videoTitle}</h3>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5">
+                                                <div className="w-5 h-5 rounded-full overflow-hidden border border-white/50">
+                                                    <img src={agent.avatar} alt="" className="w-full h-full object-cover" />
+                                                </div>
+                                                <span className="text-xs font-medium text-white/90">{agent.name}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-[10px] text-white/80">
+                                                <Heart size={10} fill="currentColor" /> {agent.likes}
+                                            </div>
+                                        </div>
+                                    </div>
+                                 ) : (
+                                    /* Default Agent Layout */
+                                    <>
+                                        {/* Name & Status Row */}
+                                        <div className="flex items-center justify-between">
+                                           <div className="flex items-center gap-2">
+                                              <h3 className="text-sm font-bold leading-none text-white shadow-sm">{agent.name}</h3>
+                                              {agent.isEnterprise && <BadgeCheck size={12} className="text-blue-400" fill="currentColor" stroke="white" />}
+                                              <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)]"></div>
+                                           </div>
+                                           <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                                              <ChevronDown size={12} className="-rotate-90 text-white" />
+                                           </div>
+                                        </div>
+                                        
+                                        {/* Description Line */}
+                                        <p className="text-[10px] text-white/80 font-medium line-clamp-1 mt-1">{agent.desc}</p>
+                                    </>
+                                 )}
                               </div>
                             </div>
                           </motion.div>
