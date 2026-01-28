@@ -30,6 +30,17 @@ const iconMap = {
   Home: HomeIcon
 };
 
+const thoughts = [
+  "今天去哪儿玩？",
+  "附近有什么好吃的？",
+  "这家店招牌菜是？",
+  "有当地人带玩吗？",
+  "找家性价比酒店？",
+  "黄果树人多吗？",
+  "推荐拍照景点？",
+  "找个地方喝咖啡？"
+];
+
 const getAiReminder = (node) => {
   if (!node) return "今天天气不错，适合出去走走，记得带上好心情哦～";
   if (node.type === 'flight') return "航班出行请记得携带身份证，提前2小时到达机场安检～";
@@ -141,18 +152,6 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
 
   const [randomThought, setRandomThought] = useState('');
 
-  // Random thoughts for the bubble
-  const thoughts = [
-    "今天去哪儿玩呢？",
-    "附近有什么吃的呢？",
-    "这家店的招牌菜是什么？",
-    "有没有当地人带我玩？",
-    "帮我找一家性价比高的酒店",
-    "黄果树瀑布现在人多吗？",
-    "推荐一个适合拍照的景点",
-    "我想找个安静的地方喝咖啡"
-  ];
-
   useEffect(() => {
     // Pick a random thought on mount
     const randomIndex = Math.floor(Math.random() * thoughts.length);
@@ -171,10 +170,10 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
          }
          return thoughts[nextIndex];
       });
-    }, 8000); // Change every 8 seconds
+    }, 4000); // Change every 4 seconds
 
     return () => clearInterval(interval);
-  }, []); // Empty dependency array is correct as thoughts is constant (defined inside component but effectively constant)
+  }, []); // thoughts is now a module-level constant, but including it wouldn't hurt if we want to support HMR updates better
 
   // Mock Agents for Social Card
   const socialAgents = [
@@ -450,7 +449,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                      
                      {/* Bubble Content */}
                        <div className="relative z-10 px-8 py-6 flex items-center justify-center min-w-[160px] min-h-[80px]">
-                          <h3 className="text-lg font-bold text-slate-800 text-center leading-snug max-w-[180px] -translate-x-4 whitespace-pre-wrap break-words">
+                          <h3 className="text-lg font-bold text-slate-800 text-center leading-snug max-w-[180px] -translate-x-4 translate-y-4 whitespace-pre-wrap break-words">
                             <TypewriterText key={randomThought} text={randomThought} />
                           </h3>
                        </div>
@@ -465,7 +464,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                   
                   {/* Character Image - Anchored to the right */}
                    <div className="relative w-0 h-0">
-                     <div className="absolute -top-28 -right-4 w-48 h-48 pointer-events-none z-[120]">
+                     <div className="absolute -top-28 -right-4 w-48 h-48 pointer-events-none z-[120] translate-x-6">
                         <img 
                           src={TuoSaiImage} 
                          alt="Character" 
