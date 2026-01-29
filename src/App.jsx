@@ -22,6 +22,7 @@ import HotelAgent from './pages/agent/HotelAgent';
 import ScenicAgent from './pages/agent/ScenicAgent';
 import FoodAgent from './pages/agent/FoodAgent';
 import PersonalAgent from './pages/agent/PersonalAgent';
+import AgentService from './pages/AgentService';
 
 // Auth Guard Component
 const RequireAuth = ({ children, isAuthenticated }) => {
@@ -216,11 +217,13 @@ function App() {
             } />
             <Route path="/category/:id" element={<AgentCategoryList />} />
             <Route path="/agent/hotel/:id" element={<HotelAgent />} />
-            <Route path="/agent/scenic/:id" element={<ScenicAgent />} />
-            <Route path="/agent/food/:id" element={<FoodAgent />} />
-            <Route path="/agent/personal/:id" element={<PersonalAgent />} />
+            <Route path="/agent/scenic/:id" element={<ScenicAgent toggleBottomNav={setIsBottomNavVisible} />} />
+            <Route path="/agent/food/:id" element={<FoodAgent toggleBottomNav={setIsBottomNavVisible} />} />
+            <Route path="/agent/personal/:id" element={<PersonalAgent toggleBottomNav={setIsBottomNavVisible} />} />
+            <Route path="/agent-service/:id" element={<AgentService />} />
           </Route>
-          
+
+          {/* Protected Routes */}
           <Route path="/message" element={
             <RequireAuth isAuthenticated={isAuthenticated}>
               <Message />

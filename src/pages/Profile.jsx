@@ -17,7 +17,8 @@ import {
   Edit2,
   LogOut,
   Contact,
-  Plus
+  Plus,
+  LayoutDashboard
 } from 'lucide-react';
 import avatarImage from '../image/托腮_1.png';
 import BusinessCardModal from '../components/BusinessCardModal';
@@ -181,6 +182,13 @@ const Profile = ({ isAuthenticated, onLogout }) => {
                   }`}
                 >
                   <Map size={16} className={agent.isPushed ? "fill-cyan-500" : ""} />
+                </button>
+                <button 
+                  onClick={() => navigate(`/agent-service/${agent.id}`)}
+                  title="管理智能体"
+                  className="p-2 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors"
+                >
+                  <LayoutDashboard size={16} />
                 </button>
                 <button 
                   onClick={() => handleDeleteAgent(agent.id)}

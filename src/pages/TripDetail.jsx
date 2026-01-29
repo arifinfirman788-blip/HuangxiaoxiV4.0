@@ -516,7 +516,13 @@ const TripDetail = ({ adoptedTrip }) => {
                          <div key={nodeIndex} className="relative">
                             <div className={`absolute -left-[5px] top-0 w-3 h-3 rounded-full ring-4 ring-white z-10 ${node.status === 'arrived' || node.status === 'completed' ? 'bg-blue-500' : 'bg-slate-300'}`} />
                             <div className="flex justify-between items-center mb-3 pl-6">
-                               <span className="text-sm font-bold text-slate-400 font-mono">{node.time}</span>
+                               <div className="flex items-center gap-3">
+                                   <span className="text-sm font-bold text-slate-400 font-mono">{node.time}</span>
+                                   <div className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 ${agent.bgColor} ${agent.color} border ${agent.borderColor}`}>
+                                      <agent.icon size={10} />
+                                      {agent.name.split('·')[1] || agent.name}
+                                   </div>
+                               </div>
                                <span className="text-sm font-bold text-slate-800">{node.title}</span>
                             </div>
                             <div className="ml-6">
@@ -528,7 +534,7 @@ const TripDetail = ({ adoptedTrip }) => {
                                           <agent.icon size={16} className={agent.color} />
                                        </div>
                                        <div className="flex flex-col">
-                                          <span className={`text-xs font-bold ${agent.color}`}>{agent.name}</span>
+                                          <span className={`text-xs font-bold ${agent.color}`}>{agent.name.split('·')[0]}</span>
                                           <div className="flex items-center gap-1">
                                              <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
                                              <span className="text-[10px] text-slate-400">在线</span>
@@ -565,81 +571,96 @@ const TripDetail = ({ adoptedTrip }) => {
                                     </div>
                                  </div>
 
+                                 {/* Huang Xiaoxi TIPS */}
+                                 {node.tips && (
+                                    <div className="mb-4 mx-1 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-3 border border-cyan-100 flex gap-3 items-start">
+                                       <div className="w-6 h-6 rounded-full bg-cyan-100 flex items-center justify-center shrink-0 mt-0.5">
+                                          <Sparkles size={12} className="text-cyan-600" />
+                                       </div>
+                                       <div className="flex-1">
+                                          <div className="flex items-center gap-1.5 mb-1">
+                                             <span className="text-xs font-bold text-cyan-700">黄小西 TIPS</span>
+                                          </div>
+                                          <p className="text-xs text-slate-600 leading-relaxed">{node.tips}</p>
+                                       </div>
+                                    </div>
+                                 )}
+
                                  {/* Action Buttons */}
                                  <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
                                     {node.type === 'scenic' ? (
                                       <>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-purple-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-purple-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <Headphones size={16} />
-                                              语音讲解
-                                          </button>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <MapPin size={16} />
-                                              地图导览
-                                          </button>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <Ticket size={16} />
-                                              购票/预约
-                                          </button>
-                                      </>
-                                    ) : node.type === 'hotel' ? (
-                                      <>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <Navigation size={16} />
-                                              一键导航
-                                          </button>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <Phone size={16} />
-                                              联系前台
-                                          </button>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <Coffee size={16} />
-                                              客房服务
-                                          </button>
-                                      </>
-                                    ) : node.type === 'transport' ? (
-                                      <>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <Phone size={16} />
-                                              联系司机
-                                          </button>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <Share size={16} />
-                                              分享行程
-                                          </button>
-                                      </>
-                                    ) : node.type === 'flight' ? (
-                                      <>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <QrCode size={16} />
-                                              电子登机牌
-                                          </button>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-red-50 text-red-600 rounded-xl font-bold text-sm border border-red-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <AlertCircle size={16} />
-                                              遇到问题
-                                          </button>
-                                      </>
-                                    ) : node.type === 'food' ? (
-                                      <>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-orange-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <Navigation size={16} />
-                                              一键导航
-                                          </button>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <FileText size={16} />
-                                              查看菜单
-                                          </button>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                              <Clock size={16} />
-                                              排队取号
-                                          </button>
-                                      </>
-                                    ) : (
-                                      <button className="flex-1 py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                          <Info size={16} />
-                                          查看详情
-                                      </button>
-                                    )}
+                                          <button className="flex-1 min-w-[100px] py-2.5 bg-purple-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-purple-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Headphones size={16} />
+                                             语音讲解
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <MapPin size={16} />
+                                             地图导览
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Ticket size={16} />
+                                             购票/预约
+                                         </button>
+                                     </>
+                                   ) : node.type === 'hotel' ? (
+                                     <>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Navigation size={16} />
+                                             一键导航
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Phone size={16} />
+                                             联系前台
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Coffee size={16} />
+                                             客房服务
+                                         </button>
+                                     </>
+                                   ) : node.type === 'transport' ? (
+                                     <>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Phone size={16} />
+                                             联系司机
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Share size={16} />
+                                             分享行程
+                                         </button>
+                                     </>
+                                   ) : node.type === 'flight' ? (
+                                     <>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <QrCode size={16} />
+                                             电子登机牌
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-red-50 text-red-600 rounded-xl font-bold text-sm border border-red-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <AlertCircle size={16} />
+                                             遇到问题
+                                         </button>
+                                     </>
+                                   ) : node.type === 'food' ? (
+                                     <>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-orange-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Navigation size={16} />
+                                             一键导航
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <FileText size={16} />
+                                             查看菜单
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Clock size={16} />
+                                             排队取号
+                                         </button>
+                                     </>
+                                   ) : (
+                                     <button className="flex-1 py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                         <Info size={16} />
+                                         查看详情
+                                     </button>
+                                   )}
                                  </div>
                               </div>
                             </div>
@@ -719,7 +740,13 @@ const TripDetail = ({ adoptedTrip }) => {
                          <Reorder.Item key={itemKey} value={node} className="relative mb-6">
                             {/* Time Display */}
                             <div className="flex items-center justify-between mb-3 px-1">
-                               <span className="text-xl font-bold text-slate-400 font-mono tracking-wider">{node.time}</span>
+                               <div className="flex items-center gap-3">
+                                   <span className="text-xl font-bold text-slate-400 font-mono tracking-wider">{node.time}</span>
+                                   <div className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 ${agent.bgColor} ${agent.color} border ${agent.borderColor}`}>
+                                      <agent.icon size={10} />
+                                      {agent.name.split('·')[1] || agent.name}
+                                   </div>
+                               </div>
                                <span className="text-sm font-bold text-slate-800">{node.type === 'hotel' ? '入住酒店' : node.type === 'scenic' ? '游玩景点' : node.title}</span>
                             </div>
 
@@ -731,7 +758,7 @@ const TripDetail = ({ adoptedTrip }) => {
                                         <agent.icon size={16} className={agent.color} />
                                      </div>
                                      <div className="flex flex-col">
-                                        <span className={`text-xs font-bold ${agent.color}`}>{agent.name}</span>
+                                        <span className={`text-xs font-bold ${agent.color}`}>{agent.name.split('·')[0]}</span>
                                         <div className="flex items-center gap-1">
                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
                                            <span className="text-[10px] text-slate-400">在线</span>
@@ -744,105 +771,121 @@ const TripDetail = ({ adoptedTrip }) => {
                                </div>
 
                                {/* Main Content */}
-                               <div className="flex gap-4 mb-5">
-                                  {/* Left Image (Optional) or Placeholder */}
-                                  <div className="w-24 h-24 rounded-2xl bg-slate-100 shrink-0 overflow-hidden relative">
-                                    {node.image ? (
-                                        <img src={node.image} alt={node.title} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-bold text-[10px] uppercase tracking-wider">
-                                            {node.type === 'scenic' ? 'Scenic' : node.type}
-                                        </div>
-                                    )}
-                                  </div>
-                                  
-                                  <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                     <h3 className="text-xl font-bold text-slate-800 mb-1 truncate">{node.title}</h3>
-                                     <p className="text-xs text-slate-500 mb-2 truncate">{node.details.desc || '暂无描述'}</p>
-                                     <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded font-medium">计划中</span>
-                                        {node.type === 'scenic' && (
-                                            <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-[10px] rounded font-bold">建议游玩 2h</span>
-                                        )}
-                                     </div>
-                                  </div>
-                               </div>
+                                 <div className="flex gap-4 mb-5">
+                                    {/* Left Image (Optional) or Placeholder */}
+                                    <div className="w-24 h-24 rounded-2xl bg-slate-100 shrink-0 overflow-hidden relative">
+                                      {node.image ? (
+                                          <img src={node.image} alt={node.title} className="w-full h-full object-cover" />
+                                      ) : (
+                                          <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-bold text-[10px] uppercase tracking-wider">
+                                              {node.type === 'scenic' ? 'Scenic' : node.type}
+                                          </div>
+                                      )}
+                                    </div>
+                                    
+                                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                       <h3 className="text-xl font-bold text-slate-800 mb-1 truncate">{node.title}</h3>
+                                       <p className="text-xs text-slate-500 mb-2 truncate">{node.details.desc || '暂无描述'}</p>
+                                       <div className="flex items-center gap-2">
+                                          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded font-medium">计划中</span>
+                                          {node.type === 'scenic' && (
+                                              <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-[10px] rounded font-bold">建议游玩 2h</span>
+                                          )}
+                                       </div>
+                                    </div>
+                                 </div>
 
-                               {/* Action Buttons */}
+                                 {/* Huang Xiaoxi TIPS */}
+                                 {node.tips && (
+                                    <div className="mb-4 mx-1 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-3 border border-cyan-100 flex gap-3 items-start">
+                                       <div className="w-6 h-6 rounded-full bg-cyan-100 flex items-center justify-center shrink-0 mt-0.5">
+                                          <Sparkles size={12} className="text-cyan-600" />
+                                       </div>
+                                       <div className="flex-1">
+                                          <div className="flex items-center gap-1.5 mb-1">
+                                             <span className="text-xs font-bold text-cyan-700">黄小西 TIPS</span>
+                                             <div className="px-1.5 py-0.5 rounded-full bg-cyan-100 text-[8px] font-bold text-cyan-600">AI 生成</div>
+                                          </div>
+                                          <p className="text-xs text-slate-600 leading-relaxed">{node.tips}</p>
+                                       </div>
+                                    </div>
+                                 )}
+
+                                 {/* Action Buttons */}
                                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
                                   {node.type === 'scenic' ? (
                                     <>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-purple-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-purple-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <Headphones size={16} />
-                                            语音讲解
-                                        </button>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <MapPin size={16} />
-                                            地图导览
-                                        </button>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <Ticket size={16} />
-                                            购票/预约
-                                        </button>
-                                    </>
-                                  ) : node.type === 'hotel' ? (
-                                    <>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <Navigation size={16} />
-                                            一键导航
-                                        </button>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <Phone size={16} />
-                                            联系前台
-                                        </button>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <Coffee size={16} />
-                                            客房服务
-                                        </button>
-                                    </>
-                                  ) : node.type === 'transport' ? (
-                                    <>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <Phone size={16} />
-                                            联系司机
-                                        </button>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <Share size={16} />
-                                            分享行程
-                                        </button>
-                                    </>
-                                  ) : node.type === 'flight' ? (
-                                    <>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <QrCode size={16} />
-                                            电子登机牌
-                                        </button>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-red-50 text-red-600 rounded-xl font-bold text-sm border border-red-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <AlertCircle size={16} />
-                                            遇到问题
-                                        </button>
-                                    </>
-                                  ) : node.type === 'food' ? (
-                                    <>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-orange-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <Navigation size={16} />
-                                            一键导航
-                                        </button>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <FileText size={16} />
-                                            查看菜单
-                                        </button>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                            <Clock size={16} />
-                                            排队取号
-                                        </button>
-                                    </>
-                                  ) : (
-                                    <button className="flex-1 py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                                        <Info size={16} />
-                                        查看详情
-                                    </button>
-                                  )}
+                                        <button className="flex-1 min-w-[100px] py-2.5 bg-purple-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-purple-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Headphones size={16} />
+                                             语音讲解
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <MapPin size={16} />
+                                             地图导览
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Ticket size={16} />
+                                             购票/预约
+                                         </button>
+                                     </>
+                                   ) : node.type === 'hotel' ? (
+                                     <>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Navigation size={16} />
+                                             一键导航
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Phone size={16} />
+                                             联系前台
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Coffee size={16} />
+                                             客房服务
+                                         </button>
+                                     </>
+                                   ) : node.type === 'transport' ? (
+                                     <>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Phone size={16} />
+                                             联系司机
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Share size={16} />
+                                             分享行程
+                                         </button>
+                                     </>
+                                   ) : node.type === 'flight' ? (
+                                     <>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <QrCode size={16} />
+                                             电子登机牌
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-red-50 text-red-600 rounded-xl font-bold text-sm border border-red-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <AlertCircle size={16} />
+                                             遇到问题
+                                         </button>
+                                     </>
+                                   ) : node.type === 'food' ? (
+                                     <>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-orange-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Navigation size={16} />
+                                             一键导航
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <FileText size={16} />
+                                             查看菜单
+                                         </button>
+                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                             <Clock size={16} />
+                                             排队取号
+                                         </button>
+                                     </>
+                                   ) : (
+                                     <button className="flex-1 py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
+                                         <Info size={16} />
+                                         查看详情
+                                     </button>
+                                   )}
                                </div>
                             </div>
                          </Reorder.Item>
