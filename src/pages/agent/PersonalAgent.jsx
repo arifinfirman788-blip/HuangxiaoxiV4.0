@@ -47,7 +47,7 @@ const AgentRecommendationCard = ({ title, agents, onConnect }) => {
     );
 };
 
-const PersonalAgent = () => {
+const PersonalAgent = ({ onConnectAgent }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [inputMessage, setInputMessage] = useState('');
@@ -203,7 +203,7 @@ const PersonalAgent = () => {
                             desc: '酱香型白酒典范',
                             avatar: 'https://images.unsplash.com/photo-1598155523122-38423bb4d6c1?w=300&h=300&fit=crop',
                             type: 'product',
-                            role: 'food',
+                            role: 'retail',
                             rating: 5.0,
                             details: { name: '贵州茅台酒', desc: '53度飞天茅台' },
                             color: 'red'
@@ -214,7 +214,7 @@ const PersonalAgent = () => {
                             desc: '中国十大名茶之一',
                             avatar: 'https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=300&h=300&fit=crop',
                             type: 'product',
-                            role: 'food',
+                            role: 'retail',
                             rating: 4.9,
                             details: { name: '都匀毛尖', desc: '明前特级' },
                             color: 'green'
@@ -225,7 +225,7 @@ const PersonalAgent = () => {
                             desc: '国民女神，下饭神器',
                             avatar: 'https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?w=300&h=300&fit=crop',
                             type: 'product',
-                            role: 'food',
+                            role: 'retail',
                             rating: 4.8,
                             details: { name: '老干妈', desc: '风味豆豉油辣椒' },
                             color: 'orange'
@@ -374,7 +374,7 @@ const PersonalAgent = () => {
                            <AgentRecommendationCard 
                                title={msg.title} 
                                agents={msg.agents} 
-                               onConnect={(agent) => console.log('Connect', agent)} 
+                               onConnect={(agent) => onConnectAgent && onConnectAgent(agent)} 
                            />
                        </div>
                    ) : (

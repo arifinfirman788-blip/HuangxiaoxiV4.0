@@ -223,7 +223,7 @@ function App() {
             <Route path="/agent/hotel/:id" element={<HotelAgent />} />
             <Route path="/agent/scenic/:id" element={<ScenicAgent toggleBottomNav={setIsBottomNavVisible} />} />
             <Route path="/agent/food/:id" element={<FoodAgent toggleBottomNav={setIsBottomNavVisible} />} />
-            <Route path="/agent/personal/:id" element={<PersonalAgent toggleBottomNav={setIsBottomNavVisible} />} />
+            <Route path="/agent/personal/:id" element={<PersonalAgent toggleBottomNav={setIsBottomNavVisible} onConnectAgent={handleConnectAgent} />} />
             <Route path="/agent-service/:id" element={<AgentService />} />
             <Route path="/business-card" element={<BusinessCardPage />} />
           </Route>

@@ -138,9 +138,17 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
 
   // Helper to generate dynamic history items based on agent type
   const getHistoryItems = () => {
-      const type = agent?.name?.includes('交通') || agent?.services?.includes('接机') ? 'transport' :
-                   agent?.name?.includes('酒店') || agent?.services?.includes('订房') ? 'hotel' :
-                   agent?.name?.includes('餐饮') || agent?.services?.includes('点餐') ? 'food' : 'scenic';
+      const isTransport = agent?.name?.includes('交通') || agent?.services?.includes('接机') || agent?.role === 'transport';
+      const isHotel = agent?.name?.includes('酒店') || agent?.services?.includes('订房') || agent?.name?.includes('民宿') || agent?.role === 'hotel';
+      const isFood = agent?.name?.includes('餐饮') || agent?.services?.includes('点餐') || agent?.name?.includes('美食') || agent?.name?.includes('辣子鸡') || agent?.name?.includes('饭') || agent?.role === 'food';
+      const isRetail = agent?.name?.includes('特产') || agent?.name?.includes('酒') || agent?.name?.includes('茶') || agent?.name?.includes('优选') || agent?.role === 'retail' || agent?.type === 'product';
+      const isGuide = agent?.name?.includes('管家') || agent?.name?.includes('向导') || agent?.name?.includes('地陪') || agent?.role === 'guide';
+
+      const type = isTransport ? 'transport' :
+                   isHotel ? 'hotel' :
+                   isFood ? 'food' : 
+                   isRetail ? 'retail' :
+                   isGuide ? 'guide' : 'scenic';
       
       const items = [];
       for (let i = 1; i <= 3; i++) {
@@ -150,6 +158,10 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
               items.push({ title: '大床房 - 2晚', time: `09:${20+i} AM`, price: '¥899.00' });
           } else if (type === 'food') {
               items.push({ title: '订座 - 4人桌', time: `11:${30+i} AM`, price: '¥260.00' });
+          } else if (type === 'retail') {
+              items.push({ title: '特产礼盒 - 1份', time: `14:${15+i} PM`, price: '¥368.00' });
+          } else if (type === 'guide') {
+              items.push({ title: '包车一日游', time: `08:${0+i} AM`, price: '¥600.00' });
           } else {
               items.push({ title: '门票预订 - 2张', time: `10:${40+i} AM`, price: '¥128.00' });
           }
