@@ -1,15 +1,46 @@
-import React, { useState } from 'react';
-import { ChevronLeft, Phone, Mail, MapPin, Download, Share2, Check, Mic, Send } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, Phone, Mail, MapPin, Download, Share2, Check, Mic, Send, MessageCircle, Star } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
+import { agents } from '../data/agents';
+import HuangXiaoXiAvatar from '../image/huangxiaoxi_ai_avatar_v2.png';
 
-const BusinessCardPreview = ({ card, mode = 'own', onConfirm, onBack, onShare }) => {
+// Mini Agent Card Component
+const MiniAgentCard = ({ agent, onConnect }) => {
+  return (
+    <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 w-full mt-3 flex items-start gap-3 text-left">
+      <div className="w-10 h-10 rounded-full bg-white shrink-0 overflow-hidden shadow-sm">
+           {agent.avatar?.length < 5 ? (
+             <div className="w-full h-full flex items-center justify-center text-xl">{agent.avatar}</div>
+           ) : (
+             <img src={agent.avatar} alt={agent.name} className="w-full h-full object-cover" />
+           )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <h4 className="text-xs font-black text-slate-800 truncate">{agent.name}</h4>
+        <p className="text-[10px] text-slate-500 line-clamp-2 mt-0.5 leading-relaxed">{agent.intro}</p>
+        <button 
+          onClick={(e) => { e.stopPropagation(); onConnect(agent); }}
+          className="mt-2 px-3 py-1.5 bg-cyan-500 text-white text-[10px] font-bold rounded-lg flex items-center gap-1 hover:bg-cyan-600 transition-colors shadow-sm shadow-cyan-200"
+        >
+          <MessageCircle size={10} />
+          立即咨询
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const BusinessCardPreview = ({ card, mode = 'own', onConfirm, onBack, onShare, onCloseModal }) => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([
     { role: 'assistant', text: `您好！我是黄小西，任何关于贵州旅游的问题都可以问我哦！` }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   
-  const lastAssistantMessage = [...messages].reverse().find(m => m.role === 'assistant')?.text || "";
+  // Find the last assistant message to display
+  const lastAssistantMsg = [...messages].reverse().find(m => m.role === 'assistant') || { text: "" };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isTyping) return;
@@ -18,6 +49,101 @@ const BusinessCardPreview = ({ card, mode = 'own', onConfirm, onBack, onShare })
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setInputValue('');
     setIsTyping(true);
+
+    // Intent Recognition Logic
+    const lowerMsg = userMsg.toLowerCase();
+    console.log('User input:', lowerMsg);
+    
+    let matchedAgent = null;
+
+    // More flexible matching logic
+    const isIntent = (keywords) => keywords.some(k => lowerMsg.includes(k));
+    const hasAction = isIntent(['我想', '我要', '想', '要', '买', '订', '吃', '推荐', '找', '有', '去']);
+    console.log('Has action:', hasAction);
+
+    // Generic search across all agents
+    const fillers = ['我想', '我要', '推荐', '去', '吃', '住', '玩', '找', '一个', '订', '有', '想', '要', '看'];
+    let cleanedContent = lowerMsg;
+    fillers.forEach(filler => {
+        cleanedContent = cleanedContent.replaceAll(filler, '');
+    });
+
+    if (hasAction || lowerMsg.length > 1) {
+        // Split by delimiters
+        const keywords = cleanedContent.split(/也|和|，|,| |、/);
+        const allMatchedAgents = [];
+
+        keywords.forEach(keyword => {
+            const k = keyword.trim();
+            if (k.length > 0) {
+                 const matched = agents.find(a => 
+                    a.name.includes(k) || 
+                    a.intro.includes(k) || 
+                    a.skills.some(s => s.includes(k)) ||
+                    (a.category === 'scenic' && k.includes('景区')) ||
+                    (a.category === 'hotel' && k.includes('酒店')) ||
+                    (a.category === 'dining' && k.includes('吃'))
+                 );
+                 if (matched) allMatchedAgents.push(matched);
+            }
+        });
+        
+        // Deduplicate
+        const uniqueAgents = Array.from(new Set(allMatchedAgents.map(a => a.id)))
+            .map(id => allMatchedAgents.find(a => a.id === id));
+        
+        if (uniqueAgents.length > 0) {
+             matchedAgent = uniqueAgents; // Assign array
+        }
+    }
+    
+    // Fallback for specific demos if not found in generic search
+    if (!matchedAgent) {
+        if (lowerMsg.includes('辣子鸡')) {
+             matchedAgent = {
+                id: 'custom-food-1',
+                name: '王阿姨辣子鸡智能体',
+                avatar: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=200&h=200&fit=crop',
+                intro: '三十年老字号，地道贵阳味，现炒现卖，香辣过瘾。',
+                skills: ['排队取号', '外卖预订', '口味定制'],
+                category: 'food'
+             };
+        } else if ((lowerMsg.includes('酒店') || lowerMsg.includes('住')) && hasAction) {
+             matchedAgent = {
+                id: 'custom-hotel-1',
+                name: '附近的酒店智能体',
+                avatar: '🏨',
+                intro: '为您推荐周边高评分舒适酒店，性价比之选。',
+                skills: ['房型查询', '价格对比', '快速预订'],
+                category: 'hotel'
+             };
+        }
+    }
+
+    if (matchedAgent) {
+       console.log('Agent found:', matchedAgent);
+       // Handle array or single object
+       const agentResponse = Array.isArray(matchedAgent) ? matchedAgent : [matchedAgent];
+       
+       setTimeout(() => {
+         console.log('Dispatching agent response');
+         setMessages(prev => {
+            const newMessages = [
+               ...prev, 
+               { 
+                 role: 'assistant', 
+                 text: `太棒了！为您找到以下${agentResponse.length}个智能体，能帮您解决需求哦～`,
+                 agents: agentResponse, // Store array
+                 agent: agentResponse[0], // Fallback for old code
+                 type: 'recommendation'
+               }
+            ];
+            return newMessages;
+         });
+         setIsTyping(false);
+       }, 800);
+       return;
+    }
 
     try {
       // Note: You should replace 'process.env.API_KEY' with your actual key handling strategy
@@ -57,6 +183,17 @@ const BusinessCardPreview = ({ card, mode = 'own', onConfirm, onBack, onShare })
   };
 
   const isOwn = mode === 'own';
+  const isShared = mode === 'shared';
+  const [hasSaved, setHasSaved] = useState(false);
+
+  const handleSaveCard = () => {
+      setHasSaved(true);
+      // Here you would typically save to local storage or backend
+      // For demo, we just switch state
+      setTimeout(() => {
+         // Optional: Navigate to profile or just show success
+      }, 500);
+  };
 
   return (
     <div className="flex flex-col h-full bg-white font-sans overflow-hidden relative">
@@ -66,7 +203,7 @@ const BusinessCardPreview = ({ card, mode = 'own', onConfirm, onBack, onShare })
           <ChevronLeft size={24} />
         </button>
         <h1 className="text-xl font-bold flex-1 text-center mr-6 text-gray-900">
-          {isOwn ? '预览名片' : '名片详情'}
+          {isOwn ? '预览名片' : (isShared ? '名片预览' : '名片详情')}
         </h1>
       </div>
 
@@ -112,32 +249,68 @@ const BusinessCardPreview = ({ card, mode = 'own', onConfirm, onBack, onShare })
 
         {/* 2. 按钮区域 - 样式完全统一 */}
         <div className="flex gap-3">
-           {isOwn && (
-             <button 
-               onClick={() => alert('已保存到相册')}
-               className="flex-1 flex flex-col items-center justify-center py-4 bg-gray-50 rounded-2xl border border-gray-100 text-gray-600 active:scale-95 transition-all shadow-sm"
-             >
-               <Download size={20} className="mb-1" />
-               <span className="text-[11px] font-black uppercase tracking-widest">保存名片</span>
-             </button>
-           )}
-           
-           <button 
-             onClick={onShare}
-             className="flex-1 flex flex-col items-center justify-center py-4 bg-gray-50 rounded-2xl border border-gray-100 text-gray-600 active:scale-95 transition-all shadow-sm"
-           >
-             <Share2 size={20} className="mb-1" />
-             <span className="text-[11px] font-black uppercase tracking-widest">分享名片</span>
-           </button>
+           {/* Shared Mode: Save/Download Buttons */}
+           {isShared ? (
+             <>
+               <button 
+                 onClick={() => alert('已下载名片图片')}
+                 className="flex-1 flex flex-col items-center justify-center py-4 bg-gray-50 rounded-2xl border border-gray-100 text-gray-600 active:scale-95 transition-all shadow-sm"
+               >
+                 <Download size={20} className="mb-1" />
+                 <span className="text-[11px] font-black uppercase tracking-widest">下载名片</span>
+               </button>
 
-           {isOwn && (
-             <button 
-               onClick={() => onConfirm(card)}
-               className="flex-1 flex flex-col items-center justify-center py-4 bg-gray-50 rounded-2xl border border-gray-100 text-gray-600 active:scale-95 transition-all shadow-sm"
-             >
-               <Check size={20} className="mb-1" />
-               <span className="text-[11px] font-black uppercase tracking-widest">我的名片</span>
-             </button>
+               {!hasSaved ? (
+                    <button 
+                      onClick={handleSaveCard}
+                      className="flex-1 flex flex-col items-center justify-center py-4 bg-cyan-500 rounded-2xl border border-cyan-500 text-white active:scale-95 transition-all shadow-lg shadow-cyan-200"
+                    >
+                      <Download size={20} className="mb-1" />
+                      <span className="text-[11px] font-black uppercase tracking-widest">保存名片</span>
+                    </button>
+                ) : (
+                    <button 
+                      onClick={() => {
+                        if (onBack) {
+                          onBack();
+                        } else {
+                          navigate('/business-card');
+                        }
+                      }}
+                      className="flex-1 flex flex-col items-center justify-center py-4 bg-green-500 rounded-2xl border border-green-500 text-white active:scale-95 transition-all shadow-lg shadow-green-200"
+                    >
+                      <Check size={20} className="mb-1" />
+                      <span className="text-[11px] font-black uppercase tracking-widest">我的名片</span>
+                    </button>
+                )}
+             </>
+           ) : (
+             // Own Mode Buttons
+             <>
+               <button 
+                 onClick={() => alert('已保存到相册')}
+                 className="flex-1 flex flex-col items-center justify-center py-4 bg-gray-50 rounded-2xl border border-gray-100 text-gray-600 active:scale-95 transition-all shadow-sm"
+               >
+                 <Download size={20} className="mb-1" />
+                 <span className="text-[11px] font-black uppercase tracking-widest">保存名片</span>
+               </button>
+               
+               <button 
+                 onClick={onShare}
+                 className="flex-1 flex flex-col items-center justify-center py-4 bg-gray-50 rounded-2xl border border-gray-100 text-gray-600 active:scale-95 transition-all shadow-sm"
+               >
+                 <Share2 size={20} className="mb-1" />
+                 <span className="text-[11px] font-black uppercase tracking-widest">分享名片</span>
+               </button>
+
+               <button 
+                 onClick={() => onConfirm(card)}
+                 className="flex-1 flex flex-col items-center justify-center py-4 bg-gray-50 rounded-2xl border border-gray-100 text-gray-600 active:scale-95 transition-all shadow-sm"
+               >
+                 <Check size={20} className="mb-1" />
+                 <span className="text-[11px] font-black uppercase tracking-widest">我的名片</span>
+               </button>
+             </>
            )}
         </div>
 
@@ -146,10 +319,36 @@ const BusinessCardPreview = ({ card, mode = 'own', onConfirm, onBack, onShare })
           <div className="relative pt-6 flex flex-col items-center">
              {/* 对话气泡 */}
              <div className="relative mb-6 w-full flex justify-center animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <div className="bg-white px-8 py-7 rounded-[3rem] shadow-[0_15px_45px_rgba(0,0,0,0.06)] border border-gray-100 relative z-10 max-w-[92%] min-h-[110px] flex items-center justify-center">
-                  <p className="text-lg font-black text-gray-800 leading-relaxed text-center">
-                     {isTyping ? "黄小西正在思考中..." : lastAssistantMessage}
-                  </p>
+                <div className="bg-white px-8 py-7 rounded-[3rem] shadow-[0_15px_45px_rgba(0,0,0,0.06)] border border-gray-100 relative z-10 max-w-[92%] min-h-[110px] flex flex-col items-center justify-center text-center">
+                  <div className="text-lg font-black text-gray-800 leading-relaxed w-full">
+                     {isTyping ? "黄小西正在思考中..." : (
+                        <>
+                           <p>{lastAssistantMsg.text}</p>
+                           {lastAssistantMsg.agents && lastAssistantMsg.agents.length > 0 ? (
+                              <div className="w-full flex flex-col gap-2">
+                                  {lastAssistantMsg.agents.map(agent => (
+                                      <MiniAgentCard 
+                                        key={agent.id}
+                                        agent={agent} 
+                                        onConnect={(agent) => {
+                                           if (onCloseModal) onCloseModal();
+                                           navigate(`/message/agent-${agent.id}`);
+                                        }}
+                                      />
+                                  ))}
+                              </div>
+                           ) : lastAssistantMsg.agent && (
+                              <MiniAgentCard 
+                                agent={lastAssistantMsg.agent} 
+                                onConnect={(agent) => {
+                                   if (onCloseModal) onCloseModal();
+                                   navigate(`/message/agent-${agent.id}`); // Assuming chat route
+                                }}
+                              />
+                           )}
+                        </>
+                     )}
+                  </div>
                   <div className="absolute -bottom-4 right-1/4 w-8 h-8 bg-white border-r border-b border-gray-100 transform rotate-[35deg] z-0"></div>
                 </div>
              </div>
@@ -157,19 +356,11 @@ const BusinessCardPreview = ({ card, mode = 'own', onConfirm, onBack, onShare })
              {/* AI 角色形象 */}
              <div className="relative w-full h-40 flex justify-end pr-10 mt-2">
                 <div className="w-56 h-full relative group">
-                   <svg viewBox="0 0 200 120" className="w-full h-full drop-shadow-2xl overflow-visible">
-                      <path d="M40 100 Q70 50 160 70 Q200 80 200 110 L40 110 Z" fill="#F87171" />
-                      <circle cx="125" cy="65" r="38" fill="#FFE4E6" />
-                      <path d="M85 55 Q125 0 165 55" stroke="#E2E8F0" strokeWidth="14" fill="none" strokeLinecap="round" />
-                      <circle cx="125" cy="30" r="6" fill="white" stroke="#CBD5E1" strokeWidth="1" />
-                      <circle cx="112" cy="70" r="4.5" fill="#3F3F46" />
-                      <circle cx="138" cy="70" r="4.5" fill="#3F3F46" />
-                      <circle cx="100" cy="80" r="6" fill="#F472B6" opacity="0.4" />
-                      <circle cx="150" cy="80" r="6" fill="#F472B6" opacity="0.4" />
-                      <path d="M120 85 Q125 90 130 85" stroke="#3F3F46" strokeWidth="2" fill="none" strokeLinecap="round" />
-                      <path d="M105 100 Q115 88 125 100" stroke="#FFE4E6" strokeWidth="7" fill="none" strokeLinecap="round" />
-                      <path d="M145 100 Q135 88 125 100" stroke="#FFE4E6" strokeWidth="7" fill="none" strokeLinecap="round" />
-                   </svg>
+                   <img 
+                      src={HuangXiaoXiAvatar} 
+                      alt="黄小西AI助手" 
+                      className="w-full h-full object-contain object-bottom drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                   />
                    <div className="absolute -top-4 left-6 animate-pulse text-2xl">☁️</div>
                    <div className="absolute top-8 -right-2 animate-bounce text-xl">✨</div>
                 </div>

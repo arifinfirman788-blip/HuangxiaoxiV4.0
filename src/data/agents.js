@@ -213,5 +213,16 @@ export const agents = [
     skills: ['山地旅游', '康养服务'],
     location: [25.0879, 104.8972],
     intro: '万峰成林，户外胜地，黔西南欢迎您。'
+  },
+  // 特色美食 (New)
+  {
+    id: 'food-spicy-chicken',
+    category: 'dining',
+    name: '王阿姨辣子鸡智能体',
+    avatar: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=200&h=200&fit=crop',
+    status: 'online',
+    skills: ['排队取号', '外卖预订', '口味定制'],
+    location: [26.5800, 106.7200],
+    intro: '三十年老字号，地道贵阳味，现炒现卖，香辣过瘾。'
   }
 ];

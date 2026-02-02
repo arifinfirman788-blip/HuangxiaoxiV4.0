@@ -8,9 +8,10 @@ const MOCK_CONTACTS = [
   { id: '3', name: '王大力', organization: '西江千户苗寨', position: '民宿主理人', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150', background: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800' },
 ];
 
-const BusinessCardDetail = ({ card, onEdit, onPreview, onBack }) => {
+const BusinessCardDetail = ({ card, onEdit, onPreview, onBack, onViewCard }) => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showWechatModal, setShowWechatModal] = useState(false);
+  const [showWechatPreview, setShowWechatPreview] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   // 搜索过滤逻辑
@@ -215,10 +216,14 @@ const BusinessCardDetail = ({ card, onEdit, onPreview, onBack }) => {
                 {[
                   { icon: '📱', name: '生成海报', color: 'bg-orange-50' },
                   { icon: '💾', name: '保存图片', color: 'bg-blue-50' },
-                  { icon: '💬', name: '微信好友', color: 'bg-green-50' },
+                  { icon: '💬', name: '微信好友', color: 'bg-green-50', action: () => { setShowShareModal(false); setShowWechatPreview(true); } },
                   { icon: '🎡', name: '朋友圈', color: 'bg-red-50' }
                 ].map(opt => (
-                  <button key={opt.name} className="flex flex-col items-center gap-2 group">
+                  <button 
+                    key={opt.name} 
+                    className="flex flex-col items-center gap-2 group"
+                    onClick={opt.action}
+                  >
                     <div className={`w-14 h-14 ${opt.color} rounded-2xl flex items-center justify-center text-2xl group-active:scale-90 transition-transform`}>
                       {opt.icon}
                     </div>
@@ -237,11 +242,41 @@ const BusinessCardDetail = ({ card, onEdit, onPreview, onBack }) => {
         </div>
       )}
 
-      {/* WeChat Preview Modal */}
+      {/* WeChat Preview Modal - Actually reusing the one from BusinessCardModal context if possible, 
+          but BusinessCardDetail is a child. 
+          To fix the "click not working" issue:
+          The problem is that BusinessCardDetail is rendering its OWN WeChatSharePreview, 
+          but it doesn't pass the `onViewCard` prop!
+          
+          We need to either:
+          1. Pass `onViewCard` down from BusinessCardModal to BusinessCardDetail, and then to WeChatSharePreview.
+          2. Or better, let BusinessCardModal handle the WeChat preview visibility entirely if it manages the viewMode.
+          
+          However, BusinessCardDetail has its own local state `showShareModal` (which seems to be the share OPTIONS modal)
+          and it seems it was trying to use `WeChatSharePreview` as the share modal? No, wait.
+          
+          Line 241: 
+          <WeChatSharePreview 
+            isOpen={showShareModal}  <-- This is wrong. showShareModal is the options grid.
+            onClose={() => setShowShareModal(false)} 
+            cardData={card} 
+          />
+          
+          And line 204 renders the Options Grid as `showShareModal`.
+          So `WeChatSharePreview` is being rendered BEHIND the options grid or replacing it?
+          Ah, `WeChatSharePreview` is rendered at the bottom.
+          But `showShareModal` controls BOTH the options grid AND the WeChatPreview?
+          That triggers both to open.
+          
+          Correction:
+          We need a separate state for `showWechatPreview`.
+          And we need to pass `onViewCard` (which switches to 'shared_preview') from parent.
+      */}
       <WeChatSharePreview 
-        isOpen={showShareModal} 
-        onClose={() => setShowShareModal(false)} 
+        isOpen={showWechatPreview} 
+        onClose={() => setShowWechatPreview(false)} 
         cardData={card} 
+        onViewCard={onViewCard} // We need this prop!
       />
     </div>
   );

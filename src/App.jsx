@@ -23,6 +23,7 @@ import ScenicAgent from './pages/agent/ScenicAgent';
 import FoodAgent from './pages/agent/FoodAgent';
 import PersonalAgent from './pages/agent/PersonalAgent';
 import AgentService from './pages/AgentService';
+import BusinessCardPage from './pages/BusinessCardPage';
 
 // Auth Guard Component
 const RequireAuth = ({ children, isAuthenticated }) => {
@@ -224,6 +225,7 @@ function App() {
             <Route path="/agent/food/:id" element={<FoodAgent toggleBottomNav={setIsBottomNavVisible} />} />
             <Route path="/agent/personal/:id" element={<PersonalAgent toggleBottomNav={setIsBottomNavVisible} />} />
             <Route path="/agent-service/:id" element={<AgentService />} />
+            <Route path="/business-card" element={<BusinessCardPage />} />
           </Route>
 
           {/* Protected Routes */}

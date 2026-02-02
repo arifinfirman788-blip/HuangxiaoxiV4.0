@@ -24,13 +24,11 @@ import {
   X
 } from 'lucide-react';
 import avatarImage from '../image/托腮_1.png';
-import BusinessCardModal from '../components/BusinessCardModal';
 import CreateAgentModal from '../components/CreateAgentModal';
 import BusinessCardCertification from '../components/BusinessCardCertification';
 
 const Profile = ({ isAuthenticated, onLogout }) => {
   const navigate = useNavigate();
-  const [showCardModal, setShowCardModal] = React.useState(false);
   const [showCreateAgentModal, setShowCreateAgentModal] = React.useState(false);
   const [showCertModal, setShowCertModal] = React.useState(false);
   const [cardData, setCardData] = React.useState(null);
@@ -54,11 +52,6 @@ const Profile = ({ isAuthenticated, onLogout }) => {
       setIsCertified(JSON.parse(savedCert));
     }
   }, []);
-
-  const handleSaveCard = (data) => {
-    setCardData(data);
-    localStorage.setItem('user_business_card', JSON.stringify(data));
-  };
 
   const handleCertComplete = () => {
     setIsCertified(true);
@@ -136,7 +129,7 @@ const Profile = ({ isAuthenticated, onLogout }) => {
                   </div>
                   
                   <button 
-                    onClick={() => setShowCardModal(true)}
+                    onClick={() => navigate('/business-card')}
                     className="mt-3 flex items-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1.5 rounded-full shadow-md shadow-cyan-200 active:scale-95 transition-all hover:shadow-lg"
                   >
                     <Contact size={14} />
@@ -277,12 +270,7 @@ const Profile = ({ isAuthenticated, onLogout }) => {
         <p className="text-[10px] text-slate-400">ICP号：黔ICP备2025044274号-1X</p>
       </div>
 
-      <BusinessCardModal 
-        isOpen={showCardModal} 
-        onClose={() => setShowCardModal(false)} 
-        initialData={cardData}
-        onSave={handleSaveCard}
-      />
+
       
       <CreateAgentModal
         isOpen={showCreateAgentModal}

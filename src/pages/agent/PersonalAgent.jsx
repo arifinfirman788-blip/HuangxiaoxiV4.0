@@ -1,20 +1,74 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   ChevronLeft, MoreHorizontal, User, MapPin, 
   Camera, Heart, Share2, MessageCircle, Mic, Send, 
   Menu, ScanLine, Phone, Star, UserCheck, ChefHat, 
-  Utensils, Video
+  Utensils, Video, Sparkles
 } from 'lucide-react';
 import GuideAvatar from '../../image/daoyou.png'; 
 import WangAyiAvatar from '../../image/wangayi.png';
+
+const AgentRecommendationCard = ({ title, agents, onConnect }) => {
+    return (
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 space-y-3 w-full">
+            <h4 className="font-bold text-sm text-slate-800 flex items-center gap-2">
+                <Sparkles size={16} className="text-cyan-500" />
+                {title}
+            </h4>
+            
+            <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1 scrollbar-hide">
+                {agents.map(agent => (
+                    <div 
+                        key={agent.id}
+                        className="shrink-0 w-32 h-40 rounded-xl overflow-hidden relative border-[2px] border-white shadow-md cursor-pointer group bg-slate-900"
+                        onClick={() => onConnect && onConnect(agent)}
+                    >
+                        {/* Full Background Image */}
+                        <img 
+                            src={agent.avatar} 
+                            alt={agent.name} 
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                        />
+                        
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" />
+                        
+                        {/* Content */}
+                        <div className="absolute bottom-0 left-0 right-0 p-2">
+                            <div className="text-[10px] font-bold text-white leading-tight mb-0.5">{agent.name}</div>
+                            <div className="text-[8px] text-white/80 truncate">{agent.desc}</div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 const PersonalAgent = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [inputMessage, setInputMessage] = useState('');
   const [agentData, setAgentData] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const scrollRef = useRef(null);
+
+  // Auto-scroll to bottom
+  const scrollContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+        // Use scrollTo to prevent whole page shift
+        const { scrollHeight, clientHeight } = scrollContainerRef.current;
+        scrollContainerRef.current.scrollTo({
+            top: scrollHeight - clientHeight,
+            behavior: 'smooth'
+        });
+    }
+  }, [messages, isTyping]);
 
   // Mock Data Configurations
   const agentsConfig = {
@@ -77,7 +131,7 @@ const PersonalAgent = () => {
         ],
         quickActions: [
             { icon: Video, text: '观看制作教程' },
-            { icon: Utensils, text: '预约线下品鉴' },
+            { icon: Utensils, text: '贵州优选' },
             { icon: Share2, text: '分享给馋嘴朋友' },
         ],
         tags: ['购买辣子鸡', '咨询做法'],
@@ -98,7 +152,7 @@ const PersonalAgent = () => {
         ],
         quickActions: [
             { icon: Video, text: '观看制作教程' },
-            { icon: Utensils, text: '预约线下品鉴' },
+            { icon: Utensils, text: '贵州优选' },
             { icon: Share2, text: '分享给馋嘴朋友' },
         ],
         tags: ['购买辣子鸡', '咨询做法'],
@@ -115,11 +169,99 @@ const PersonalAgent = () => {
     }
   }, [id]);
 
+  const handleInteraction = (text) => {
+      // Add user message
+      const userMsg = {
+          id: Date.now(),
+          sender: 'user',
+          text: text,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, userMsg]);
+      setIsTyping(true);
+
+      // Simulate Agent Response
+      setTimeout(() => {
+          setIsTyping(false);
+          
+          if (text.includes('贵州优选')) {
+               // Add intro message
+               const introMsg = {
+                  id: Date.now() + 1,
+                  sender: 'agent',
+                  text: '为您精选了以下贵州特色好物，都是地道正宗的伴手礼哦～',
+                  time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+               };
+               setMessages(prev => [...prev, introMsg]);
+
+               // Add Product Card
+               setTimeout(() => {
+                   const products = [
+                        {
+                            id: 'prod-1',
+                            name: '贵州茅台酒',
+                            desc: '酱香型白酒典范',
+                            avatar: 'https://images.unsplash.com/photo-1598155523122-38423bb4d6c1?w=300&h=300&fit=crop',
+                            type: 'product',
+                            role: 'food',
+                            rating: 5.0,
+                            details: { name: '贵州茅台酒', desc: '53度飞天茅台' },
+                            color: 'red'
+                        },
+                        {
+                            id: 'prod-2',
+                            name: '都匀毛尖',
+                            desc: '中国十大名茶之一',
+                            avatar: 'https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=300&h=300&fit=crop',
+                            type: 'product',
+                            role: 'food',
+                            rating: 4.9,
+                            details: { name: '都匀毛尖', desc: '明前特级' },
+                            color: 'green'
+                        },
+                        {
+                            id: 'prod-3',
+                            name: '老干妈风味豆豉',
+                            desc: '国民女神，下饭神器',
+                            avatar: 'https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?w=300&h=300&fit=crop',
+                            type: 'product',
+                            role: 'food',
+                            rating: 4.8,
+                            details: { name: '老干妈', desc: '风味豆豉油辣椒' },
+                            color: 'orange'
+                        }
+                   ];
+                   const prodCard = {
+                      id: Date.now() + 2,
+                      sender: 'agent',
+                      type: 'agent_recommendation',
+                      title: '贵州优选好物',
+                      agents: products,
+                      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                   };
+                   setMessages(prev => [...prev, prodCard]);
+               }, 800);
+          } else {
+               // Generic response
+               const replyMsg = {
+                  id: Date.now() + 1,
+                  sender: 'agent',
+                  text: `收到您的需求"${text}"，我是${agentData.name}，正在为您处理...`,
+                  time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+               };
+               setMessages(prev => [...prev, replyMsg]);
+          }
+      }, 1000);
+  };
+
   if (!agentData) return null;
 
   return (
     <div className="h-full w-full bg-slate-50 relative flex flex-col overflow-hidden">
-      <div className="flex-1 overflow-y-auto pb-[180px]">
+      <div 
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto pb-[200px]"
+      >
         {/* Header Background Gradient */}
         <div className="absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b from-purple-100 via-purple-50/50 to-transparent z-0 pointer-events-none" />
 
@@ -211,28 +353,69 @@ const PersonalAgent = () => {
             <motion.button
               key={index}
               whileTap={{ scale: 0.98 }}
+              onClick={() => handleInteraction(action.text)}
               className="bg-white rounded-2xl px-4 py-2 flex items-center gap-2 shadow-sm border border-slate-100 text-slate-700 font-medium text-sm"
             >
                <div className="w-5 h-5 flex items-center justify-center text-slate-500">
-                  <MessageCircle size={18} />
+                  <action.icon size={18} />
                </div>
                {action.text}
             </motion.button>
          ))}
       </div>
+
+        {/* Chat Messages Area */}
+        <div className="px-4 mt-6 pb-4 space-y-4 relative z-10">
+            {messages.map(msg => (
+                <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                   {/* Message Bubble Logic */}
+                   {msg.type === 'agent_recommendation' ? (
+                       <div className="w-full max-w-[90%]">
+                           <AgentRecommendationCard 
+                               title={msg.title} 
+                               agents={msg.agents} 
+                               onConnect={(agent) => console.log('Connect', agent)} 
+                           />
+                       </div>
+                   ) : (
+                       <div className={`p-3 rounded-xl max-w-[80%] text-sm shadow-sm ${msg.sender === 'user' ? 'bg-slate-900 text-white rounded-br-none' : 'bg-white border border-slate-100 text-slate-700 rounded-bl-none'}`}>
+                           {msg.text}
+                       </div>
+                   )}
+                </div>
+            ))}
+            
+            {isTyping && (
+                <div className="flex justify-start">
+                    <div className="bg-white p-3 rounded-xl rounded-bl-none border border-slate-100 shadow-sm flex items-center gap-1.5">
+                       <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                       <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                       <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                </div>
+            )}
+            <div ref={scrollRef} />
+        </div>
       </div>
 
       {/* Bottom Fixed Area */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 z-20 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 p-4 z-20 pointer-events-none pb-8">
          {/* Tags */}
          <div className="flex items-center gap-2 mb-3 overflow-x-auto scrollbar-hide pointer-events-auto">
             {agentData.tags.map((tag, index) => (
-                <button key={index} className="px-4 py-1.5 bg-white rounded-full text-xs font-bold text-slate-600 shadow-sm border border-slate-100 whitespace-nowrap">
+                <button 
+                  key={index} 
+                  onClick={() => handleInteraction(tag)}
+                  className="px-4 py-1.5 bg-white rounded-full text-xs font-bold text-slate-600 shadow-sm border border-slate-100 whitespace-nowrap active:bg-slate-100 transition-colors"
+                >
                    {tag}
                 </button>
             ))}
             <div className="ml-auto">
-               <button className="px-4 py-1.5 bg-white rounded-full text-xs font-bold text-purple-500 shadow-sm border border-purple-100 flex items-center gap-1 whitespace-nowrap">
+               <button 
+                 onClick={() => handleInteraction('私信留言')}
+                 className="px-4 py-1.5 bg-white rounded-full text-xs font-bold text-purple-500 shadow-sm border border-purple-100 flex items-center gap-1 whitespace-nowrap active:bg-purple-50 transition-colors"
+               >
                   <MessageCircle size={12} />
                   私信留言
                </button>
@@ -248,10 +431,14 @@ const PersonalAgent = () => {
               type="text" 
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && inputMessage.trim() && handleInteraction(inputMessage)}
               placeholder={agentData.inputPlaceholder}
               className="flex-1 bg-transparent outline-none text-sm text-slate-800 placeholder-slate-400"
             />
-            <button className="w-9 h-9 bg-purple-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-600 transition-colors">
+            <button 
+              onClick={() => inputMessage.trim() && handleInteraction(inputMessage)}
+              className="w-9 h-9 bg-purple-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-600 transition-colors active:scale-95"
+            >
                <Send size={16} className={inputMessage ? 'ml-0.5' : ''} />
             </button>
          </div>

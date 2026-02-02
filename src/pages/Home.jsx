@@ -53,7 +53,7 @@ const getAiReminder = (node) => {
 
 
 
-const NewsMarquee = () => {
+const NewsMarquee = ({ className }) => {
   const navigate = useNavigate();
   const news = [
     "贵州文旅优惠季开启，百家景区半价游",
@@ -72,7 +72,7 @@ const NewsMarquee = () => {
   return (
     <button 
       onClick={() => navigate('/news')}
-      className="w-full bg-white/60 backdrop-blur-sm rounded-xl p-2 flex items-center gap-2 shadow-sm border border-white/60 mb-12 active:scale-98 transition-transform"
+      className={`bg-white/60 backdrop-blur-sm rounded-xl p-2 flex items-center gap-2 shadow-sm border border-white/60 active:scale-98 transition-transform ${className}`}
     >
       <div className="bg-orange-100 p-1 rounded-md">
         <Volume2 size={14} className="text-orange-500" />
@@ -499,14 +499,12 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
 
   return (
     <div className="h-full w-full relative">
-      <div className="h-full w-full overflow-y-auto scrollbar-hide pb-[240px]">
+      <div className="h-full w-full overflow-hidden pb-[240px]">
         <div className="px-6 pt-12 relative z-10">
           {/* Header */}
-          <header className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight leading-tight">你好, <br/>旅行者</h1>
-            </div>
-            <div className="flex items-center gap-3">
+          <header className="flex justify-between items-center mb-6 gap-3">
+            <NewsMarquee className="flex-1" />
+            <div className="flex items-center gap-3 shrink-0">
               <button className="w-10 h-10 bg-white rounded-blob-2 shadow-sm border border-white/60 flex items-center justify-center text-slate-500 hover:text-cyan-600 transition-colors">
                  <Languages size={20} />
               </button>
@@ -519,9 +517,6 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
               </button>
             </div>
           </header>
-
-          {/* News Marquee */}
-          <NewsMarquee />
 
 
 
@@ -552,7 +547,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="w-full mb-20 relative -top-10"
+            className="w-full mb-20 relative -top-6"
           >
             <div className="rounded-[2rem] p-5 relative overflow-visible h-[420px] flex flex-col">
               {/* Header with Visual Icons (No Text) */}

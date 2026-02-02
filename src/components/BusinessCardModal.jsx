@@ -68,6 +68,11 @@ const BusinessCardModal = ({ isOpen, onClose, initialData, onSave }) => {
       setViewMode('detail');
   };
 
+  const handleSharedCardView = () => {
+     setShowSharePreview(false);
+     setViewMode('shared_preview'); // New mode for shared view
+  };
+
   if (!isOpen) return null;
 
   return ReactDOM.createPortal(
@@ -93,6 +98,7 @@ const BusinessCardModal = ({ isOpen, onClose, initialData, onSave }) => {
                 onEdit={() => setViewMode('edit')}
                 onPreview={() => setViewMode('preview')}
                 onBack={onClose}
+                onViewCard={handleSharedCardView} // Pass the handler down
               />
             )}
             
@@ -111,11 +117,29 @@ const BusinessCardModal = ({ isOpen, onClose, initialData, onSave }) => {
                 onConfirm={handleConfirm}
                 onBack={() => setViewMode('detail')}
                 onShare={handleShare}
+                onCloseModal={onClose}
+              />
+            )}
+
+            {viewMode === 'shared_preview' && (
+              <BusinessCardPreview 
+                card={formData} 
+                mode="shared" 
+                onBack={() => setViewMode('detail')} // Or close
+                onCloseModal={onClose}
               />
             )}
           </motion.div>
         </motion.div>
       </AnimatePresence>
+      
+      {/* WeChat Share Preview Modal - Outside of main modal content but inside Portal */}
+      <WeChatSharePreview 
+         isOpen={showSharePreview} 
+         onClose={() => setShowSharePreview(false)} 
+         cardData={formData}
+         onViewCard={handleSharedCardView}
+      />
     </>,
     document.body
   );

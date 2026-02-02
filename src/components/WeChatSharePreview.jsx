@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mic, Plus, Smile, MoreHorizontal, ChevronLeft } from 'lucide-react';
 
-const WeChatSharePreview = ({ isOpen, onClose, cardData }) => {
+const WeChatSharePreview = ({ isOpen, onClose, cardData, onViewCard }) => {
   if (!isOpen) return null;
 
   return (
@@ -61,7 +61,19 @@ const WeChatSharePreview = ({ isOpen, onClose, cardData }) => {
 
             {/* Mini Program Card (Right Side) */}
             <div className="flex justify-end gap-3">
-              <div className="bg-white w-60 rounded-lg overflow-hidden shadow-sm border border-gray-200">
+              <div 
+                className="bg-white w-60 rounded-lg overflow-hidden shadow-sm border border-gray-200 cursor-pointer active:scale-95 transition-transform relative z-10"
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  console.log("Card clicked"); // Debug log
+                  // Ensure onClose is called if onViewCard doesn't handle it
+                  if (onViewCard) {
+                      onViewCard();
+                  } else if (onClose) {
+                      onClose();
+                  }
+                }}
+              >
                 {/* Card Header */}
                 <div className="flex items-center gap-2 p-2 border-b border-gray-100 bg-white">
                     <div className="w-5 h-5 rounded-full bg-cyan-500 flex items-center justify-center">

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Send, Mic, Plane, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, Star, Info, Car, Camera, Hotel, Loader2, Wand2, RefreshCcw, ArrowRight, Bed, MapPin, X, ZoomIn, ZoomOut, MessageSquare, Phone, BadgeCheck, MoreHorizontal, MessageCircle } from 'lucide-react';
 import TuoSaiImage from '../image/托腮_1.png';
+import { agents as availableAgents } from '../data/agents';
 import { getPlaceholder } from '../utils/imageUtils';
 import ReservationLetterCard from './ReservationLetterCard';
 import MuseumAvatar from '../image/bowuguan.png';
@@ -854,6 +855,8 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
       const serviceChips = initialContext.services ? initialContext.services.map(s => `我想${s}`) : ['我想咨询', '我想预订'];
       // Add "Contact Merchant" chip
       serviceChips.push(`联系${initialContext.name}`);
+      // Add Guizhou Selected chip
+      serviceChips.push('贵州优选');
 
       setMessages([
         {
@@ -880,6 +883,8 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
       
       // Add "Connect to" prompt as the last option
       prompts.push(`联系${initialContext.desc}`);
+      // Add Guizhou Selected prompt
+      prompts.push('贵州优选');
 
       setMessages([
         {
@@ -1169,7 +1174,7 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
                 if (match && match[1]) {
                     name = match[1] + '智能体';
                 }
-
+                
                 const newAgent = {
                     ...baseInfo,
                     name: name,
@@ -1187,6 +1192,73 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
                 dispatchAiResponse(cardMsg);
 
             }, 2000);
+
+        }, 1000);
+        return;
+    }
+
+    // Guizhou Products Recommendation (Prompt handling)
+    if (content.includes('贵州优选')) {
+        setTimeout(() => {
+            setIsTyping(false);
+            
+            // 1. Intro Message
+            const introMsg = {
+                id: Date.now() + 1,
+                sender: 'agent',
+                text: '为您精选了以下贵州特色好物，都是地道正宗的伴手礼哦～',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            dispatchAiResponse(introMsg);
+
+            // 2. Push Product Cards
+            setTimeout(() => {
+                const products = [
+                    {
+                        id: 'prod-1',
+                        name: '贵州茅台酒',
+                        desc: '酱香型白酒典范',
+                        avatar: 'https://images.unsplash.com/photo-1598155523122-38423bb4d6c1?w=300&h=300&fit=crop',
+                        type: 'product',
+                        role: 'food',
+                        rating: 5.0,
+                        details: { name: '贵州茅台酒', desc: '53度飞天茅台' },
+                        color: 'red'
+                    },
+                    {
+                        id: 'prod-2',
+                        name: '都匀毛尖',
+                        desc: '中国十大名茶之一',
+                        avatar: 'https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=300&h=300&fit=crop',
+                        type: 'product',
+                        role: 'food',
+                        rating: 4.9,
+                        details: { name: '都匀毛尖', desc: '明前特级' },
+                        color: 'green'
+                    },
+                    {
+                        id: 'prod-3',
+                        name: '老干妈风味豆豉',
+                        desc: '国民女神，下饭神器',
+                        avatar: 'https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?w=300&h=300&fit=crop',
+                        type: 'product',
+                        role: 'food',
+                        rating: 4.8,
+                        details: { name: '老干妈', desc: '风味豆豉油辣椒' },
+                        color: 'orange'
+                    }
+                ];
+
+                const prodCard = {
+                    id: Date.now() + 2,
+                    sender: 'agent',
+                    type: 'agent_recommendation',
+                    title: '贵州优选好物',
+                    agents: products,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                };
+                dispatchAiResponse(prodCard);
+            }, 800);
 
         }, 1000);
         return;
@@ -1220,6 +1292,79 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
              dispatchAiResponse(cardMsg);
          }, 1000);
          return;
+      }
+
+      // NEW: Intent Recognition for "我想..." (Dynamic Agent Matching)
+      if (content.includes('我想') || content.includes('我要') || content.includes('推荐')) {
+           // Clean the string
+           let cleanedContent = content;
+           const fillers = ['我想', '我要', '推荐', '去', '吃', '住', '玩', '找', '一个', '订', '有', '想', '要', '看'];
+           fillers.forEach(filler => {
+               cleanedContent = cleanedContent.replaceAll(filler, '');
+           });
+
+           // Split by delimiters
+           const keywords = cleanedContent.split(/也|和|，|,| |、/);
+           
+           const allMatchedAgents = [];
+           
+           keywords.forEach(keyword => {
+               const k = keyword.trim();
+               if (k.length > 0) {
+                   const matched = availableAgents.filter(a => 
+                       a.name.includes(k) || 
+                       a.intro.includes(k) || 
+                       a.skills.some(s => s.includes(k)) ||
+                       (a.category === 'scenic' && k.includes('景区')) ||
+                       (a.category === 'hotel' && k.includes('酒店')) ||
+                       (a.category === 'dining' && k.includes('吃'))
+                   );
+                   allMatchedAgents.push(...matched);
+               }
+           });
+           
+           // Deduplicate
+           const uniqueAgents = Array.from(new Set(allMatchedAgents.map(a => a.id)))
+               .map(id => allMatchedAgents.find(a => a.id === id));
+
+           if (uniqueAgents.length > 0) {
+               const mappedAgents = uniqueAgents.slice(0, 5).map(agent => { // Allow up to 5
+                   let avatarImg = agent.avatar;
+                   // Map emoji avatars to images if needed
+                   if (!agent.avatar || agent.avatar.length < 5) {
+                       switch(agent.category) {
+                           case 'scenic': avatarImg = ScenicAvatar; break;
+                           case 'hotel': avatarImg = HotelAvatar; break;
+                           case 'dining': avatarImg = WangAyiAvatar; break;
+                           case 'gov': avatarImg = getPlaceholder(200, 200, 'Gov'); break;
+                           default: avatarImg = TuoSaiImage;
+                       }
+                   }
+                   
+                   return {
+                       id: agent.id,
+                       name: agent.name,
+                       desc: agent.intro,
+                       avatar: avatarImg,
+                       type: 'enterprise',
+                       role: agent.category,
+                       rating: 4.9,
+                       details: { name: agent.name, desc: agent.intro },
+                       color: agent.category === 'scenic' ? 'green' : agent.category === 'hotel' ? 'indigo' : 'orange'
+                   };
+               });
+               
+               const recMsg = {
+                   id: Date.now() + 1,
+                   sender: 'agent',
+                   type: 'agent_recommendation',
+                   title: `为您找到相关智能体`,
+                   agents: mappedAgents,
+                   time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+               };
+               dispatchAiResponse(recMsg);
+               return;
+           }
       }
       
       let aiText = '';
