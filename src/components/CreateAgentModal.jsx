@@ -7,10 +7,14 @@ import GuizhouLandscapeImg from '../image/guizhou_landscape.jpg';
 const CreateAgentModal = ({ isOpen, onClose, onSave }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    inputDescription: '',
-    selectedType: '',
-    services: [],
-    intro: '',
+    inputDescription: '我是一个专业的贵州本地向导，熟悉各大景区路线，提供包车、讲解和行程规划服务。',
+    selectedType: '导游',
+    services: [
+        { name: '一日游带队', price: '300', unit: '元/天' },
+        { name: '行程规划', price: '50', unit: '元/次' },
+        { name: '代订门票', price: '10', unit: '元/张' }
+    ],
+    intro: '我是您的专属旅行管家，深耕贵州旅游多年。无论是小众秘境还是经典路线，我都能为您量身定制。带您避开人潮，品尝地道美食，感受最纯粹的风土人情。选择我，让您的旅程省心、省力更省钱！',
     name: '我的智能体', // Default name
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=MyAgent', // Default avatar
     bgImage: GuizhouLandscapeImg
@@ -116,10 +120,14 @@ const CreateAgentModal = ({ isOpen, onClose, onSave }) => {
     setTimeout(() => {
         setStep(1);
         setFormData({
-            inputDescription: '',
-            selectedType: '',
-            services: [],
-            intro: '',
+            inputDescription: '我是一个专业的贵州本地向导，熟悉各大景区路线，提供包车、讲解和行程规划服务。',
+            selectedType: '导游',
+            services: [
+                { name: '一日游带队', price: '300', unit: '元/天' },
+                { name: '行程规划', price: '50', unit: '元/次' },
+                { name: '代订门票', price: '10', unit: '元/张' }
+            ],
+            intro: '我是您的专属旅行管家，深耕贵州旅游多年。无论是小众秘境还是经典路线，我都能为您量身定制。带您避开人潮，品尝地道美食，感受最纯粹的风土人情。选择我，让您的旅程省心、省力更省钱！',
             name: '我的智能体',
             avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + Date.now(),
             bgImage: GuizhouLandscapeImg

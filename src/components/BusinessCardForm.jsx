@@ -10,16 +10,16 @@ const BACKGROUND_TEMPLATES = [
 ];
 
 const BusinessCardForm = ({ initialData, onSubmit, onBack }) => {
-  const [formData, setFormData] = useState(initialData || {
-    name: '',
-    organization: '',
-    title: '', // Map 'position' to 'title'
-    phone: '',
-    email: '',
-    location: '', // Map 'region' to 'location'
-    avatar: null,
-    bgImage: BACKGROUND_TEMPLATES[0].img, // Map 'background' to 'bgImage'
-    wechatId: ''
+  const [formData, setFormData] = useState({
+    name: initialData?.name || '王大雷',
+    organization: initialData?.organization || '贵旅数网',
+    title: initialData?.title || '产品经理', // Map 'position' to 'title'
+    phone: initialData?.phone || '18899998888',
+    email: initialData?.email || '12345678@qq.com',
+    location: initialData?.location || '贵州省 · 贵阳市 · 南明区', // Map 'region' to 'location'
+    avatar: initialData?.avatar || null,
+    bgImage: initialData?.bgImage || BACKGROUND_TEMPLATES[0].img, // Map 'background' to 'bgImage'
+    wechatId: initialData?.wechatId || ''
   });
 
   const [isMatching, setIsMatching] = useState(false);
