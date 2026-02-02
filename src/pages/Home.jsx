@@ -21,9 +21,8 @@ import HotelAvatar from '../image/jiudian.png';
 import GuideAvatar from '../image/daoyou.png';
 import CarAvatar from '../image/zhuanche.png';
 import ScenicAvatar from '../image/huangguoshu.png';
-// 使用 CDN 加速视频加载
-const SpicyChickenVideo = 'https://cdn.jsdelivr.net/gh/arifinfirman788-blip/HuangxiaoxiV4.0@main/src/video/spicy_chicken.mp4';
-const MiaoGirlVideo = 'https://cdn.jsdelivr.net/gh/arifinfirman788-blip/HuangxiaoxiV4.0@main/src/video/miao_girl.mp4';
+import SpicyChickenVideo from '../video/spicy_chicken.mp4';
+import MiaoGirlVideo from '../video/miao_girl.mp4';
 
 const iconMap = {
   Landmark: Landmark,
@@ -311,30 +310,6 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
       likes: "8.5k",
       avatar: HotelAvatar,
       poster: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=1200&fit=crop"
-    },
-    {
-      id: 3,
-      name: "王阿姨辣子鸡",
-      type: "personal",
-      cardType: "agent",
-      isEnterprise: false,
-      desc: "地道贵阳味",
-      intro: "专注贵阳老味道三十年，每一锅辣子鸡都坚持手工炒制。我是王阿姨的数字分身，除了帮您预留位置，还能教您地道的吃法，甚至偷偷告诉您这道菜的独家秘方。",
-      likes: "2.3k",
-      avatar: WangAyiAvatar,
-      poster: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=1200&fit=crop"
-    },
-    {
-      id: 4,
-      name: "金牌地陪小张",
-      type: "personal",
-      cardType: "agent",
-      isEnterprise: false,
-      desc: "带你玩转贵州",
-      intro: "土生土长的贵州通，不带您走马观花，只带您深入苗寨深处、探寻喀斯特秘境。根据您的体力和兴趣，实时调整行程，让每一次出发都成为独家记忆。",
-      likes: "5.6k",
-      avatar: GuideAvatar,
-      poster: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop"
     },
     {
       id: 6,

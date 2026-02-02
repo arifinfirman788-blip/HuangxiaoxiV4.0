@@ -5,7 +5,7 @@ import {
   ChevronLeft, MoreHorizontal, User, MapPin, 
   Camera, Heart, Share2, MessageCircle, Mic, Send, 
   Menu, ScanLine, Phone, Star, UserCheck, ChefHat, 
-  Utensils, Video, Sparkles
+  Utensils, Video, Sparkles, ShoppingBag
 } from 'lucide-react';
 import GuideAvatar from '../../image/daoyou.png'; 
 import WangAyiAvatar from '../../image/wangayi.png';
@@ -88,7 +88,7 @@ const PersonalAgent = ({ onConnectAgent }) => {
         ],
         quickActions: [
             { icon: UserCheck, text: '查看个人履历/评价' },
-            { icon: Camera, text: '查看旅拍作品集' },
+            { icon: ShoppingBag, text: '贵州优选' },
             { icon: Share2, text: '分享给朋友' },
         ],
         tags: ['咨询行程', '费用说明'],
@@ -109,7 +109,7 @@ const PersonalAgent = ({ onConnectAgent }) => {
         ],
         quickActions: [
             { icon: UserCheck, text: '查看个人履历/评价' },
-            { icon: Camera, text: '查看旅拍作品集' },
+            { icon: ShoppingBag, text: '贵州优选' },
             { icon: Share2, text: '分享给朋友' },
         ],
         tags: ['咨询行程', '费用说明'],

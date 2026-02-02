@@ -8,7 +8,8 @@ import {
   TrendingUp, Users, Activity, Play, FileCheck
 } from 'lucide-react';
 import ReservationLetterCard from './ReservationLetterCard';
-import ReservationVideo from '../video/03d28efefa5d12a142ffcf8e57225ede.mp4';
+// 使用 CDN 加速视频加载
+const ReservationVideo = 'https://cdn.jsdelivr.net/gh/arifinfirman788-blip/HuangxiaoxiV4.0@main/src/video/03d28efefa5d12a142ffcf8e57225ede.mp4';
 
 const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerchantReply, isHumanMode, onToggleHumanMode }) => {
   const [activeRequest, setActiveRequest] = useState(null);
