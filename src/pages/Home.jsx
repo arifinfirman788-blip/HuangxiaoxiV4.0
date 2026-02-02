@@ -21,8 +21,9 @@ import HotelAvatar from '../image/jiudian.png';
 import GuideAvatar from '../image/daoyou.png';
 import CarAvatar from '../image/zhuanche.png';
 import ScenicAvatar from '../image/huangguoshu.png';
-import SpicyChickenVideo from '../video/老奶奶制作辣子鸡视频.mp4';
-import MiaoGirlVideo from '../video/苗寨美女打卡视频生成.mp4';
+// 使用 CDN 加速视频加载
+const SpicyChickenVideo = 'https://cdn.jsdelivr.net/gh/arifinfirman788-blip/HuangxiaoxiV4.0@main/src/video/spicy_chicken.mp4';
+const MiaoGirlVideo = 'https://cdn.jsdelivr.net/gh/arifinfirman788-blip/HuangxiaoxiV4.0@main/src/video/miao_girl.mp4';
 
 const iconMap = {
   Landmark: Landmark,
