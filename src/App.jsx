@@ -150,25 +150,25 @@ function App() {
 
   return (
     <Router basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-      {/* Global Reset State Button */}
-      <button 
+      {/* Global Reset State Button - Hidden */}
+      {/* <button 
         onClick={handleReset}
         className="fixed top-4 left-4 z-[9999] bg-red-500 text-white p-3 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 font-bold pr-5 border-2 border-white/20"
         title="重置状态"
       >
         <RotateCcw size={20} />
         <span className="text-xs">重置状态</span>
-      </button>
+      </button> */}
 
-      {/* Global Functional Mind Map Button */}
-      <button 
+      {/* Global Functional Mind Map Button - Hidden */}
+      {/* <button 
         onClick={() => setShowMindMap(true)}
         className="fixed top-20 left-4 z-[9999] bg-slate-900 text-white p-3 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 font-bold pr-5 border-2 border-white/20"
         title="查看功能脑图"
       >
         <GitBranch size={20} />
         <span className="text-xs">功能预览</span>
-      </button>
+      </button> */}
 
       {/* Mind Map Modal */}
       <ProjectMindMap isOpen={showMindMap} onClose={() => setShowMindMap(false)} />
