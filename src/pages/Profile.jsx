@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Settings, 
   ChevronRight, 
@@ -18,18 +19,23 @@ import {
   LogOut,
   Contact,
   Plus,
-  LayoutDashboard
+  LayoutDashboard,
+  ShieldCheck,
+  X
 } from 'lucide-react';
 import avatarImage from '../image/托腮_1.png';
 import BusinessCardModal from '../components/BusinessCardModal';
 import CreateAgentModal from '../components/CreateAgentModal';
+import BusinessCardCertification from '../components/BusinessCardCertification';
 
 const Profile = ({ isAuthenticated, onLogout }) => {
   const navigate = useNavigate();
   const [showCardModal, setShowCardModal] = React.useState(false);
   const [showCreateAgentModal, setShowCreateAgentModal] = React.useState(false);
+  const [showCertModal, setShowCertModal] = React.useState(false);
   const [cardData, setCardData] = React.useState(null);
   const [myAgents, setMyAgents] = React.useState([]);
+  const [isCertified, setIsCertified] = React.useState(false);
 
   // Load card data and agents from local storage on mount
   React.useEffect(() => {
@@ -42,11 +48,22 @@ const Profile = ({ isAuthenticated, onLogout }) => {
     if (savedAgents) {
       setMyAgents(JSON.parse(savedAgents));
     }
+
+    const savedCert = localStorage.getItem('user_is_certified');
+    if (savedCert) {
+      setIsCertified(JSON.parse(savedCert));
+    }
   }, []);
 
   const handleSaveCard = (data) => {
     setCardData(data);
     localStorage.setItem('user_business_card', JSON.stringify(data));
+  };
+
+  const handleCertComplete = () => {
+    setIsCertified(true);
+    localStorage.setItem('user_is_certified', 'true');
+    setShowCertModal(false);
   };
 
   const handleSaveAgent = (agentData) => {
@@ -230,6 +247,12 @@ const Profile = ({ isAuthenticated, onLogout }) => {
 
       {/* General Content Section */}
       <div className="px-6 mb-8 space-y-3">
+        <MenuItem 
+          icon={ShieldCheck} 
+          label={isCertified ? "本地人认证 (已认证)" : "本地人认证"} 
+          onClick={() => setShowCertModal(true)}
+          rightElement={isCertified ? <span className="text-green-500 text-xs font-bold flex items-center gap-1"><ShieldCheck size={12} /> 已认证</span> : null}
+        />
         <MenuItem icon={CreditCard} label="常用证件信息" />
         <MenuItem icon={FileText} label="协议规则" />
         <MenuItem icon={Phone} label="客服电话" />
@@ -266,6 +289,33 @@ const Profile = ({ isAuthenticated, onLogout }) => {
         onClose={() => setShowCreateAgentModal(false)}
         onSave={handleSaveAgent}
       />
+
+      {/* Certification Modal */}
+      {showCertModal && ReactDOM.createPortal(
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowCertModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white w-full max-w-md rounded-[2rem] overflow-hidden shadow-2xl relative flex flex-col h-[85vh] max-h-[800px]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <BusinessCardCertification 
+                onComplete={handleCertComplete}
+                onBack={() => setShowCertModal(false)}
+              />
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };
@@ -282,16 +332,17 @@ const OrderItem = ({ icon: Icon, label, color, bg }) => (
   </motion.button>
 );
 
-const MenuItem = ({ icon: Icon, label, isLast }) => (
+const MenuItem = ({ icon: Icon, label, isLast, onClick, rightElement }) => (
   <motion.button 
     whileTap={{ scale: 0.98 }}
+    onClick={onClick}
     className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm"
   >
     <div className="flex items-center gap-3">
       <Icon size={18} className="text-slate-700" />
       <span className="text-sm font-medium text-slate-700">{label}</span>
     </div>
-    <ChevronRight size={16} className="text-slate-300" />
+    {rightElement ? rightElement : <ChevronRight size={16} className="text-slate-300" />}
   </motion.button>
 );
 

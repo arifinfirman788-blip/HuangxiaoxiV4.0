@@ -76,6 +76,9 @@ function App() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    // Clear user data on logout
+    localStorage.removeItem('user_business_card');
+    localStorage.removeItem('my_created_agents');
   };
 
   const handleReset = () => {
