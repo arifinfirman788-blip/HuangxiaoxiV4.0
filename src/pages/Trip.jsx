@@ -300,7 +300,7 @@ const HorizontalTripCard = ({ country, title, date, users, extraUsers, bgImage, 
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
     </div>
 
-    <div className="absolute top-0 right-0 p-4 z-10">
+    <div className="absolute top-0 right-0 p-4 z-10 hidden">
        <button className="w-6 h-6 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/10">
          <ArrowUpRight size={12} />
        </button>
@@ -320,7 +320,7 @@ const HorizontalTripCard = ({ country, title, date, users, extraUsers, bgImage, 
       </div>
 
       <div className="flex justify-between items-center">
-        <div className="flex -space-x-2">
+        <div className="flex -space-x-2 hidden">
           {users.map((u, i) => (
             <img key={i} src={u} alt="User" className="w-6 h-6 rounded-full border border-slate-900 object-cover" />
           ))}
@@ -328,7 +328,7 @@ const HorizontalTripCard = ({ country, title, date, users, extraUsers, bgImage, 
             +{extraUsers}
           </div>
         </div>
-        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10">
+        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10 hidden">
           <span className="text-base">{icon}</span>
         </div>
       </div>

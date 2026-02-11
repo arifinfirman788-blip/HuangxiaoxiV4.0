@@ -31,14 +31,42 @@ const CreateAgentModal = ({ isOpen, onClose, onSave }) => {
   // Step 1: Handle Text Input & Auto-Identify (Mock)
   const handleIdentify = () => {
     // Mock AI Identification logic
-    if (formData.inputDescription.includes('导游') || formData.inputDescription.includes('玩')) {
-       setFormData(prev => ({ ...prev, selectedType: '导游' }));
+    let type = '';
+    if (formData.inputDescription.includes('导游') || formData.inputDescription.includes('玩') || formData.inputDescription.includes('向导')) {
+       type = '导游';
     } else if (formData.inputDescription.includes('保洁') || formData.inputDescription.includes('打扫')) {
-       setFormData(prev => ({ ...prev, selectedType: '保洁' }));
+       type = '保洁';
     } else {
        // Randomly pick one if no keyword match for demo
-       setFormData(prev => ({ ...prev, selectedType: '导游' }));
+       type = '导游';
     }
+    
+    // Auto-generate services based on type
+    let mockServices = [];
+    if (['导游', '地陪'].includes(type)) {
+       mockServices = [
+           { name: '一日游带队', price: '300', unit: '元/天' },
+           { name: '行程规划', price: '50', unit: '元/次' },
+           { name: '代订门票', price: '10', unit: '元/张' }
+       ];
+    } else if (['保洁'].includes(type)) {
+       mockServices = [
+           { name: '全屋大扫除', price: '面议', unit: '' },
+           { name: '空调清洗', price: '90', unit: '元/台' },
+           { name: '冰箱清洗', price: '70', unit: '元/台' },
+           { name: '深度保洁', price: '40', unit: '元/小时' }
+       ];
+    } else {
+       mockServices = [
+           { name: '基础服务', price: '100', unit: '元/次' }
+       ];
+    }
+    
+    setFormData(prev => ({ 
+        ...prev, 
+        selectedType: type,
+        services: mockServices 
+    }));
   };
 
   const handleImageUpload = (e) => {
@@ -340,14 +368,10 @@ const CreateAgentModal = ({ isOpen, onClose, onSave }) => {
                       <button 
                         onClick={() => {
                             if (step === 1 && !formData.selectedType) {
-                                alert("请选择服务类型");
+                                alert("请先点击【识别】按钮或选择服务类型");
                                 return;
                             }
                             setStep(prev => prev + 1);
-                            // Auto-populate services if moving to step 2 and empty
-                            if (step === 1 && formData.services.length === 0) {
-                                handleReferencePrice(); // Pre-fill for demo convenience
-                            }
                         }}
                         className="flex-1 py-3 bg-blue-500 text-white rounded-full font-bold shadow-lg shadow-blue-200 active:scale-95 transition-transform"
                       >

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Share, MoreHorizontal, Sun, Cloud, CloudRain, Info, Plane, Train, MapPin, ChevronRight, QrCode, AlertCircle, Clock, CheckCircle2, Utensils, Hotel, Camera, Coffee, Navigation, Phone, FileText, Headphones, Ticket, Car, Sparkles, Plus, Search, Edit3, GripVertical, Map, Calendar, X, List, Layout, Wand2 } from 'lucide-react';
+import { ArrowLeft, Share, MoreHorizontal, Sun, Cloud, CloudRain, Info, Plane, Train, MapPin, ChevronRight, QrCode, AlertCircle, Clock, CheckCircle2, Utensils, Hotel, Camera, Coffee, Navigation, Phone, FileText, Headphones, Ticket, Car, Sparkles, Plus, Search, Edit3, GripVertical, Map, Calendar, X, List, Layout, Wand2, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { getPlaceholder } from '../utils/imageUtils';
 
@@ -80,11 +80,16 @@ const AIPlanningModal = ({ isOpen, onClose, onConfirm }) => {
   );
 };
 
-const AddSpotModal = ({ isOpen, onClose, onAdd }) => {
-  const [activeTab, setActiveTab] = useState('search'); // search | import | custom
-  const [query, setQuery] = useState('');
+const AddSpotModal = ({ isOpen, onClose, onAdd, days, currentDayIndex }) => {
+  const [customData, setCustomData] = useState({ 
+    name: '', 
+    type: 'scenic', 
+    desc: '', 
+    time: '10:00',
+    dayIndex: currentDayIndex 
+  });
   const [searchResults, setSearchResults] = useState([]);
-  const [customData, setCustomData] = useState({ name: '', type: 'scenic', desc: '', time: '10:00' });
+  const [showDropdown, setShowDropdown] = useState(false);
 
   // Mock database for search
   const mockPlaces = [
@@ -101,47 +106,47 @@ const AddSpotModal = ({ isOpen, onClose, onAdd }) => {
   ];
 
   useEffect(() => {
-    if (query.trim()) {
+    if (customData.name.trim()) {
       const results = mockPlaces.filter(place => 
-        place.name.includes(query) || place.address.includes(query)
+        place.name.includes(customData.name) || place.address.includes(customData.name)
       );
       setSearchResults(results);
+      // setShowDropdown(true); // Removed to avoid re-opening after selection
     } else {
       setSearchResults([]);
     }
-  }, [query]);
+  }, [customData.name]);
 
   if (!isOpen) return null;
 
-  const handleConfirm = (place = null) => {
-    let newSpot;
-    if (place) {
-        newSpot = {
-            id: Date.now(),
-            time: "12:00", // Default time
-            title: place.name,
-            type: place.type,
-            status: "planned",
-            details: {
-              name: place.name,
-              desc: place.desc || place.address
-            }
-        };
-    } else {
-        newSpot = {
-          id: Date.now(),
-          time: customData.time || "12:00",
-          title: customData.name || query || "新行程节点",
-          type: customData.type,
-          status: "planned",
-          details: {
-            name: customData.name || query || "新行程节点",
-            desc: customData.desc || "用户自定义添加"
-          }
-        };
-    }
-    onAdd(newSpot);
+  const handleSelectPlace = (place) => {
+    setCustomData({
+      ...customData,
+      name: place.name,
+      type: place.type,
+      desc: place.desc || place.address
+    });
+    setShowDropdown(false);
+  };
+
+  const handleConfirm = () => {
+    if (!customData.name) return;
+
+    const newSpot = {
+      id: Date.now(),
+      time: customData.time || "12:00",
+      title: customData.name,
+      type: customData.type,
+      status: "planned",
+      details: {
+        name: customData.name,
+        desc: customData.desc || "用户自定义添加"
+      }
+    };
+    // Pass dayIndex along with the spot data
+    onAdd(newSpot, parseInt(customData.dayIndex));
     onClose();
+    setCustomData({ name: '', type: 'scenic', desc: '', time: '10:00', dayIndex: currentDayIndex });
   };
 
   return (
@@ -160,122 +165,89 @@ const AddSpotModal = ({ isOpen, onClose, onAdd }) => {
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
-          {['search', 'import', 'custom'].map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-                activeTab === tab ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'
-              }`}
-            >
-              {tab === 'search' && '搜索地点'}
-              {tab === 'import' && '智能导入'}
-              {tab === 'custom' && '自定义'}
-            </button>
-          ))}
-        </div>
-
         {/* Content */}
-        <div className="mb-6 min-h-[150px]">
-          {activeTab === 'search' && (
-            <div className="space-y-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <input 
-                  type="text" 
-                  placeholder="搜索景点、餐厅、酒店..." 
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 rounded-xl text-sm font-bold text-slate-800 border-none outline-none focus:ring-2 focus:ring-slate-200"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </div>
-              
-              {/* Search Results */}
-              {searchResults.length > 0 ? (
-                <div className="mt-4 space-y-2 max-h-[200px] overflow-y-auto">
-                   {searchResults.map((result, i) => (
-                      <div 
-                        key={i} 
-                        onClick={() => handleConfirm(result)}
-                        className="p-3 bg-slate-50 rounded-xl flex items-center justify-between active:bg-slate-100 cursor-pointer"
-                      >
-                         <div>
-                            <div className="font-bold text-slate-800 text-sm">{result.name}</div>
-                            <div className="text-[10px] text-slate-400">{result.address}</div>
-                         </div>
-                         <div className="text-[10px] font-bold px-2 py-1 bg-white rounded text-slate-500 border border-slate-100">
-                            {result.type === 'scenic' ? '景点' : result.type === 'food' ? '美食' : result.type === 'hotel' ? '酒店' : '交通'}
-                         </div>
-                      </div>
-                   ))}
-                </div>
-              ) : query && (
-                <div className="text-center text-xs text-slate-400 py-4">
-                  未找到相关地点，可尝试切换到“自定义”添加
-                </div>
-              )}
-              
-              {!query && (
-                <div className="text-center text-xs text-slate-400 py-4">
-                  输入关键词搜索地点
-                </div>
-              )}
-            </div>
-          )}
-
-          {activeTab === 'import' && (
-            <div className="space-y-4">
-              <textarea 
-                placeholder="粘贴小红书/抖音/携程笔记，AI自动解析行程..." 
-                className="w-full h-32 p-4 bg-slate-50 rounded-xl text-sm text-slate-800 border-none outline-none resize-none focus:ring-2 focus:ring-slate-200"
-              />
-            </div>
-          )}
-
-          {activeTab === 'custom' && (
-            <div className="space-y-3">
+        <div className="mb-6 space-y-3">
+            {/* Row 1: Type, Time, Day */}
+            <div className="flex gap-3">
+               <select 
+                  className="flex-1 px-4 py-3 bg-slate-50 rounded-xl text-sm font-bold text-slate-800 border-none outline-none appearance-none"
+                  value={customData.type}
+                  onChange={(e) => setCustomData({...customData, type: e.target.value})}
+               >
+                  <option value="scenic">景点</option>
+                  <option value="food">餐饮</option>
+                  <option value="hotel">住宿</option>
+                  <option value="transport">交通</option>
+                  <option value="custom">自定义活动</option>
+               </select>
                <input 
+                  type="time" 
+                  className="w-24 px-4 py-3 bg-slate-50 rounded-xl text-sm font-bold text-slate-800 border-none outline-none"
+                  value={customData.time}
+                  onChange={(e) => setCustomData({...customData, time: e.target.value})}
+               />
+               <select 
+                  className="flex-1 px-4 py-3 bg-slate-50 rounded-xl text-sm font-bold text-slate-800 border-none outline-none appearance-none"
+                  value={customData.dayIndex}
+                  onChange={(e) => setCustomData({...customData, dayIndex: e.target.value})}
+               >
+                  {days.map((day, index) => (
+                    <option key={index} value={index}>{day.dayLabel}</option>
+                  ))}
+               </select>
+            </div>
+
+            {/* Row 2: Name Input with Search Dropdown */}
+            <div className="relative">
+                <input 
                   type="text" 
                   placeholder="地点/活动名称" 
-                  className="w-full px-4 py-3 bg-slate-50 rounded-xl text-sm font-bold text-slate-800 border-none outline-none"
+                  className="w-full px-4 py-3 bg-slate-50 rounded-xl text-sm font-bold text-slate-800 border-none outline-none focus:ring-2 focus:ring-slate-200 transition-all"
                   value={customData.name}
-                  onChange={(e) => setCustomData({...customData, name: e.target.value})}
+                  onChange={(e) => {
+                    setCustomData({...customData, name: e.target.value});
+                    if (e.target.value.trim()) setShowDropdown(true);
+                    else setShowDropdown(false);
+                  }}
+                  onFocus={() => {
+                    if (customData.name && searchResults.length > 0) setShowDropdown(true);
+                  }}
                 />
-                <div className="flex gap-3">
-                   <select 
-                      className="flex-1 px-4 py-3 bg-slate-50 rounded-xl text-sm font-bold text-slate-800 border-none outline-none"
-                      value={customData.type}
-                      onChange={(e) => setCustomData({...customData, type: e.target.value})}
-                   >
-                      <option value="scenic">景点</option>
-                      <option value="food">餐饮</option>
-                      <option value="hotel">住宿</option>
-                      <option value="transport">交通</option>
-                      <option value="custom">自定义活动</option>
-                   </select>
-                   <input 
-                      type="time" 
-                      className="flex-1 px-4 py-3 bg-slate-50 rounded-xl text-sm font-bold text-slate-800 border-none outline-none"
-                      value={customData.time}
-                      onChange={(e) => setCustomData({...customData, time: e.target.value})}
-                   />
-                </div>
-                <input 
-                  type="text" 
-                  placeholder="备注说明 (选填)" 
-                  className="w-full px-4 py-3 bg-slate-50 rounded-xl text-sm text-slate-800 border-none outline-none"
-                  value={customData.desc}
-                  onChange={(e) => setCustomData({...customData, desc: e.target.value})}
-                />
+                
+                {/* Search Dropdown */}
+                {showDropdown && searchResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-100 max-h-[200px] overflow-y-auto z-20">
+                     {searchResults.map((result, i) => (
+                        <div 
+                          key={i} 
+                          onClick={() => handleSelectPlace(result)}
+                          className="p-3 hover:bg-slate-50 flex items-center justify-between cursor-pointer border-b border-slate-50 last:border-none"
+                        >
+                           <div>
+                              <div className="font-bold text-slate-800 text-sm">{result.name}</div>
+                              <div className="text-[10px] text-slate-400">{result.address}</div>
+                           </div>
+                           <div className="text-[10px] font-bold px-2 py-1 bg-slate-50 rounded text-slate-500">
+                              {result.type === 'scenic' ? '景点' : result.type === 'food' ? '美食' : result.type === 'hotel' ? '酒店' : '交通'}
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+                )}
             </div>
-          )}
+
+            <textarea 
+              placeholder="备注说明 (选填)" 
+              className="w-full px-4 py-3 bg-slate-50 rounded-xl text-sm text-slate-800 border-none outline-none resize-none h-24 focus:ring-2 focus:ring-slate-200 transition-all"
+              value={customData.desc}
+              onChange={(e) => setCustomData({...customData, desc: e.target.value})}
+            />
         </div>
 
         <button 
           onClick={handleConfirm}
-          className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-transform"
+          disabled={!customData.name}
+          className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:scale-100"
         >
           确认添加
         </button>
@@ -307,9 +279,57 @@ const TripDetail = ({ adoptedTrip }) => {
             highlights: "抵达贵阳 — 特色早餐 — 文昌阁 — 甲秀楼夜景",
             tips: "为您监控到今日进港航班流量较大，建议下机后直接使用下方「一键叫车」服务。",
             timeline: [
-              { time: "08:00", title: "航班抵达", type: "flight", status: "arrived", tips: "建议提前2小时到达机场。", details: { flightNo: "CZ3685", dep: "北京大兴", arr: "龙洞堡T2", depTime: "06:00", arrTime: "08:10", status: "飞行中", desc: "预计提前10分钟抵达" } },
-              { time: "09:30", title: "早餐·糯米饭", type: "food", status: "upcoming", tips: "这家店排队人较多。", image: getPlaceholder(400, 300, 'Breakfast'), details: { name: "六广门毛阿姨糯米饭", desc: "距离下个节点 2.5km" } },
-              { time: "14:00", title: "文昌阁", type: "scenic", status: "upcoming", tips: "阁楼内楼梯较陡。", image: getPlaceholder(400, 300, 'Attraction'), details: { name: "明代古建筑", desc: "游玩时长约 1.5 小时" } }
+              { 
+                  time: "08:00", 
+                  title: "航班抵达", 
+                  type: "flight", 
+                  status: "arrived", 
+                  tips: "建议提前2小时到达机场。", 
+                  details: { 
+                      flightNo: "CZ3685", 
+                      dep: "北京大兴", 
+                      arr: "龙洞堡T2", 
+                      depTime: "06:00", 
+                      arrTime: "08:10", 
+                      status: "飞行中", 
+                      desc: "预计提前10分钟抵达",
+                      punctuality: "95%"
+                  } 
+              },
+              { 
+                  time: "09:30", 
+                  title: "早餐·糯米饭", 
+                  type: "food", 
+                  status: "upcoming", 
+                  tips: "这家店排队人较多。", 
+                  image: getPlaceholder(400, 300, 'Breakfast'), 
+                  details: { 
+                      name: "六广门毛阿姨糯米饭", 
+                      desc: "距离下个节点 2.5km",
+                      cuisine: "贵阳小吃",
+                      price: "¥12/人",
+                      score: "4.8分",
+                      mustEat: "招牌糯米饭, 脆哨",
+                      avoid: "排队较久"
+                  } 
+              },
+              { 
+                  time: "14:00", 
+                  title: "文昌阁", 
+                  type: "scenic", 
+                  status: "upcoming", 
+                  tips: "阁楼内楼梯较陡。", 
+                  image: getPlaceholder(400, 300, 'Attraction'), 
+                  details: { 
+                      name: "文昌阁", 
+                      desc: "游玩时长约 1.5 小时",
+                      level: "3A",
+                      openTime: "09:00-18:00",
+                      price: "免费",
+                      reasons: "古城墙遗址，俯瞰南明河",
+                      photoSpot: "城墙转角处"
+                  } 
+              }
             ]
           },
           {
@@ -320,8 +340,40 @@ const TripDetail = ({ adoptedTrip }) => {
             highlights: "黔灵山公园 — 弘福寺 — 贵州省博物馆",
             tips: "今日有小雨，出行请记得携带雨具。",
             timeline: [
-              { time: "09:00", title: "黔灵山公园", type: "scenic", status: "planned", tips: "公园内猴子较多。", image: getPlaceholder(400, 300, 'Park'), details: { name: "黔南第一山", desc: "游玩时长约 3 小时" } },
-              { time: "12:30", title: "午餐·丝娃娃", type: "food", status: "planned", tips: "建议搭配酸汤食用。", image: getPlaceholder(400, 300, 'Lunch'), details: { name: "丝恋红汤丝娃娃", desc: "必吃榜餐厅" } }
+              { 
+                  time: "09:00", 
+                  title: "黔灵山公园", 
+                  type: "scenic", 
+                  status: "planned", 
+                  tips: "公园内猴子较多。", 
+                  image: getPlaceholder(400, 300, 'Park'), 
+                  details: { 
+                      name: "黔灵山公园", 
+                      desc: "游玩时长约 3 小时",
+                      level: "4A",
+                      openTime: "07:00-20:00",
+                      price: "¥5",
+                      reasons: "黔南第一山，性价比极高",
+                      photoSpot: "弘福寺观景台"
+                  } 
+              },
+              { 
+                  time: "12:30", 
+                  title: "午餐·丝娃娃", 
+                  type: "food", 
+                  status: "planned", 
+                  tips: "建议搭配酸汤食用。", 
+                  image: getPlaceholder(400, 300, 'Lunch'), 
+                  details: { 
+                      name: "丝恋红汤丝娃娃", 
+                      desc: "必吃榜餐厅",
+                      cuisine: "贵州菜",
+                      price: "¥60/人",
+                      score: "4.7分",
+                      mustEat: "红酸汤, 脆哨洋芋",
+                      avoid: "周末需提前取号"
+                  } 
+              }
             ]
           },
           {
@@ -332,8 +384,39 @@ const TripDetail = ({ adoptedTrip }) => {
             highlights: "青岩古镇 — 状元蹄 — 送机",
             tips: "古镇石板路较多，建议穿着舒适的鞋子。",
             timeline: [
-              { time: "10:00", title: "青岩古镇", type: "scenic", status: "planned", tips: "建议穿着舒适的运动鞋。", image: getPlaceholder(400, 300, 'Ancient Town'), details: { name: "四大古镇之一", desc: "游玩时长约 4 小时" } },
-              { time: "16:00", title: "前往机场", type: "transport", status: "planned", tips: "请检查随身物品。", image: null, details: { name: "送机服务", desc: "预计 45 分钟抵达机场" } }
+              { 
+                  time: "10:00", 
+                  title: "青岩古镇", 
+                  type: "scenic", 
+                  status: "planned", 
+                  tips: "建议穿着舒适的运动鞋。", 
+                  image: getPlaceholder(400, 300, 'Ancient Town'), 
+                  details: { 
+                      name: "青岩古镇", 
+                      desc: "游玩时长约 4 小时",
+                      level: "5A",
+                      openTime: "08:30-17:00",
+                      price: "¥10 (门票)",
+                      reasons: "四大古镇之一，建筑保存完好",
+                      photoSpot: "定广门城楼"
+                  } 
+              },
+              { 
+                  time: "16:00", 
+                  title: "前往机场", 
+                  type: "transport", 
+                  status: "planned", 
+                  tips: "请检查随身物品。", 
+                  image: null, 
+                  details: { 
+                      name: "送机服务", 
+                      desc: "预计 45 分钟抵达机场",
+                      flightNo: "专车",
+                      start: "青岩古镇",
+                      end: "龙洞堡机场",
+                      duration: "45m"
+                  } 
+              }
             ]
           }
         ]
@@ -390,12 +473,21 @@ const TripDetail = ({ adoptedTrip }) => {
     setTrip({ ...trip, itinerary: newItinerary });
   };
 
-  const handleAddSpot = (newSpot) => {
+  const handleAddSpot = (newSpot, dayIndex) => {
+     const targetDayIndex = dayIndex !== undefined ? dayIndex : selectedDayIndex;
      const newItinerary = [...trip.itinerary];
-     newItinerary[selectedDayIndex].timeline.push(newSpot);
+     newItinerary[targetDayIndex].timeline.push(newSpot);
      // Simple sort by time (optional, but good for UX)
-     newItinerary[selectedDayIndex].timeline.sort((a, b) => a.time.localeCompare(b.time));
+     newItinerary[targetDayIndex].timeline.sort((a, b) => a.time.localeCompare(b.time));
      setTrip({ ...trip, itinerary: newItinerary });
+  };
+
+  const handleDeleteNode = (nodeId) => {
+    const newItinerary = [...trip.itinerary];
+    newItinerary[selectedDayIndex].timeline = newItinerary[selectedDayIndex].timeline.filter(
+        node => (node.id || node.time + node.title) !== nodeId
+    );
+    setTrip({ ...trip, itinerary: newItinerary });
   };
 
   const handleAIPlanning = (start, end) => {
@@ -547,7 +639,7 @@ const TripDetail = ({ adoptedTrip }) => {
                                  </div>
 
                                  {/* Main Content */}
-                                 <div className="flex gap-4 mb-5">
+                                 <div className="flex gap-4 mb-3">
                                     {/* Left Image */}
                                     <div className="w-24 h-24 rounded-2xl bg-slate-100 shrink-0 overflow-hidden relative">
                                       {node.image ? (
@@ -560,15 +652,63 @@ const TripDetail = ({ adoptedTrip }) => {
                                     </div>
                                     
                                     <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                       <h3 className="text-xl font-bold text-slate-800 mb-1 truncate">{node.details.name || node.title}</h3>
-                                       <p className="text-xs text-slate-500 mb-2 truncate">{node.details.desc || '暂无描述'}</p>
-                                       <div className="flex items-center gap-2">
-                                          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded font-medium">计划中</span>
-                                          {node.type === 'scenic' && (
-                                              <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-[10px] rounded font-bold">建议游玩 2h</span>
+                                       <div className="flex items-center gap-2 mb-1">
+                                          <h3 className="text-xl font-bold text-slate-800 truncate">{node.details.name || node.title}</h3>
+                                          {/* Type specific badges */}
+                                          {node.type === 'scenic' && node.details.level && (
+                                              <span className="px-1.5 py-0.5 bg-orange-100 text-orange-600 text-[10px] font-bold rounded">{node.details.level}</span>
+                                          )}
+                                          {node.type === 'food' && node.details.score && (
+                                              <span className="px-1.5 py-0.5 bg-red-50 text-red-600 text-[10px] font-bold rounded flex items-center gap-0.5">
+                                                  ★ {node.details.score}
+                                              </span>
                                           )}
                                        </div>
+                                       
+                                       <p className="text-xs text-slate-500 mb-2 truncate">{node.details.desc || '暂无描述'}</p>
+                                       
+                                       {/* Rich Info Grid */}
+                                       <div className="grid grid-cols-2 gap-y-1 gap-x-2">
+                                           {node.type === 'scenic' && (
+                                               <>
+                                                   {node.details.price && <div className="text-[10px] text-slate-500 truncate"><span className="font-bold text-slate-700">门票:</span> {node.details.price}</div>}
+                                                   {node.details.openTime && <div className="text-[10px] text-slate-500 truncate"><span className="font-bold text-slate-700">开放:</span> {node.details.openTime}</div>}
+                                               </>
+                                           )}
+                                           {node.type === 'food' && (
+                                               <>
+                                                   {node.details.cuisine && <div className="text-[10px] text-slate-500 truncate"><span className="font-bold text-slate-700">菜系:</span> {node.details.cuisine}</div>}
+                                                   {node.details.price && <div className="text-[10px] text-slate-500 truncate"><span className="font-bold text-slate-700">人均:</span> {node.details.price}</div>}
+                                               </>
+                                           )}
+                                            {node.type === 'transport' && node.details.duration && (
+                                               <div className="text-[10px] text-slate-500 col-span-2 truncate"><span className="font-bold text-slate-700">耗时:</span> {node.details.duration}</div>
+                                           )}
+                                       </div>
                                     </div>
+                                 </div>
+
+                                 {/* AI Recommendations - Full Width Row */}
+                                 <div className="flex flex-wrap gap-2 mb-4">
+                                    <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded font-medium">计划中</span>
+                                    
+                                    {node.type === 'scenic' && node.details.reasons && (
+                                        <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-[10px] rounded font-bold border border-purple-100">
+                                            推荐: {node.details.reasons}
+                                        </span>
+                                    )}
+                                    
+                                    {node.type === 'food' && node.details.mustEat && (
+                                        <span className="px-2 py-0.5 bg-orange-50 text-orange-600 text-[10px] rounded font-bold border border-orange-100">
+                                            必吃: {node.details.mustEat}
+                                        </span>
+                                    )}
+
+                                    {node.type === 'scenic' && node.details.photoSpot && (
+                                        <span className="px-2 py-0.5 bg-pink-50 text-pink-600 text-[10px] rounded font-bold border border-pink-100">
+                                            机位: {node.details.photoSpot}
+                                        </span>
+                                    )}
                                  </div>
 
                                  {/* Huang Xiaoxi TIPS */}
@@ -719,7 +859,7 @@ const TripDetail = ({ adoptedTrip }) => {
                           className="mt-1 text-sm font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-md border-none outline-none w-auto inline-block"
                        />
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-purple-50 hover:text-purple-500 transition-colors" onClick={() => setIsAIPlanningOpen(true)}>
+                    <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-purple-50 hover:text-purple-500 transition-colors hidden" onClick={() => setIsAIPlanningOpen(true)}>
                        <Wand2 size={20} />
                     </div>
                  </div>
@@ -737,9 +877,19 @@ const TripDetail = ({ adoptedTrip }) => {
                        const agent = getAgentInfo(node.type);
                        
                        return (
-                         <Reorder.Item key={itemKey} value={node} className="relative mb-6">
+                         <Reorder.Item key={itemKey} value={node} className="relative mb-6 group">
+                            {/* Delete Button Layer */}
+                            <div className="absolute right-0 top-[40px] bottom-0 w-20 flex items-center justify-center bg-red-100 rounded-r-[2rem] z-0">
+                                <button 
+                                    onClick={() => handleDeleteNode(itemKey)}
+                                    className="w-full h-full flex items-center justify-center text-red-600 hover:bg-red-200 rounded-r-[2rem] transition-colors"
+                                >
+                                    <Trash2 size={20} />
+                                </button>
+                            </div>
+
                             {/* Time Display */}
-                            <div className="flex items-center justify-between mb-3 px-1">
+                            <div className="flex items-center justify-between mb-3 px-1 relative z-20 pointer-events-none">
                                <div className="flex items-center gap-3">
                                    <span className="text-xl font-bold text-slate-400 font-mono tracking-wider">{node.time}</span>
                                    <div className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 ${agent.bgColor} ${agent.color} border ${agent.borderColor}`}>
@@ -750,7 +900,13 @@ const TripDetail = ({ adoptedTrip }) => {
                                <span className="text-sm font-bold text-slate-800">{node.type === 'hotel' ? '入住酒店' : node.type === 'scenic' ? '游玩景点' : node.title}</span>
                             </div>
 
-                            <div className="bg-white rounded-[2rem] p-4 shadow-sm border border-slate-100 overflow-hidden relative">
+                            <motion.div 
+                               drag="x"
+                               dragConstraints={{ left: -80, right: 0 }}
+                               dragElastic={0.1}
+                               className="bg-white rounded-[2rem] p-4 shadow-sm border border-slate-100 overflow-hidden relative z-10"
+                               style={{ touchAction: "pan-y" }}
+                            >
                                {/* Agent Header */}
                                <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-50">
                                   <div className="flex items-center gap-2">
@@ -887,7 +1043,7 @@ const TripDetail = ({ adoptedTrip }) => {
                                      </button>
                                    )}
                                </div>
-                            </div>
+                            </motion.div>
                          </Reorder.Item>
                        );
                     })}
@@ -913,6 +1069,8 @@ const TripDetail = ({ adoptedTrip }) => {
             isOpen={isAddSpotOpen} 
             onClose={() => setIsAddSpotOpen(false)} 
             onAdd={handleAddSpot}
+            days={trip.itinerary}
+            currentDayIndex={selectedDayIndex}
           />
         )}
       </AnimatePresence>
