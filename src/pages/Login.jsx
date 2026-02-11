@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Eye, EyeOff, Smartphone, Lock, ShieldCheck, ChevronRight, Loader2 } from 'lucide-react';
-import { getPlaceholder } from '../utils/imageUtils';
+import { Loader2, MessageCircle, Check } from 'lucide-react';
+import TuoSaiImage from '../image/托腮_1.png';
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [step, setStep] = useState('landing'); // landing, login, forgot
-  const [loginMethod, setLoginMethod] = useState('code'); // code, password
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  
-  // Form States
-  const [mobile, setMobile] = useState('');
-  const [password, setPassword] = useState('');
-  const [code, setCode] = useState('');
+  const [isPrivacyAgreed, setIsPrivacyAgreed] = useState(false);
+  const [shake, setShake] = useState(false);
   
   const from = location.state?.from?.pathname || '/';
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const handleWechatLogin = () => {
+    if (!isPrivacyAgreed) {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      return;
+    }
+
     setIsLoading(true);
     
-    // Simulate API call
+    // Simulate WeChat Authorization
     setTimeout(() => {
       setIsLoading(false);
       onLogin();
@@ -31,274 +29,80 @@ const Login = ({ onLogin }) => {
     }, 1500);
   };
 
-  const handleForgotSubmit = (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      alert('密码重置成功，请重新登录');
-      setStep('login');
-    }, 1500);
-  };
-
-  // Background Video
-  // const bgVideo = "/video/background.mp4"; // Local video file
-  const bgVideo = `${import.meta.env.BASE_URL}video/guizhou_seasons.mp4`;
-
   return (
-    <div className="h-full w-full relative bg-slate-900 overflow-hidden font-sans text-white">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          className="w-full h-full object-cover opacity-80"
-        >
-          <source src={bgVideo} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/90" />
+    <div className="h-full w-full relative bg-white overflow-hidden font-sans flex flex-col items-center justify-between py-12 px-6">
+      
+      {/* Header / Title */}
+      <div className="w-full pt-12 flex flex-col items-center z-10">
+         <div className="relative">
+            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-800 to-slate-600 text-center leading-tight tracking-tight drop-shadow-sm font-serif">
+              <span className="font-sans font-light text-2xl text-slate-400 block mb-2 tracking-widest">WELCOME</span>
+              欢迎使用
+              <br />
+              <span className="text-5xl mt-2 relative inline-block bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent filter drop-shadow-md">
+                多彩黄小西
+                <svg className="absolute -bottom-3 left-0 w-full h-4 text-yellow-300 -z-10 opacity-80" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M0 5 Q 50 15 100 5" stroke="currentColor" strokeWidth="6" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
+            </h1>
+         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        {step === 'landing' && (
-          <motion.div 
-            key="landing"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="relative z-10 h-full flex flex-col justify-end p-8 pb-16"
-          >
-            <div className="mb-12">
-              <div className="flex items-center gap-2 mb-4">
-                 <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center">
-                    <span className="font-bold text-white">黄</span>
-                 </div>
-                 <span className="text-xl font-bold tracking-wide">多彩黄小西</span>
-              </div>
-              <h1 className="text-4xl font-light leading-tight mb-4">
-                游贵州，找小西 <br/>
-                <span className="text-cyan-400 font-bold">全程贴心陪伴 <br/> 你的全域向导</span>
-              </h1>
-              <p className="text-white/60 text-sm leading-relaxed max-w-[80%]">
-                不管去哪儿，不管玩啥，有事儿您说话，黄小西一直都在。
-              </p>
-            </div>
+      {/* Character Image */}
+      <div className="flex-1 flex items-center justify-center w-full max-w-sm relative z-0">
+          <div className="relative w-full aspect-square bg-cyan-50 rounded-[3rem] rotate-3 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden">
+             <div className="absolute top-4 left-4 text-cyan-200">
+                <MessageCircle size={32} />
+             </div>
+             <div className="absolute bottom-12 right-4 text-cyan-200 rotate-12">
+                <MessageCircle size={24} />
+             </div>
+             <img 
+               src={TuoSaiImage} 
+               alt="黄小西" 
+               className="w-[90%] h-[90%] object-contain -rotate-3 mt-4"
+             />
+             
+             {/* Decorative Elements */}
+             <div className="absolute top-1/2 -left-4 text-cyan-400 font-bold text-xl rotate-[-15deg]">?!</div>
+             <div className="absolute bottom-10 -right-2 text-cyan-400 font-bold text-xl rotate-[15deg]">✓</div>
+          </div>
+          
+          {/* Background Blobs */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+          <div className="absolute -bottom-8 -left-4 w-64 h-64 bg-yellow-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+      </div>
 
-            <button 
-              onClick={() => setStep('login')}
-              className="group relative h-14 bg-white/10 backdrop-blur-md border border-white/20 rounded-full overflow-hidden flex items-center pr-2 pl-6"
-            >
-              <span className="flex-1 text-left font-bold text-sm tracking-wide">立即开启</span>
-              <div className="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center group-active:scale-95 transition-transform">
-                <ChevronRight size={20} className="text-white" />
-              </div>
-            </button>
-          </motion.div>
-        )}
-
-        {step === 'login' && (
-          <motion.div 
-            key="login"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="relative z-10 h-full flex flex-col"
-          >
-            <div className="p-4 pt-12">
-              <button 
-                onClick={() => setStep('landing')}
-                className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10"
-              >
-                <ArrowLeft size={20} />
-              </button>
-            </div>
-
-            <div className="flex-1 flex flex-col justify-end p-8 pb-10">
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 shadow-2xl">
-                <h2 className="text-2xl font-bold mb-6 text-center">欢迎回来</h2>
-                
-                {/* Tabs */}
-                <div className="flex p-1 bg-black/20 rounded-xl mb-6">
-                  <button 
-                    onClick={() => setLoginMethod('code')}
-                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${loginMethod === 'code' ? 'bg-white text-slate-900 shadow-sm' : 'text-white/60'}`}
-                  >
-                    验证码登录
-                  </button>
-                  <button 
-                    onClick={() => setLoginMethod('password')}
-                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${loginMethod === 'password' ? 'bg-white text-slate-900 shadow-sm' : 'text-white/60'}`}
-                  >
-                    密码登录
-                  </button>
-                </div>
-
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-white/60 pl-3">手机号</label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
-                        <Smartphone size={18} />
-                      </div>
-                      <input 
-                        type="tel" 
-                        value={mobile}
-                        onChange={(e) => setMobile(e.target.value)}
-                        placeholder="请输入手机号"
-                        className="w-full h-12 bg-black/20 border border-white/10 rounded-xl px-12 text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  {loginMethod === 'code' ? (
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-white/60 pl-3">验证码</label>
-                      <div className="relative">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
-                          <ShieldCheck size={18} />
-                        </div>
-                        <input 
-                          type="text" 
-                          value={code}
-                          onChange={(e) => setCode(e.target.value)}
-                          placeholder="请输入验证码"
-                          className="w-full h-12 bg-black/20 border border-white/10 rounded-xl px-12 text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                        />
-                        <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold bg-white/10 px-2 py-1 rounded-md text-cyan-400 hover:bg-white/20 transition-colors">
-                          获取验证码
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-white/60 pl-3">密码</label>
-                      <div className="relative">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
-                          <Lock size={18} />
-                        </div>
-                        <input 
-                          type={showPassword ? "text" : "password"} 
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder="请输入密码"
-                          className="w-full h-12 bg-black/20 border border-white/10 rounded-xl px-12 text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                        />
-                        <button 
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
-                        >
-                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                        </button>
-                      </div>
-                      <div className="flex justify-end pt-1">
-                        <button 
-                          type="button"
-                          onClick={() => setStep('forgot')}
-                          className="text-[10px] text-white/50 hover:text-white transition-colors"
-                        >
-                          忘记密码?
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  <button 
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full h-12 bg-cyan-500 hover:bg-cyan-400 active:scale-95 rounded-xl text-white font-bold text-sm shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center mt-4"
-                  >
-                    {isLoading ? <Loader2 size={18} className="animate-spin" /> : '登 录'}
-                  </button>
-                </form>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {step === 'forgot' && (
-          <motion.div 
-            key="forgot"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="relative z-10 h-full flex flex-col"
-          >
-            <div className="p-4 pt-12">
-              <button 
-                onClick={() => setStep('login')}
-                className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10"
-              >
-                <ArrowLeft size={20} />
-              </button>
-            </div>
-
-            <div className="flex-1 flex flex-col justify-end p-8 pb-10">
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 shadow-2xl">
-                <h2 className="text-2xl font-bold mb-2 text-center">重置密码</h2>
-                <p className="text-xs text-center text-white/50 mb-6">请输入手机号和验证码以重置您的密码</p>
-                
-                <form onSubmit={handleForgotSubmit} className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-white/60 pl-3">手机号</label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
-                        <Smartphone size={18} />
-                      </div>
-                      <input 
-                        type="tel" 
-                        placeholder="请输入手机号"
-                        className="w-full h-12 bg-black/20 border border-white/10 rounded-xl px-12 text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-white/60 pl-3">验证码</label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
-                        <ShieldCheck size={18} />
-                      </div>
-                      <input 
-                        type="text" 
-                        placeholder="请输入验证码"
-                        className="w-full h-12 bg-black/20 border border-white/10 rounded-xl px-12 text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                      />
-                      <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold bg-white/10 px-2 py-1 rounded-md text-cyan-400 hover:bg-white/20 transition-colors">
-                        获取验证码
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-white/60 pl-3">新密码</label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
-                        <Lock size={18} />
-                      </div>
-                      <input 
-                        type="password" 
-                        placeholder="请输入新密码"
-                        className="w-full h-12 bg-black/20 border border-white/10 rounded-xl px-12 text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <button 
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full h-12 bg-cyan-500 hover:bg-cyan-400 active:scale-95 rounded-xl text-white font-bold text-sm shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center mt-4"
-                  >
-                    {isLoading ? <Loader2 size={18} className="animate-spin" /> : '重 置'}
-                  </button>
-                </form>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Login Button */}
+      <div className="w-full max-w-xs space-y-4 z-10 pb-8">
+        <button 
+          onClick={handleWechatLogin}
+          disabled={isLoading}
+          className="w-full h-14 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 active:scale-95 rounded-full text-white font-bold text-lg shadow-lg shadow-emerald-200 transition-all flex items-center justify-center relative overflow-hidden"
+        >
+          {isLoading ? (
+             <div className="flex items-center gap-2">
+               <Loader2 size={24} className="animate-spin" />
+               <span className="text-sm">授权中...</span>
+             </div>
+          ) : (
+             <span>微信一键登录</span>
+          )}
+        </button>
+        
+        <div className={`flex items-center justify-center gap-2 text-[10px] text-slate-400 ${shake ? 'animate-shake' : ''}`}>
+           <div 
+             onClick={() => setIsPrivacyAgreed(!isPrivacyAgreed)}
+             className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors cursor-pointer shrink-0 ${isPrivacyAgreed ? 'bg-cyan-500 border-cyan-500' : 'border-slate-300 bg-white'}`}
+           >
+              {isPrivacyAgreed && <Check size={10} className="text-white" />}
+           </div>
+           <p onClick={() => setIsPrivacyAgreed(!isPrivacyAgreed)} className="cursor-pointer">
+             点击登录即表示同意《用户协议》和《隐私政策》
+           </p>
+        </div>
+      </div>
     </div>
   );
 };

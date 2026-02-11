@@ -396,7 +396,10 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                     exit={{ opacity: 0, x: 20 }}
                     className="absolute right-0 top-3 left-[60px] bottom-6 py-2"
                 >
-                    <div className="bg-white/95 backdrop-blur-xl rounded-[1.5rem] p-3 pl-8 shadow-2xl border border-slate-100 h-full flex flex-col relative overflow-hidden">
+                    <div 
+                        className="bg-white/95 backdrop-blur-xl rounded-[1.5rem] p-3 pl-8 shadow-2xl border border-slate-100 h-full flex flex-col relative overflow-hidden cursor-pointer"
+                        onClick={() => navigate('/trip')}
+                    >
                         {/* Header: Title + Status */}
                         <div className="flex items-center justify-between mb-2 relative z-10 pr-6">
                              <div className="flex items-center gap-2 min-w-0">
@@ -443,7 +446,10 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
 
                         {/* Close Button */}
                         <button 
-                            onClick={() => setIsTripExpanded(false)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsTripExpanded(false);
+                            }}
                             className="absolute top-2 right-2 w-6 h-6 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 z-20 active:scale-90"
                         >
                             <X size={12} />

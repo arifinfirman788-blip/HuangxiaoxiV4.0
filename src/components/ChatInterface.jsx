@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Send, Mic, Plane, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, Star, Info, Car, Camera, Hotel, Loader2, Wand2, RefreshCcw, ArrowRight, Bed, MapPin, X, ZoomIn, ZoomOut, MessageSquare, Phone, BadgeCheck, MoreHorizontal, MessageCircle } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { ArrowLeft, Send, Mic, Plane, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, ChevronRight, Star, Info, Car, Camera, Hotel, Loader2, Wand2, RefreshCcw, ArrowRight, Bed, MapPin, X, ZoomIn, ZoomOut, MessageSquare, Phone, BadgeCheck, MoreHorizontal, MessageCircle } from 'lucide-react';
 import TuoSaiImage from '../image/托腮_1.png';
 import { agents as availableAgents } from '../data/agents';
 import { getPlaceholder } from '../utils/imageUtils';
@@ -774,6 +776,32 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
             }
           },
           {
+            id: 'lunch-1',
+            time: '12:30',
+            title: '午餐·酸汤鱼',
+            type: 'food',
+            status: 'upcoming',
+            tips: "酸汤鱼是贵州特色，建议搭配糊辣椒蘸水。",
+            image: getPlaceholder(200, 200, 'Food'),
+            details: {
+              name: '老凯里酸汤鱼',
+              desc: '人均 ¥80'
+            }
+          },
+          {
+            id: 'attr-2',
+            time: '14:30',
+            title: '甲秀楼',
+            type: 'scenic',
+            status: 'upcoming',
+            tips: "贵阳地标建筑，夜景非常漂亮。",
+            image: getPlaceholder(400, 300, 'Scenic'),
+            details: {
+              name: '甲秀楼',
+              desc: '建议游览时长 1h'
+            }
+          },
+          {
             id: 'hotel-1',
             time: '18:30',
             title: '住宿·桔子水晶',
@@ -788,7 +816,147 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
           }
         ]
       },
-      // ... (keeping other days same as original but shortened for brevity if needed, or assume full data)
+      {
+        date: "06.07",
+        dayLabel: "Day 2",
+        tag: "文化之旅",
+        weather: { temp: "24°C", desc: "晴" },
+        highlights: "青岩古镇 — 特色猪脚 — 花溪夜郎谷",
+        tips: "古镇石板路较多，建议穿舒适的平底鞋。",
+        timeline: [
+          {
+            id: 'breakfast-2',
+            time: '09:00',
+            title: '早餐·肠旺面',
+            type: 'food',
+            status: 'upcoming',
+            tips: "金牌罗记肠旺面，汤鲜味美。",
+            image: getPlaceholder(200, 200, 'Breakfast'),
+            details: {
+              name: '金牌罗记肠旺面',
+              desc: '人均 ¥15'
+            }
+          },
+          {
+            id: 'attr-3',
+            time: '10:30',
+            title: '青岩古镇',
+            type: 'scenic',
+            status: 'upcoming',
+            tips: "明清风格古镇，推荐品尝状元蹄。",
+            image: getPlaceholder(400, 300, 'AncientTown'),
+            details: {
+              name: '青岩古镇',
+              desc: '建议游览时长 3h'
+            }
+          },
+          {
+            id: 'lunch-2',
+            time: '13:00',
+            title: '午餐·青岩猪脚',
+            type: 'food',
+            status: 'upcoming',
+            tips: "软糯入味，肥而不腻。",
+            image: getPlaceholder(200, 200, 'Food'),
+            details: {
+              name: '王万妈卤猪脚',
+              desc: '人均 ¥45'
+            }
+          },
+          {
+            id: 'attr-4',
+            time: '15:30',
+            title: '花溪夜郎谷',
+            type: 'scenic',
+            status: 'upcoming',
+            tips: "石头城堡，独特的艺术风格。",
+            image: getPlaceholder(400, 300, 'Scenic'),
+            details: {
+              name: '夜郎谷',
+              desc: '建议游览时长 2h'
+            }
+          },
+          {
+            id: 'hotel-2',
+            time: '19:00',
+            title: '住宿·花溪迎宾馆',
+            type: 'hotel',
+            status: 'upcoming',
+            tips: "环境清幽，毗邻花溪公园。",
+            image: getPlaceholder(400, 300, 'Hotel'),
+            details: {
+              name: '花溪迎宾馆',
+              desc: '评分 4.8'
+            }
+          }
+        ]
+      },
+      {
+        date: "06.08",
+        dayLabel: "Day 3",
+        tag: "自然与返程",
+        weather: { temp: "23°C", desc: "阴" },
+        highlights: "黔灵山公园 — 丝娃娃 — 返程",
+        tips: "公园内有野生猕猴，请注意保管好个人物品。",
+        timeline: [
+          {
+            id: 'attr-5',
+            time: '09:00',
+            title: '黔灵山公园',
+            type: 'scenic',
+            status: 'upcoming',
+            tips: "早起可以看熊猫，还可以去弘福寺祈福。",
+            image: getPlaceholder(400, 300, 'Park'),
+            details: {
+              name: '黔灵山公园',
+              desc: '建议游览时长 2.5h'
+            }
+          },
+          {
+            id: 'lunch-3',
+            time: '12:00',
+            title: '午餐·丝娃娃',
+            type: 'food',
+            status: 'upcoming',
+            tips: "各种素菜丝包在小面皮里，注入酸汤，口感丰富。",
+            image: getPlaceholder(200, 200, 'Food'),
+            details: {
+              name: '丝恋红汤丝娃娃',
+              desc: '人均 ¥40'
+            }
+          },
+          {
+            id: 'transport-2',
+            time: '14:30',
+            title: '前往机场',
+            type: 'transport',
+            status: 'upcoming',
+            tips: "建议提前预约送机服务。",
+            image: getPlaceholder(400, 300, 'Car'),
+            details: {
+              name: '专车送机',
+              desc: '预计40分钟抵达'
+            }
+          },
+          {
+            id: 'flight-2',
+            time: '17:00',
+            title: '返程航班',
+            type: 'flight',
+            status: 'upcoming',
+            tips: "祝您旅途愉快，期待下次相遇。",
+            details: {
+              flightNo: 'CZ3686',
+              dep: '龙洞堡T2',
+              arr: '北京大兴',
+              depTime: '17:00',
+              arrTime: '19:40',
+              status: '计划',
+              desc: "准点率 95%"
+            }
+          }
+        ]
+      }
     ]
   };
 
@@ -2007,71 +2175,50 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
 
       if (!activeAgent) {
           setTimeout(() => {
+            const serviceAgents = [
+                {
+                    id: 301,
+                    name: '出行调度智能体',
+                    desc: '提供专车接送、包车服务',
+                    avatar: CarAvatar,
+                    type: 'enterprise',
+                    role: 'transport',
+                    rating: 4.9,
+                    details: { name: '出行调度智能体', desc: '专属司机' },
+                    color: 'blue'
+                },
+                {
+                    id: 102,
+                    name: '金牌导游小张',
+                    desc: '十年贵州通，带你玩转地道贵州',
+                    avatar: GuideAvatar,
+                    type: 'personal',
+                    role: 'scenic',
+                    rating: 4.8,
+                    details: { name: '金牌导游小张', desc: '金牌地陪' },
+                    color: 'green'
+                },
+                {
+                    id: 202,
+                    name: '美食达人王阿姨',
+                    desc: '深巷美食挖掘机，跟着吃不踩雷',
+                    avatar: WangAyiAvatar,
+                    type: 'personal',
+                    role: 'food',
+                    rating: 4.9,
+                    details: { name: '美食达人王阿姨', desc: '美食达人' },
+                    color: 'orange'
+                }
+            ];
+
             const cardMsg = {
               id: Date.now() + 2,
               sender: 'agent',
               type: 'itinerary',
+              recommendations: serviceAgents,
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
             dispatchAiResponse(cardMsg);
-
-            // Follow-up with service recommendation
-            setTimeout(() => {
-                const followUpMsg = {
-                    id: Date.now() + 3,
-                    sender: 'agent',
-                    text: '为了让您的行程更顺畅，我为您精选了以下配套服务智能体，您可以直接联系他们安排细节。',
-                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                };
-                dispatchAiResponse(followUpMsg);
-
-                const serviceAgents = [
-                    {
-                        id: 301,
-                        name: '出行调度智能体',
-                        desc: '提供专车接送、包车服务',
-                        avatar: CarAvatar,
-                        type: 'enterprise',
-                        role: 'transport',
-                        rating: 4.9,
-                        details: { name: '出行调度智能体', desc: '专属司机' },
-                        color: 'blue'
-                    },
-                    {
-                        id: 102,
-                        name: '金牌导游小张',
-                        desc: '十年贵州通，带你玩转地道贵州',
-                        avatar: GuideAvatar,
-                        type: 'personal',
-                        role: 'scenic',
-                        rating: 4.8,
-                        details: { name: '金牌导游小张', desc: '金牌地陪' },
-                        color: 'green'
-                    },
-                    {
-                        id: 202,
-                        name: '美食达人王阿姨',
-                        desc: '深巷美食挖掘机，跟着吃不踩雷',
-                        avatar: WangAyiAvatar,
-                        type: 'personal',
-                        role: 'food',
-                        rating: 4.9,
-                        details: { name: '美食达人王阿姨', desc: '美食达人' },
-                        color: 'orange'
-                    }
-                ];
-
-                const recMsg = {
-                    id: Date.now() + 4,
-                    sender: 'agent',
-                    type: 'agent_recommendation',
-                    title: '行程配套服务推荐',
-                    agents: serviceAgents,
-                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                };
-                dispatchAiResponse(recMsg);
-            }, 1000);
-
           }, 600);
       }
     }, 1500);
@@ -2152,7 +2299,26 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
             <div className={`max-w-[85%] space-y-1 ${msg.sender === 'user' ? 'items-end flex flex-col' : ''}`}>
               {msg.type === 'itinerary' ? (
                 <div className="w-full min-w-[300px]">
-                  <ItineraryCard onAdopt={handleAdopt} tripData={currentTrip} onViewImage={setViewingImage} />
+                  <ItineraryCard 
+                    onAdopt={handleAdopt} 
+                    tripData={currentTrip} 
+                    onViewImage={setViewingImage}
+                    recommendations={msg.recommendations}
+                    onConnectAgent={(agent) => {
+                        if (onConnectAgent) onConnectAgent(agent);
+                        
+                        setTimeout(() => {
+                           const connectedMsg = {
+                               id: Date.now(),
+                               sender: 'agent',
+                               text: `已为您成功接入${agent.name}，现在您可以直接与它对话了。`,
+                               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                           };
+                           setMessages(prev => [...prev, connectedMsg]);
+                           setActiveAgent(agent);
+                        }, 1500);
+                    }}
+                  />
                 </div>
               ) : msg.type === 'service_card' ? (
                 <div className="w-full min-w-[300px]">
@@ -2453,10 +2619,11 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
   );
 };
 
-const ItineraryCard = ({ onAdopt, tripData, onViewImage }) => {
+const ItineraryCard = ({ onAdopt, tripData, onViewImage, recommendations, onConnectAgent }) => {
   const [activeDay, setActiveDay] = useState(1);
   const [isBudgetExpanded, setIsBudgetExpanded] = useState(false);
   const [isAdopted, setIsAdopted] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleAdoptClick = () => {
     setIsAdopted(true);
@@ -2464,6 +2631,208 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage }) => {
   };
 
   if (!tripData) return null;
+
+  if (!isExpanded) {
+    const previewImages = tripData.itinerary
+      .flatMap(day => day.timeline)
+      .filter(item => item.image)
+      .slice(0, 3)
+      .map(item => item.image);
+
+    const tripOverviewMarkdown = `
+### 🌄 ${tripData.title}
+
+#### **📅 第1天：贵阳→西江千户苗寨（沉浸式苗族文化体验）**
+**🚗 交通**：13:00从贵阳自驾出发（2.5小时），沿途欣赏黔东南的青山绿水。
+**🏞 景点**：
+- **15:30-20:30 西江千户苗寨**（游玩5小时）
+🌟 **亮点**：全球最大苗族聚居地！层层叠叠的吊脚楼铺满山坡，傍晚万家灯火亮起时宛如星空坠落人间。建议穿苗族服饰拍照，参与拦门酒仪式，感受高山流水的热情敬酒。
+![西江千户苗寨](https://images.weserv.nl/?url=images.unsplash.com/photo-1558230559-0590892c57e8&w=800&h=600&fit=crop)
+
+**🍜 美食推荐**：
+- **苗家糍粑肉**（咸香软糯，苗家待客必备）
+- **苗王鱼**（酸辣鲜香，用秘制红酸汤炖煮，超开胃！）
+
+**🏨 酒店推荐**：
+**云隐仙居·陌野高空全景美宿(四号风雨桥博物馆店)**
+👉 推窗即见苗寨全景，位置靠近博物馆，夜观灯火超方便！
+
+---
+
+#### **📅 第2天：黔东南→贵阳（艺术与自然的碰撞）**
+**🌅 上午**：
+- **8:30-10:30** 自驾至**红飘带艺术馆**（2小时车程）
+- **10:30-12:30 红飘带艺术馆**（游玩2小时）
+🎨 **亮点**：巨型红色飘带建筑盘旋山间，拍照极出片！馆内展示贵州长征文化，光影互动体验超震撼。
+![红飘带艺术馆](https://images.weserv.nl/?url=images.unsplash.com/photo-1599571233056-11f486414704&w=800&h=600&fit=crop)
+
+**🍜 午餐**：途经贵阳可尝试**豆米火锅**（豆香浓郁，麻辣汤底涮野菜绝配！）
+
+**🌿 下午**：
+- **13:00-15:00 黔灵山公园**（游玩2小时）
+🐒 **亮点**：与野生猕猴互动，登瞰筑亭俯瞰贵阳全景，弘福寺香火缭绕求个平安符~
+- **15:30-17:30 青岩古镇**（游玩2小时）
+🏮 **亮点**：600年军事古镇！爬城墙、钻背街小巷，推荐试试**玫瑰糖**和**卤猪脚**。
+![青岩古镇](https://images.weserv.nl/?url=images.unsplash.com/photo-1543152648-933e08f5d05e&w=800&h=600&fit=crop)
+
+**🍜 美食推荐**：
+- **青岩糕粑稀饭**（清甜软糯，用古镇井水熬制！）
+
+**🏨 酒店推荐**：
+**新状元时光民宿(青岩古镇店)**
+👉 明清风格小院，步行3分钟到古镇核心区，晚上还能听打更声！
+
+---
+
+#### **📅 第3天：贵阳→黄果树瀑布→返程（大自然的终极震撼）**
+**💦 全天亮点**：
+- **8:30-10:00** 自驾至**黄果树瀑布**（1.5小时）
+- **10:00-15:00 黄果树瀑布**（游玩5小时）
+🌊 **必玩**：
+1. **大瀑布**（近距离感受“银河落九天”的水雾扑面）
+2. **陡坡塘**（86版《西游记》取景地，彩虹常现！）
+3. **天星桥**（水上石林+银链坠潭瀑布，徒步探险超有趣）
+📌 **提示**：穿防滑鞋，带雨衣！
+![黄果树瀑布](https://images.weserv.nl/?url=images.unsplash.com/photo-1463695973559-94b3c95eb73e&w=800&h=600&fit=crop)
+
+**🚗 返程**：15:00自驾回贵阳（1.5小时），结束行程。
+
+---
+
+### **💰 费用总览（1人）**
+| **项目** | **费用（元）** |
+|----------------|---------------|
+| 车费（油费） | 502 |
+| 住宿（2晚） | 463 |
+| 门票 | 260 |
+| 餐饮（3天） | 300 |
+| **合计** | **1525** |
+
+🌟 **小贴士**：贵州多山路，自驾注意安全；景区内步行多，建议轻装出行！
+    `;
+
+    return (
+      <div className="space-y-3">
+        <div className="p-4 bg-white rounded-2xl rounded-tl-none border border-slate-100 shadow-sm text-sm text-slate-700 leading-relaxed markdown-content">
+           <ReactMarkdown
+             remarkPlugins={[remarkGfm]}
+             components={{
+               h3: ({node, ...props}) => <h3 className="text-lg font-bold text-slate-900 mb-2 mt-4 first:mt-0" {...props} />,
+               h4: ({node, ...props}) => <h4 className="text-base font-bold text-slate-800 mb-2 mt-4" {...props} />,
+               p: ({node, ...props}) => <p className="mb-2 leading-relaxed text-slate-600" {...props} />,
+               ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2 space-y-1 ml-1" {...props} />,
+               ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2 space-y-1 ml-1" {...props} />,
+               li: ({node, ...props}) => <li className="text-slate-600" {...props} />,
+               strong: ({node, ...props}) => <strong className="font-bold text-slate-800" {...props} />,
+               img: ({node, ...props}) => (
+                 <div className="my-3 rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-slate-50">
+                    <img 
+                      className="w-full h-48 object-cover hover:scale-105 transition-transform duration-500" 
+                      {...props} 
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
+                    />
+                 </div>
+               ),
+               table: ({node, ...props}) => (
+                 <div className="overflow-x-auto my-4 rounded-xl border border-slate-200 shadow-sm bg-white">
+                   <table className="w-full text-xs text-left divide-y divide-slate-100" {...props} />
+                 </div>
+               ),
+               thead: ({node, ...props}) => <thead className="bg-slate-50 text-slate-700 font-bold" {...props} />,
+               tbody: ({node, ...props}) => <tbody className="divide-y divide-slate-50 bg-white" {...props} />,
+               tr: ({node, ...props}) => <tr className="hover:bg-slate-50/50 transition-colors" {...props} />,
+               th: ({node, ...props}) => <th className="px-4 py-3 whitespace-nowrap text-slate-600" {...props} />,
+               td: ({node, ...props}) => <td className="px-4 py-3 text-slate-600 whitespace-nowrap" {...props} />,
+               hr: ({node, ...props}) => <hr className="my-4 border-slate-100" {...props} />,
+             }}
+           >
+             {tripOverviewMarkdown}
+           </ReactMarkdown>
+        </div>
+        
+        <div className="px-1 grid grid-cols-3 gap-3">
+          <button
+            onClick={() => setIsExpanded(true)}
+            className="py-2.5 rounded-xl bg-slate-50 text-slate-600 text-xs font-bold hover:bg-slate-100 transition-colors shadow-sm border border-slate-100"
+          >
+            查看详情
+          </button>
+          <button
+            className="py-2.5 rounded-xl bg-slate-50 text-slate-600 text-xs font-bold hover:bg-slate-100 transition-colors shadow-sm border border-slate-100"
+          >
+            一键购买
+          </button>
+          <button
+            onClick={handleAdoptClick}
+            disabled={isAdopted}
+            className={`py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-lg ${
+              isAdopted 
+                ? 'bg-green-50 text-green-600 border border-green-200 shadow-none' 
+                : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200'
+            }`}
+          >
+            {isAdopted ? (
+              <>
+                <Check size={14} /> 已采纳
+              </>
+            ) : (
+              <>
+                <Check size={14} /> 采纳行程
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Recommendations Section */}
+        {recommendations && recommendations.length > 0 && (
+           <div className="mt-4 space-y-3">
+              <h4 className="font-bold text-sm text-slate-800 flex items-center gap-2 px-1">
+                 <Sparkles size={16} className="text-cyan-500" />
+                 行程配套服务推荐
+              </h4>
+              <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1 scrollbar-hide">
+                 {recommendations.map((agent) => (
+                   <div 
+                     key={agent.id}
+                     onClick={() => onConnectAgent && onConnectAgent(agent)}
+                     className="shrink-0 w-40 h-56 rounded-[1.5rem] overflow-hidden relative border-[3px] border-white shadow-lg cursor-pointer group bg-slate-900"
+                   >
+                      <img 
+                        src={agent.avatar} 
+                        alt={agent.name} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" />
+                      
+                      {/* Hover Overlay */}
+                      <div className="absolute right-3 top-[35%] -translate-y-1/2 flex flex-col gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                         <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+                           <ArrowRight size={14} className="-rotate-45" />
+                         </div>
+                         <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+                           <MessageCircle size={14} />
+                         </div>
+                      </div>
+
+                      <div className="absolute bottom-2 left-2 right-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl p-3 text-white shadow-sm z-20">
+                         <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                               <h3 className="text-xs font-bold leading-none text-white shadow-sm truncate">{agent.name}</h3>
+                               {agent.type === 'enterprise' && <BadgeCheck size={12} className="text-blue-400 shrink-0" fill="currentColor" stroke="white" />}
+                               <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)] shrink-0" />
+                            </div>
+                         </div>
+                         <p className="text-[9px] text-white/80 font-medium line-clamp-1 mt-1">{agent.desc}</p>
+                      </div>
+                   </div>
+                 ))}
+              </div>
+           </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden mb-6">
@@ -2533,19 +2902,38 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage }) => {
                   iconBg={
                     item.type === 'flight' || item.type === 'transport' ? "bg-blue-500" :
                     item.type === 'food' ? "bg-orange-400" :
-                    item.type === 'hotel' ? "bg-purple-500" :
+                    item.type === 'hotel' ? "bg-indigo-500" :
                     "bg-green-500"
                   }
                   title={item.title}
                 >
-                  <div className="mt-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                     {item.details.desc || item.details.name}
+                  <div className={`mt-2 text-xs p-3 rounded-xl border ${
+                    item.type === 'flight' || item.type === 'transport' ? 'bg-blue-50 border-blue-100 text-blue-700' :
+                    item.type === 'food' ? 'bg-orange-50 border-orange-100 text-orange-700' :
+                    item.type === 'hotel' ? 'bg-indigo-50 border-indigo-100 text-indigo-700' :
+                    'bg-green-50 border-green-100 text-green-700'
+                  }`}>
+                     <div className="flex items-center gap-2 mb-1">
+                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                         item.type === 'flight' || item.type === 'transport' ? 'bg-blue-200 text-blue-700' :
+                         item.type === 'food' ? 'bg-orange-200 text-orange-700' :
+                         item.type === 'hotel' ? 'bg-indigo-200 text-indigo-700' :
+                         'bg-green-200 text-green-700'
+                       }`}>
+                         {item.type === 'flight' ? '航班' : 
+                          item.type === 'transport' ? '交通' : 
+                          item.type === 'food' ? '餐饮' : 
+                          item.type === 'hotel' ? '酒店' : '景点'}
+                       </span>
+                       <span className="font-bold">{item.details.desc || item.details.name}</span>
+                     </div>
+                     
                      {item.image && (
                         <div 
-                            className="mt-2 w-full h-32 rounded-lg overflow-hidden group relative cursor-pointer"
+                            className="mt-2 w-full h-32 rounded-lg overflow-hidden group relative cursor-pointer shadow-sm"
                             onClick={() => onViewImage && onViewImage(item.image)}
                         >
-                           <img src={item.image} alt="" className="w-full h-full object-cover" />
+                           <img src={item.image} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                            <div className="absolute top-2 right-2 bg-black/30 rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                                 <ZoomIn size={14} className="text-white" />
                            </div>
@@ -2554,7 +2942,12 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage }) => {
                      
                      {/* Yellow Xiaoxi Tips */}
                      {item.tips && (
-                        <div className="mt-3 pt-3 border-t border-slate-200/50 flex gap-2 items-start">
+                        <div className={`mt-3 pt-3 border-t flex gap-2 items-start ${
+                            item.type === 'flight' || item.type === 'transport' ? 'border-blue-200/50' :
+                            item.type === 'food' ? 'border-orange-200/50' :
+                            item.type === 'hotel' ? 'border-indigo-200/50' :
+                            'border-green-200/50'
+                        }`}>
                            <div className="w-3.5 h-3.5 rounded-full bg-orange-100 flex items-center justify-center shrink-0 mt-0.5">
                               <Sparkles size={8} className="text-orange-500" />
                            </div>
@@ -2626,7 +3019,7 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage }) => {
            查看详情
          </button>
          <button className="py-2.5 rounded-xl bg-slate-50 text-slate-600 text-xs font-bold hover:bg-slate-100 transition-colors">
-           调整方案
+           一键购买
          </button>
          <button 
            onClick={handleAdoptClick}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Send, Mic, MapPin, Calendar, Clock, Plane, Bed, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, Star, Info, Car, Camera, Hotel, Headphones, Ticket, Phone, Coffee, FileText, Navigation, Loader2, Wand2, RefreshCcw, ArrowRight, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Send, Mic, MapPin, Calendar, Clock, Plane, Bed, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, ChevronRight, Star, Info, Car, Camera, Hotel, Headphones, Ticket, Phone, Coffee, FileText, Navigation, Loader2, Wand2, RefreshCcw, ArrowRight, MessageSquare } from 'lucide-react';
 import TuoSaiImage from '../image/托腮_1.png';
 import { getPlaceholder } from '../utils/imageUtils';
 
@@ -699,6 +699,7 @@ const ItineraryCard = ({ onAdopt, tripData }) => {
   const [activeDay, setActiveDay] = useState(1);
   const [isBudgetExpanded, setIsBudgetExpanded] = useState(false);
   const [isAdopted, setIsAdopted] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleAdoptClick = () => {
     setIsAdopted(true);
@@ -706,6 +707,50 @@ const ItineraryCard = ({ onAdopt, tripData }) => {
   };
 
   if (!tripData) return null;
+
+  if (!isExpanded) {
+    const previewImages = tripData.itinerary
+      .flatMap(day => day.timeline)
+      .filter(item => item.image)
+      .slice(0, 3)
+      .map(item => item.image);
+
+    return (
+      <div className="space-y-3">
+        <div className="p-4 bg-white rounded-2xl rounded-tl-none border border-slate-100 shadow-sm text-sm text-slate-700 leading-relaxed">
+           为您规划了<span className="font-bold text-slate-900">{tripData.title}</span>。
+           行程特色：{['7人参考', '经济型', '行程紧凑', '景点最多'].join('、')}。
+        </div>
+        
+        <div className="flex flex-wrap gap-2 px-1">
+           {['7人参考', '经济型', '行程紧凑', '景点最多'].map((tag, i) => (
+             <span key={i} className="text-[10px] px-2.5 py-1 bg-white border border-slate-200 rounded-full text-slate-500 font-medium shadow-sm">
+               {tag}
+             </span>
+           ))}
+        </div>
+        
+        {previewImages.length > 0 && (
+           <div className="grid grid-cols-3 gap-2 px-1">
+               {previewImages.map((img, i) => (
+                   <div key={i} className="aspect-square rounded-xl overflow-hidden bg-white shadow-sm border border-slate-100">
+                        <img src={img} className="w-full h-full object-cover" alt="" />
+                   </div>
+               ))}
+           </div>
+        )}
+        
+        <div className="px-1">
+            <button
+               onClick={() => setIsExpanded(true)}
+               className="w-full py-3 rounded-xl bg-cyan-50 text-cyan-600 text-xs font-bold hover:bg-cyan-100 transition-colors flex items-center justify-center gap-1 shadow-sm border border-cyan-100"
+            >
+               查看详情 <ChevronRight size={14} />
+            </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden mb-6">
@@ -862,7 +907,7 @@ const ItineraryCard = ({ onAdopt, tripData }) => {
            查看详情
          </button>
          <button className="py-2.5 rounded-xl bg-slate-50 text-slate-600 text-xs font-bold hover:bg-slate-100 transition-colors">
-           调整方案
+           一键购买
          </button>
          <button 
            onClick={handleAdoptClick}

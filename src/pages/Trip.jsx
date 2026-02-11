@@ -78,18 +78,22 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
       }
   };
 
+  const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
+
   // Dynamically generate tabs based on trips
-  const uniqueDates = [...new Set(myTrips.map(trip => trip.date))];
-  const tabs = [
-    { id: 'all', label: '全部' },
-    ...uniqueDates.map((date, index) => ({ id: `date-${index}`, label: date }))
-  ];
+  const getMonth = (dateStr) => {
+      if (!dateStr) return '';
+      const parts = dateStr.split('/');
+      if (parts.length > 0) {
+          return parseInt(parts[0], 10) + '月';
+      }
+      return dateStr;
+  };
 
   const filteredTrips = activeTab === 'all' 
     ? myTrips 
     : myTrips.filter(t => {
-        const selectedTab = tabs.find(tab => tab.id === activeTab);
-        return selectedTab && t.date === selectedTab.label;
+        return getMonth(t.date) === activeTab;
     });
 
   const toggleTripSelection = (tripId) => {
@@ -146,33 +150,80 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
           <div className="flex justify-between items-center mr-2">
             <h2 className="text-xl font-bold text-slate-800 whitespace-nowrap">我的行程</h2>
             
-            <button 
-              onClick={() => {
-                setIsCompareMode(!isCompareMode);
-                setSelectedTrips([]);
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${isCompareMode ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}
-            >
-              {isCompareMode ? <X size={14} /> : <Scale size={14} />}
-              {isCompareMode ? '取消对比' : '行程对比'}
-            </button>
-          </div>
+            <div className="relative">
+              <button 
+                onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-100 shadow-sm active:scale-95 transition-transform"
+              >
+                <CalendarIcon size={14} className="text-cyan-500" />
+                <span>{activeTab === 'all' ? '全部月份' : activeTab}</span>
+                <ChevronRight size={14} className={`text-slate-400 transition-transform ${isMonthPickerOpen ? 'rotate-90' : ''}`} />
+              </button>
 
-          {/* Date Tabs (Hide in compare mode to simplify) */}
-          {!isCompareMode && (
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide w-full pb-2">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-shrink-0 px-5 py-3 rounded-2xl text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === tab.id ? 'bg-[#052216] text-white shadow-lg scale-105' : 'bg-white text-slate-800 border border-slate-100'}`}
-                >
-                  <Calendar size={16} className={activeTab === tab.id ? 'opacity-100' : 'opacity-40'} />
-                  {tab.label}
-                </button>
-              ))}
+              <AnimatePresence>
+                {isMonthPickerOpen && (
+                  <>
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsMonthPickerOpen(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 p-4"
+                    >
+                      <div className="flex items-center justify-between mb-3 px-1">
+                        <span className="text-xs font-bold text-slate-400">选择月份</span>
+                        <button 
+                          onClick={() => {
+                            setActiveTab('all');
+                            setIsMonthPickerOpen(false);
+                          }}
+                          className="text-xs font-bold text-cyan-600 hover:text-cyan-700"
+                        >
+                          显示全部
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-4 gap-2">
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map(month => {
+                          const monthStr = `${month}月`;
+                          const isActive = activeTab === monthStr;
+                          const hasTrips = myTrips.some(t => getMonth(t.date) === monthStr);
+                          
+                          return (
+                            <button
+                              key={month}
+                              onClick={() => {
+                                setActiveTab(monthStr);
+                                setIsMonthPickerOpen(false);
+                              }}
+                              className={`
+                                aspect-square rounded-xl flex items-center justify-center text-sm font-bold relative
+                                transition-all
+                                ${isActive 
+                                  ? 'bg-slate-900 text-white shadow-md' 
+                                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                                }
+                              `}
+                            >
+                              {month}
+                              {hasTrips && !isActive && (
+                                <span className="absolute bottom-1.5 w-1 h-1 rounded-full bg-cyan-500" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Trip List */}
