@@ -394,9 +394,9 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
-                    className="absolute right-0 top-3 left-[70px] bottom-[-24px] py-2"
+                    className="absolute right-0 top-3 left-[60px] bottom-6 py-2"
                 >
-                    <div className="bg-white/95 backdrop-blur-xl rounded-[1.5rem] p-3 pl-11 shadow-2xl border border-slate-100 h-full flex flex-col relative overflow-hidden">
+                    <div className="bg-white/95 backdrop-blur-xl rounded-[1.5rem] p-3 pl-8 shadow-2xl border border-slate-100 h-full flex flex-col relative overflow-hidden">
                         {/* Header: Title + Status */}
                         <div className="flex items-center justify-between mb-2 relative z-10 pr-6">
                              <div className="flex items-center gap-2 min-w-0">
@@ -436,23 +436,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                              </div>
                         </div>
 
-                        {/* Bottom: Assistant Message */}
-                        <div className="bg-slate-50 rounded-xl p-2 flex gap-2 border border-slate-100 relative z-10 mt-auto">
-                             <div className="w-4 h-4 bg-cyan-100 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                                 <Sparkles size={8} className="text-cyan-600" />
-                             </div>
-                             <div className="flex-1 min-w-0">
-                                 <div className="flex items-center gap-1 mb-0.5">
-                                     <span className="text-[10px] font-bold text-slate-700">黄小西</span>
-                                     <span className="text-[8px] text-slate-400 bg-white px-1 rounded border border-slate-100">AI助手</span>
-                                 </div>
-                                 <p className="text-[9px] text-slate-500 leading-relaxed line-clamp-2">
-                                    {activeTripNode 
-                                        ? "已为您确认，酒店提供24小时管家服务。今日贵阳降温，建议向通过管家预订「暖心姜茶」送至客房。" 
-                                        : "暂无行程，快去规划吧！"}
-                                 </p>
-                             </div>
-                        </div>
+                        {/* Bottom: Assistant Message REMOVED for compact view */}
                         
                         {/* Background Decoration */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -493,12 +477,12 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
           </header>
 
           {/* News Marquee */}
-          <div className="mb-6 flex justify-center -mt-8 relative z-40">
+          <div className={`mb-6 flex justify-center relative z-40 transition-all duration-300 ${isTripExpanded ? 'mt-4' : '-mt-8'}`}>
             <NewsMarquee />
           </div>
 
           {/* Filter Tabs */}
-          <div className="w-full overflow-x-auto scrollbar-hide mb-6 -mx-6 px-6">
+          <div className="w-full overflow-x-auto scrollbar-hide mb-6 -mx-6 px-6 relative z-30">
             <div className="flex gap-4 min-w-max">
                 {filters.map(filter => {
                     const isActive = activeFilter === filter.id;
@@ -526,65 +510,15 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
 
           {/* Main Content Area */}
           <div className="w-full relative min-h-[420px]">
-             {/* TRIP REMINDER CARD (Only if trip exists) */}
-             <AnimatePresence>
-                 {hasTrip && activeTripNode && (
-                     <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        className="w-full mb-8 relative z-30"
-                     >
-                         <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2rem] p-6 text-white shadow-xl shadow-slate-200 overflow-hidden relative">
-                             {/* Background Decoration */}
-                             <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                             
-                             <div className="relative z-10">
-                                 <div className="flex items-center gap-2 mb-4">
-                                     <div className="bg-yellow-500/20 p-1.5 rounded-lg">
-                                         <Clock size={16} className="text-yellow-500" />
-                                     </div>
-                                     <span className="text-xs font-bold text-yellow-500 uppercase tracking-wider">即将开始</span>
-                                 </div>
-                                 
-                                 <h2 className="text-2xl font-black mb-1">{activeTripNode.title}</h2>
-                                 <p className="text-sm text-slate-400 mb-6 flex items-center gap-2">
-                                     <MapPin size={14} /> 距离当前 2.5km
-                                 </p>
-
-                                 <div className="bg-white/10 rounded-xl p-4 mb-4 backdrop-blur-sm">
-                                     <div className="flex items-start gap-3">
-                                         <AlertCircle size={18} className="text-blue-400 shrink-0 mt-0.5" />
-                                         <div>
-                                             <h4 className="text-sm font-bold mb-1">游玩贴士</h4>
-                                             <p className="text-xs text-slate-300 leading-relaxed">
-                                                 建议穿着舒适的运动鞋。景区内湿气较重，请注意防滑。预计游玩时间3小时。
-                                             </p>
-                                         </div>
-                                     </div>
-                                 </div>
-
-                                 <div className="flex gap-3">
-                                     <button className="flex-1 py-3 bg-white text-slate-900 rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
-                                         <Map size={16} /> 开始导航
-                                     </button>
-                                     <button className="px-4 py-3 bg-white/10 text-white rounded-xl font-bold text-sm backdrop-blur-md active:scale-95 transition-transform">
-                                         详情
-                                     </button>
-                                 </div>
-                             </div>
-                         </div>
-                     </motion.div>
-                 )}
-             </AnimatePresence>
+             {/* TRIP REMINDER CARD REMOVED */}
 
              {/* AGENT/SOCIAL CARD STACK */}
              <motion.div
-                className={`w-full relative ${hasTrip ? 'scale-90 opacity-80 mt-[-20px] pointer-events-none' : 'z-20'}`}
+                className={`w-full relative z-20 transition-all duration-300 ${isTripExpanded ? '-mt-12' : 'mt-0'}`}
                 animate={{ 
-                    scale: hasTrip ? 0.9 : 1,
-                    opacity: hasTrip ? 0.6 : 1,
-                    y: hasTrip ? 20 : 0
+                    scale: 1,
+                    opacity: 1,
+                    y: 0
                 }}
              >
                 {/* Agent Card Stack Implementation */}
@@ -607,14 +541,14 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                             }}
                             exit={{ x: direction * 300, opacity: 0, rotate: direction * 20 }}
                             transition={{ type: "spring", damping: 20, stiffness: 100 }}
-                            drag={isTop && !hasTrip ? "x" : false} // Disable drag if trip card is active/overlaying
+                            drag={isTop ? "x" : false} 
                             dragConstraints={{ left: -100, right: 100 }}
                             onDragEnd={(e, { offset }) => {
                               if (Math.abs(offset.x) > 100) {
                                 handleNextSocialCard();
                               }
                             }}
-                            onClick={() => isTop && !hasTrip && handleSocialCardClick(agent)}
+                            onClick={() => isTop && handleSocialCardClick(agent)}
                           >
                             {/* Card Content (Same as before) */}
                             <div className="h-full w-full relative cursor-pointer overflow-hidden rounded-[2rem]">
