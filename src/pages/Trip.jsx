@@ -315,7 +315,7 @@ const HorizontalTripCard = ({ country, title, date, users, extraUsers, bgImage, 
         <h3 className="text-lg font-bold leading-tight mb-1.5 text-shadow-sm line-clamp-2">{title}</h3>
         <div className="flex items-center gap-1.5 text-[10px] opacity-80 font-medium">
           <Calendar size={10} />
-          <span>{date}</span>
+          <span>{date.split(' - ')[0].split('/')[0]}月</span>
         </div>
       </div>
 
@@ -416,11 +416,11 @@ const TripCard = ({ trip, isCompareMode, isSelected, onSelect, onStart, onTermin
            <Clock size={12} />
            <span>{trip.days}天</span>
          </div>
-         <div className="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded-lg backdrop-blur-sm">
+         <div className="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded-lg backdrop-blur-sm hidden">
            <MapPin size={12} />
            <span>{trip.distance}</span>
          </div>
-         <div className="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded-lg backdrop-blur-sm">
+         <div className="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded-lg backdrop-blur-sm hidden">
            <Users size={12} />
            <span>{trip.rating}分</span>
          </div>
