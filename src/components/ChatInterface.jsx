@@ -2957,6 +2957,32 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage, recommendations, onConn
                            </div>
                         </div>
                      )}
+                     {/* Service Button */}
+                     <div className="mt-3 pt-2 border-t border-slate-200/50 flex justify-end">
+                       <button
+                         onClick={() => {
+                           if (onConnectAgent) {
+                             const agentInfo = getAgentInfo(item.type);
+                             onConnectAgent({
+                               ...agentInfo,
+                               name: item.details.name,
+                               desc: item.details.desc
+                             });
+                           }
+                         }}
+                         className={`px-3 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-1 transition-all active:scale-95 shadow-sm ${
+                           item.type === 'flight' || item.type === 'transport' ? 'bg-blue-500 text-white hover:bg-blue-600 shadow-blue-200' :
+                           item.type === 'food' ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-orange-200' :
+                           item.type === 'hotel' ? 'bg-indigo-500 text-white hover:bg-indigo-600 shadow-indigo-200' :
+                           'bg-green-500 text-white hover:bg-green-600 shadow-green-200'
+                         }`}
+                       >
+                         {item.type === 'flight' || item.type === 'transport' ? '预订行程' : 
+                          item.type === 'food' ? '立即订座' : 
+                          item.type === 'hotel' ? '查看房型' : '购买门票'}
+                         <ArrowRight size={10} />
+                       </button>
+                     </div>
                   </div>
                 </TimelineItem>
               ))}
