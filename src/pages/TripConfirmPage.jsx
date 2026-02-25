@@ -86,15 +86,11 @@ const TripConfirmPage = ({ onAdoptTrip }) => {
               <div className="flex-1 min-w-0">
                  <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-black text-slate-800 text-lg">{agency.name}</h3>
-                    <ShieldCheck size={16} className="text-blue-500 fill-blue-50" />
                  </div>
-                 <p className="text-xs text-slate-500">官方认证 · 信用评级 {agency.level} · 经营许可证 {agency.license}</p>
+                 <p className="text-xs text-slate-500">
+                    联系人：{agency.operator} · 电话：138****8888
+                 </p>
               </div>
-           </div>
-           
-           <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between text-xs text-slate-500">
-              <span>经办人：{agency.operator} (工号: {agency.operatorId})</span>
-              <span>创建时间：{agency.createTime}</span>
            </div>
         </div>
 
@@ -103,11 +99,7 @@ const TripConfirmPage = ({ onAdoptTrip }) => {
            <h2 className="text-xl font-black text-slate-800 mb-4 px-1">行程概览</h2>
            <div className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-slate-100">
               <div className="p-5 border-b border-slate-50">
-                  <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2 py-1 bg-cyan-50 text-cyan-600 rounded-lg text-[10px] font-bold">跟团游</span>
-                      <span className="px-2 py-1 bg-slate-100 text-slate-500 rounded-lg text-[10px] font-bold">纯玩无购物</span>
-                  </div>
-                  <h1 className="text-2xl font-bold leading-tight text-slate-800">{scannedData.title}</h1>
+                  <h1 className="text-2xl font-bold leading-tight text-slate-800">{scannedData.title.replace('识别到的行程：', '')}</h1>
               </div>
               
               <div className="p-5 grid grid-cols-3 gap-4">
@@ -220,7 +212,7 @@ const TripConfirmPage = ({ onAdoptTrip }) => {
         <div className="mt-8 flex items-start gap-2 px-2">
            <CheckCircle2 size={16} className="text-cyan-500 shrink-0 mt-0.5" />
            <p className="text-xs text-slate-400 leading-relaxed">
-              我已阅读并同意 <span className="text-cyan-600 font-bold">《旅游服务合同》</span> 及 <span className="text-cyan-600 font-bold">《行程确认书》</span>，确认无误后将生成电子行程单。
+              确认无误后将生成电子行程单。
            </p>
         </div>
 
