@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Share, MoreHorizontal, Sun, Cloud, CloudRain, Info, Plane, Train, MapPin, ChevronRight, QrCode, AlertCircle, Clock, CheckCircle2, Utensils, Hotel, Camera, Coffee, Navigation, Phone, FileText, Headphones, Ticket, Car, Sparkles, Plus, Search, Edit3, GripVertical, Map, Calendar, X, List, Layout, Wand2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Share, MoreHorizontal, Sun, Cloud, CloudRain, Info, Plane, Train, MapPin, ChevronRight, QrCode, AlertCircle, Clock, CheckCircle2, Utensils, Hotel, Camera, Coffee, Navigation, Phone, FileText, Headphones, Ticket, Car, Sparkles, Plus, Minus, Search, Edit3, GripVertical, Map, Calendar, X, List, Layout, Wand2, Trash2, Star, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { getPlaceholder } from '../utils/imageUtils';
 
@@ -9,6 +9,55 @@ import ScenicAvatar from '../image/huangguoshu.png';
 import HotelAvatar from '../image/jiudian.png';
 import GuideAvatar from '../image/daoyou.png';
 import FoodAvatar from '../image/wangayi.png';
+
+const getStatusInfo = (status) => {
+  switch(status) {
+    case 'arrived': case 'completed': return { label: '已完成', color: 'text-slate-400 bg-slate-100' };
+    case 'ongoing': return { label: '进行中', color: 'text-blue-600 bg-blue-50' };
+    default: return { label: '未开始', color: 'text-orange-600 bg-orange-50' };
+  }
+};
+
+const getServiceButtons = (type) => {
+  switch(type) {
+    case 'flight': case 'transport':
+      return [
+        { label: '值机选座', icon: CheckCircle2, primary: true, color: 'bg-blue-600 text-white shadow-blue-200' },
+        { label: '打车前往', icon: Car, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' },
+        { label: '改签退票', icon: FileText, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' }
+      ];
+    case 'hotel':
+      return [
+        { label: '查看房型', icon: Hotel, primary: true, color: 'bg-indigo-600 text-white shadow-indigo-200' },
+        { label: '联系前台', icon: Phone, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' },
+        { label: '一键续住', icon: Clock, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' }
+      ];
+    case 'scenic':
+      return [
+        { label: '购买门票', icon: Ticket, primary: true, color: 'bg-green-600 text-white shadow-green-200' },
+        { label: '语音导览', icon: Headphones, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' },
+        { label: '周边服务', icon: Map, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' }
+      ];
+    case 'food':
+      return [
+        { label: '立即订座', icon: Utensils, primary: true, color: 'bg-orange-500 text-white shadow-orange-200' },
+        { label: '在线排号', icon: List, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' },
+        { label: '查看菜单', icon: FileText, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' }
+      ];
+    case 'group_meal':
+      return [
+        { label: '查看菜单', icon: FileText, primary: true, color: 'bg-orange-600 text-white shadow-orange-200' },
+        { label: '联系领队', icon: Phone, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' }
+      ];
+    case 'free_time':
+      return [
+        { label: '周边推荐', icon: MapPin, primary: true, color: 'bg-teal-600 text-white shadow-teal-200' },
+        { label: '打车前往', icon: Car, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' }
+      ];
+    default:
+      return [{ label: '查看详情', icon: ArrowRight, primary: true, color: 'bg-slate-900 text-white shadow-slate-200' }];
+  }
+};
 
 const AIPlanningModal = ({ isOpen, onClose, onConfirm }) => {
   const [startPoint, setStartPoint] = useState('');
@@ -262,6 +311,7 @@ const TripDetail = ({ adoptedTrip }) => {
   const [viewMode, setViewMode] = useState('overview'); // 'overview' | 'daily'
   const [activeTab, setActiveTab] = useState('all'); // For overview filtering
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [isAddSpotOpen, setIsAddSpotOpen] = useState(false);
   const [isAIPlanningOpen, setIsAIPlanningOpen] = useState(false);
   
@@ -307,8 +357,8 @@ const TripDetail = ({ adoptedTrip }) => {
                       name: "六广门毛阿姨糯米饭", 
                       desc: "距离下个节点 2.5km",
                       cuisine: "贵阳小吃",
-                      price: "¥12/人",
-                      score: "4.8分",
+                      price: "12",
+                      score: "4.8",
                       mustEat: "招牌糯米饭, 脆哨",
                       avoid: "排队较久"
                   } 
@@ -337,7 +387,7 @@ const TripDetail = ({ adoptedTrip }) => {
             dayLabel: "Day 2",
             tag: "文化探索",
             weather: { temp: "10°C - 15°C", desc: "小雨", icon: CloudRain },
-            highlights: "黔灵山公园 — 弘福寺 — 贵州省博物馆",
+            highlights: "黔灵山公园 — 团队午餐 — 自由活动",
             tips: "今日有小雨，出行请记得携带雨具。",
             timeline: [
               { 
@@ -359,19 +409,34 @@ const TripDetail = ({ adoptedTrip }) => {
               },
               { 
                   time: "12:30", 
-                  title: "午餐·丝娃娃", 
-                  type: "food", 
+                  title: "团队午餐", 
+                  type: "group_meal", 
                   status: "planned", 
-                  tips: "建议搭配酸汤食用。", 
-                  image: getPlaceholder(400, 300, 'Lunch'), 
+                  tips: "请按桌号入座，禁止饮酒。", 
+                  image: getPlaceholder(400, 300, 'GroupMeal'), 
                   details: { 
-                      name: "丝恋红汤丝娃娃", 
-                      desc: "必吃榜餐厅",
-                      cuisine: "贵州菜",
-                      price: "¥60/人",
-                      score: "4.7分",
-                      mustEat: "红酸汤, 脆哨洋芋",
-                      avoid: "周末需提前取号"
+                      name: "黔灵山庄·团队餐厅", 
+                      desc: "标准团餐",
+                      standard: "50元/人",
+                      menu: "八菜一汤，含特色酸汤鱼",
+                      tableNo: "A1-A5",
+                      seats: "10人/桌"
+                  } 
+              },
+              { 
+                  time: "14:00", 
+                  title: "自由活动", 
+                  type: "free_time", 
+                  status: "planned", 
+                  tips: "推荐前往附近的甲秀楼或亨特国际购物中心。", 
+                  image: null, 
+                  details: { 
+                      name: "自由活动时间", 
+                      desc: "自由安排约 3 小时",
+                      duration: "3h",
+                      location: "南明区中心",
+                      gatheringTime: "17:30",
+                      gatheringPoint: "亨特国际广场正门"
                   } 
               }
             ]
@@ -436,11 +501,13 @@ const TripDetail = ({ adoptedTrip }) => {
       case 'scenic': return { name: '景区智慧服务·景区智能体', icon: Camera, color: 'text-purple-600', bgColor: 'bg-purple-50', borderColor: 'border-purple-100', avatar: ScenicAvatar, tag: '景点导览', headerBg: 'bg-purple-50/50', border: 'border-purple-100' };
       case 'hotel': return { name: '酒店住宿服务·酒店智能体', icon: Hotel, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-100', avatar: HotelAvatar, tag: '贴心管家', headerBg: 'bg-blue-50/50', border: 'border-blue-100' };
       case 'food': return { name: '美食餐饮服务·美食智能体', icon: Utensils, color: 'text-orange-600', bgColor: 'bg-orange-50', borderColor: 'border-orange-100', avatar: FoodAvatar, tag: '美食推荐', headerBg: 'bg-orange-50/50', border: 'border-orange-100' };
-      case 'transport': return { name: '交通出行服务·交通智能体', icon: Car, color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-100', avatar: GuideAvatar, tag: '行程规划', headerBg: 'bg-green-50/50', border: 'border-green-100' };
-      case 'flight': return { name: '民航运行中心·交通智能体', icon: Plane, color: 'text-blue-800', bgColor: 'bg-blue-50', borderColor: 'border-blue-100', avatar: GuideAvatar, tag: '实时监控航路', headerBg: 'bg-blue-50/50', border: 'border-blue-100' };
-      default: return { name: '行程助手', icon: MapPin, color: 'text-slate-600', bgColor: 'bg-slate-50', borderColor: 'border-slate-100', avatar: GuideAvatar, tag: '旅行助手', headerBg: 'bg-slate-50/50', border: 'border-slate-100' };
-    }
-  };
+    case 'group_meal': return { name: '团餐服务·餐饮智能体', icon: Utensils, color: 'text-orange-800', bgColor: 'bg-orange-100', borderColor: 'border-orange-200', avatar: FoodAvatar, tag: '团队用餐', headerBg: 'bg-orange-100/50', border: 'border-orange-200' };
+    case 'transport': return { name: '交通出行服务·交通智能体', icon: Car, color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-100', avatar: GuideAvatar, tag: '行程规划', headerBg: 'bg-green-50/50', border: 'border-green-100' };
+    case 'flight': return { name: '民航运行中心·交通智能体', icon: Plane, color: 'text-blue-800', bgColor: 'bg-blue-50', borderColor: 'border-blue-100', avatar: GuideAvatar, tag: '实时监控航路', headerBg: 'bg-blue-50/50', border: 'border-blue-100' };
+    case 'free_time': return { name: '自由活动·行程助手', icon: Coffee, color: 'text-teal-600', bgColor: 'bg-teal-50', borderColor: 'border-teal-100', avatar: GuideAvatar, tag: '自由探索', headerBg: 'bg-teal-50/50', border: 'border-teal-100' };
+    default: return { name: '行程助手', icon: MapPin, color: 'text-slate-600', bgColor: 'bg-slate-50', borderColor: 'border-slate-100', avatar: GuideAvatar, tag: '旅行助手', headerBg: 'bg-slate-50/50', border: 'border-slate-100' };
+  }
+};
 
   const handleAddDay = () => {
     const newDayIndex = trip.itinerary.length + 1;
@@ -459,6 +526,35 @@ const TripDetail = ({ adoptedTrip }) => {
     });
     // Scroll to the new day in daily view
     setSelectedDayIndex(newDayIndex - 1);
+  };
+
+  const handleDeleteDay = (indexToDelete) => {
+    if (trip.itinerary.length <= 1) {
+      // alert("至少保留一天行程"); // Using UI feedback instead or just prevent action
+      return;
+    }
+    
+    // Filter out the day
+    const newItinerary = trip.itinerary.filter((_, index) => index !== indexToDelete);
+    
+    // Re-label days sequentially
+    const updatedItinerary = newItinerary.map((day, index) => ({
+        ...day,
+        dayLabel: `Day ${index + 1}`
+    }));
+
+    setTrip({
+        ...trip,
+        days: trip.days - 1,
+        itinerary: updatedItinerary
+    });
+
+    // Adjust selected index if needed
+    if (selectedDayIndex >= updatedItinerary.length) {
+        setSelectedDayIndex(Math.max(0, updatedItinerary.length - 1));
+    } else if (selectedDayIndex > indexToDelete) {
+        setSelectedDayIndex(selectedDayIndex - 1);
+    }
   };
 
   const handleDayUpdate = (index, field, value) => {
@@ -604,6 +700,9 @@ const TripDetail = ({ adoptedTrip }) => {
                      <div className="absolute left-[19px] top-2 bottom-0 w-0.5 bg-slate-200" />
                      {day.timeline.filter(t => activeTab === 'all' || t.type === activeTab).map((node, nodeIndex) => {
                        const agent = getAgentInfo(node.type);
+                       const statusInfo = getStatusInfo(node.status);
+                       const serviceButtons = getServiceButtons(node.type);
+                       
                        return (
                          <div key={nodeIndex} className="relative">
                             <div className={`absolute -left-[5px] top-0 w-3 h-3 rounded-full ring-4 ring-white z-10 ${node.status === 'arrived' || node.status === 'completed' ? 'bg-blue-500' : 'bg-slate-300'}`} />
@@ -615,192 +714,109 @@ const TripDetail = ({ adoptedTrip }) => {
                                       {agent.name.split('·')[1] || agent.name}
                                    </div>
                                </div>
-                               <span className="text-sm font-bold text-slate-800">{node.title}</span>
+                               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusInfo.color}`}>
+                                  {statusInfo.label}
+                               </span>
                             </div>
                             <div className="ml-6">
                               <div onClick={() => navigate('/chat-planning', { state: { nodeContext: node } })} className={`bg-white rounded-[2rem] p-4 shadow-sm border ${agent.border} overflow-hidden cursor-pointer active:scale-98 transition-transform`}>
-                                 {/* Agent Header */}
-                                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-50">
-                                    <div className="flex items-center gap-2">
-                                       <div className={`w-8 h-8 rounded-full ${agent.bgColor} flex items-center justify-center`}>
-                                          <agent.icon size={16} className={agent.color} />
-                                       </div>
-                                       <div className="flex flex-col">
-                                          <span className={`text-xs font-bold ${agent.color}`}>{agent.name.split('·')[0]}</span>
-                                          <div className="flex items-center gap-1">
-                                             <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                                             <span className="text-[10px] text-slate-400">在线</span>
-                                          </div>
-                                       </div>
+                                 {/* 1. Header: H3 Theme Name + Rating */}
+                                 <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-50">
+                                    <div className="flex flex-col gap-1">
+                                       <h3 className="font-bold text-sm text-slate-800">
+                                          {(node.type === 'flight' || node.type === 'transport') && node.details.flightNo 
+                                            ? node.details.flightNo 
+                                            : (node.details.name || node.title)}
+                                       </h3>
+                                       {(node.type === 'flight' || node.type === 'transport') ? (
+                                           <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                                               <span>{node.details.dep || '出发地'}</span>
+                                               <ArrowRight size={8} />
+                                               <span>{node.details.arr || '目的地'}</span>
+                                           </div>
+                                       ) : (
+                                           <div className="flex items-center gap-2">
+                                              <div className="flex items-center gap-0.5">
+                                                 {[1,2,3,4,5].map(i => <Star key={i} size={8} className={`text-orange-400 ${i <= Math.round(parseFloat(node.details.score || 4.8)) ? 'fill-orange-400' : ''}`} />)}
+                                              </div>
+                                              <span className="text-[10px] font-bold text-slate-600">{node.details.score || '4.8'}</span>
+                                              <span className="text-[9px] text-slate-300">|</span>
+                                              <span className="text-[9px] text-slate-400">
+                                                {node.type === 'food' ? `¥${node.details.price || '88'}/人` : (node.details.price || '¥88')}
+                                              </span>
+                                           </div>
+                                       )}
                                     </div>
-                                    <span className="px-2 py-1 bg-slate-50 text-slate-500 text-[10px] font-bold rounded-lg border border-slate-100">
-                                      {agent.tag}
+                                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                                       node.type === 'flight' || node.type === 'transport' ? 'bg-blue-50 text-blue-600' :
+                                       node.type === 'food' ? 'bg-orange-50 text-orange-600' :
+                                       node.type === 'hotel' ? 'bg-indigo-50 text-indigo-600' :
+                                       'bg-green-50 text-green-600'
+                                    }`}>
+                                       {node.type === 'flight' ? '航班' : 
+                                        node.type === 'transport' ? '交通' : 
+                                        node.type === 'food' ? '餐饮' : 
+                                        node.type === 'hotel' ? '酒店' : '景点'}
                                     </span>
                                  </div>
 
-                                 {/* Main Content */}
-                                 <div className="flex gap-4 mb-3">
-                                    {/* Left Image */}
-                                    <div className="w-24 h-24 rounded-2xl bg-slate-100 shrink-0 overflow-hidden relative">
-                                      {node.image ? (
+                                 {/* 2. Middle: Left Image | Right Info */}
+                                 <div className="flex gap-3 mb-3">
+                                    {/* Left: Image */}
+                                    <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-slate-100 relative">
+                                       {node.image ? (
                                           <img src={node.image} alt={node.title} className="w-full h-full object-cover" />
-                                      ) : (
-                                          <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-bold text-[10px] uppercase tracking-wider">
-                                              {node.type === 'scenic' ? 'Scenic' : node.type}
+                                       ) : (
+                                          <div className="w-full h-full flex items-center justify-center text-slate-300 bg-slate-50">
+                                             {node.type === 'flight' ? <Plane size={24} /> : <Camera size={20} />}
                                           </div>
-                                      )}
+                                       )}
                                     </div>
-                                    
-                                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                       <div className="flex items-center gap-2 mb-1">
-                                          <h3 className="text-xl font-bold text-slate-800 truncate">{node.details.name || node.title}</h3>
-                                          {/* Type specific badges */}
-                                          {node.type === 'scenic' && node.details.level && (
-                                              <span className="px-1.5 py-0.5 bg-orange-100 text-orange-600 text-[10px] font-bold rounded">{node.details.level}</span>
-                                          )}
-                                          {node.type === 'food' && node.details.score && (
-                                              <span className="px-1.5 py-0.5 bg-red-50 text-red-600 text-[10px] font-bold rounded flex items-center gap-0.5">
-                                                  ★ {node.details.score}
-                                              </span>
-                                          )}
-                                       </div>
-                                       
-                                       <p className="text-xs text-slate-500 mb-2 truncate">{node.details.desc || '暂无描述'}</p>
-                                       
-                                       {/* Rich Info Grid */}
-                                       <div className="grid grid-cols-2 gap-y-1 gap-x-2">
-                                           {node.type === 'scenic' && (
-                                               <>
-                                                   {node.details.price && <div className="text-[10px] text-slate-500 truncate"><span className="font-bold text-slate-700">门票:</span> {node.details.price}</div>}
-                                                   {node.details.openTime && <div className="text-[10px] text-slate-500 truncate"><span className="font-bold text-slate-700">开放:</span> {node.details.openTime}</div>}
-                                               </>
-                                           )}
-                                           {node.type === 'food' && (
-                                               <>
-                                                   {node.details.cuisine && <div className="text-[10px] text-slate-500 truncate"><span className="font-bold text-slate-700">菜系:</span> {node.details.cuisine}</div>}
-                                                   {node.details.price && <div className="text-[10px] text-slate-500 truncate"><span className="font-bold text-slate-700">人均:</span> {node.details.price}</div>}
-                                               </>
-                                           )}
-                                            {node.type === 'transport' && node.details.duration && (
-                                               <div className="text-[10px] text-slate-500 col-span-2 truncate"><span className="font-bold text-slate-700">耗时:</span> {node.details.duration}</div>
-                                           )}
+
+                                    {/* Right: Address + Tags */}
+                                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                                       <div className="space-y-1.5">
+                                          <div className="flex items-start gap-1 text-[10px] text-slate-500">
+                                             <MapPin size={12} className="shrink-0 mt-0.5 text-slate-400" />
+                                             <span className="line-clamp-2">{node.details.desc || '贵州省贵阳市...'}</span>
+                                          </div>
+                                          <div className="flex flex-wrap gap-1">
+                                             {((node.type === 'flight' || node.type === 'transport') 
+                                                ? ['准点率95%', '经济舱', '有餐食'] 
+                                                : ['必打卡', '好评如潮', '老字号']
+                                             ).map((tag, i) => (
+                                                <span key={i} className="text-[8px] px-1.5 py-0.5 bg-slate-50 text-slate-500 rounded border border-slate-100">{tag}</span>
+                                             ))}
+                                          </div>
                                        </div>
                                     </div>
                                  </div>
 
-                                 {/* AI Recommendations - Full Width Row */}
-                                 <div className="flex flex-wrap gap-2 mb-4">
-                                    <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded font-medium">计划中</span>
-                                    
-                                    {node.type === 'scenic' && node.details.reasons && (
-                                        <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-[10px] rounded font-bold border border-purple-100">
-                                            推荐: {node.details.reasons}
-                                        </span>
-                                    )}
-                                    
-                                    {node.type === 'food' && node.details.mustEat && (
-                                        <span className="px-2 py-0.5 bg-orange-50 text-orange-600 text-[10px] rounded font-bold border border-orange-100">
-                                            必吃: {node.details.mustEat}
-                                        </span>
-                                    )}
-
-                                    {node.type === 'scenic' && node.details.photoSpot && (
-                                        <span className="px-2 py-0.5 bg-pink-50 text-pink-600 text-[10px] rounded font-bold border border-pink-100">
-                                            机位: {node.details.photoSpot}
-                                        </span>
-                                    )}
-                                 </div>
-
-                                 {/* Huang Xiaoxi TIPS */}
+                                 {/* 3. TIPS Section */}
                                  {node.tips && (
-                                    <div className="mb-4 mx-1 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-3 border border-cyan-100 flex gap-3 items-start">
-                                       <div className="w-6 h-6 rounded-full bg-cyan-100 flex items-center justify-center shrink-0 mt-0.5">
-                                          <Sparkles size={12} className="text-cyan-600" />
-                                       </div>
-                                       <div className="flex-1">
-                                          <div className="flex items-center gap-1.5 mb-1">
-                                             <span className="text-xs font-bold text-cyan-700">黄小西 TIPS</span>
-                                          </div>
-                                          <p className="text-xs text-slate-600 leading-relaxed">{node.tips}</p>
+                                    <div className="bg-orange-50/50 rounded-lg p-2.5 mb-3 flex gap-2 items-start border border-orange-100/50">
+                                       <div className="mt-0.5"><Sparkles size={10} className="text-orange-500"/></div>
+                                       <div className="text-[10px] text-slate-600 leading-relaxed">
+                                          <span className="font-bold text-orange-600">黄小西Tips：</span>
+                                          {node.tips}
                                        </div>
                                     </div>
                                  )}
 
-                                 {/* Action Buttons */}
-                                 <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-                                    {node.type === 'scenic' ? (
-                                      <>
-                                          <button className="flex-1 min-w-[100px] py-2.5 bg-purple-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-purple-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Headphones size={16} />
-                                             语音讲解
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <MapPin size={16} />
-                                             地图导览
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Ticket size={16} />
-                                             购票/预约
-                                         </button>
-                                     </>
-                                   ) : node.type === 'hotel' ? (
-                                     <>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Navigation size={16} />
-                                             一键导航
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Phone size={16} />
-                                             联系前台
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Coffee size={16} />
-                                             客房服务
-                                         </button>
-                                     </>
-                                   ) : node.type === 'transport' ? (
-                                     <>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Phone size={16} />
-                                             联系司机
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Share size={16} />
-                                             分享行程
-                                         </button>
-                                     </>
-                                   ) : node.type === 'flight' ? (
-                                     <>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <QrCode size={16} />
-                                             电子登机牌
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-red-50 text-red-600 rounded-xl font-bold text-sm border border-red-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <AlertCircle size={16} />
-                                             遇到问题
-                                         </button>
-                                     </>
-                                   ) : node.type === 'food' ? (
-                                     <>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-orange-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Navigation size={16} />
-                                             一键导航
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <FileText size={16} />
-                                             查看菜单
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Clock size={16} />
-                                             排队取号
-                                         </button>
-                                     </>
-                                   ) : (
-                                     <button className="flex-1 py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                         <Info size={16} />
-                                         查看详情
-                                     </button>
-                                   )}
+                                 {/* 4. Footer Service Buttons */}
+                                 <div className="grid grid-cols-3 gap-2">
+                                     {serviceButtons.map((btn, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                            }}
+                                            className={`py-2 rounded-xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all active:scale-95 ${btn.color} ${serviceButtons.length === 1 ? 'col-span-3 flex-row py-3 text-xs' : ''}`}
+                                        >
+                                            <btn.icon size={serviceButtons.length === 1 ? 14 : 16} />
+                                            {btn.label}
+                                        </button>
+                                     ))}
                                  </div>
                               </div>
                             </div>
@@ -821,24 +837,48 @@ const TripDetail = ({ adoptedTrip }) => {
               <div className="bg-white border-b border-slate-100 sticky top-0 z-40">
                  <div className="flex overflow-x-auto scrollbar-hide px-4 py-3 gap-3">
                     {trip.itinerary.map((day, index) => (
-                       <button
-                          key={index}
-                          onClick={() => setSelectedDayIndex(index)}
-                          className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
-                             selectedDayIndex === index 
-                             ? 'bg-slate-900 text-white border-slate-900 shadow-md transform scale-105' 
-                             : 'bg-white text-slate-500 border-slate-200'
+                       <div key={index} className="relative group">
+                          <button
+                             onClick={() => setSelectedDayIndex(index)}
+                             className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                                selectedDayIndex === index 
+                                ? 'bg-slate-900 text-white border-slate-900 shadow-md transform scale-105' 
+                                : 'bg-white text-slate-500 border-slate-200'
+                             }`}
+                          >
+                             {day.dayLabel}
+                          </button>
+                          {isDeleteMode && trip.itinerary.length > 1 && (
+                             <button
+                                onClick={(e) => {
+                                   e.stopPropagation();
+                                   handleDeleteDay(index);
+                                }}
+                                className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white shadow-sm z-10 hover:bg-red-600 transition-colors"
+                             >
+                                <X size={10} />
+                             </button>
+                          )}
+                       </div>
+                    ))}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                       <button 
+                          onClick={handleAddDay}
+                          className="w-10 h-9 flex items-center justify-center rounded-xl border border-dashed border-slate-300 text-slate-400 hover:bg-slate-50 hover:border-slate-400 transition-colors"
+                       >
+                          <Plus size={16} />
+                       </button>
+                       <button 
+                          onClick={() => setIsDeleteMode(!isDeleteMode)}
+                          className={`w-10 h-9 flex items-center justify-center rounded-xl border border-dashed transition-colors ${
+                             isDeleteMode 
+                             ? 'border-red-400 bg-red-50 text-red-500' 
+                             : 'border-slate-300 text-slate-400 hover:bg-slate-50 hover:border-slate-400'
                           }`}
                        >
-                          {day.dayLabel}
+                          <Minus size={16} />
                        </button>
-                    ))}
-                    <button 
-                       onClick={handleAddDay}
-                       className="flex-shrink-0 w-10 flex items-center justify-center rounded-xl border border-dashed border-slate-300 text-slate-400 hover:bg-slate-50"
-                    >
-                       <Plus size={16} />
-                    </button>
+                    </div>
                  </div>
               </div>
 
@@ -875,6 +915,8 @@ const TripDetail = ({ adoptedTrip }) => {
                        // Need a stable ID for reorder
                        const itemKey = node.id || node.time + node.title; 
                        const agent = getAgentInfo(node.type);
+                       const statusInfo = getStatusInfo(node.status);
+                       const serviceButtons = getServiceButtons(node.type);
                        
                        return (
                          <Reorder.Item key={itemKey} value={node} className="relative mb-6 group">
@@ -897,151 +939,186 @@ const TripDetail = ({ adoptedTrip }) => {
                                       {agent.name.split('·')[1] || agent.name}
                                    </div>
                                </div>
-                               <span className="text-sm font-bold text-slate-800">{node.type === 'hotel' ? '入住酒店' : node.type === 'scenic' ? '游玩景点' : node.title}</span>
+                               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusInfo.color}`}>
+                                  {statusInfo.label}
+                               </span>
                             </div>
 
                             <motion.div 
                                drag="x"
                                dragConstraints={{ left: -80, right: 0 }}
                                dragElastic={0.1}
-                               className="bg-white rounded-[2rem] p-4 shadow-sm border border-slate-100 overflow-hidden relative z-10"
+                               onClick={() => navigate('/chat-planning', { state: { nodeContext: node } })}
+                               className={`bg-white rounded-[2rem] p-4 shadow-sm border ${agent.border} overflow-hidden relative z-10 cursor-pointer active:scale-98 transition-transform`}
                                style={{ touchAction: "pan-y" }}
                             >
-                               {/* Agent Header */}
-                               <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-50">
-                                  <div className="flex items-center gap-2">
-                                     <div className={`w-8 h-8 rounded-full ${agent.bgColor} flex items-center justify-center`}>
-                                        <agent.icon size={16} className={agent.color} />
-                                     </div>
-                                     <div className="flex flex-col">
-                                        <span className={`text-xs font-bold ${agent.color}`}>{agent.name.split('·')[0]}</span>
-                                        <div className="flex items-center gap-1">
-                                           <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                                           <span className="text-[10px] text-slate-400">在线</span>
-                                        </div>
+                               {/* 1. Header: H3 Theme Name + Rating */}
+                               <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-50">
+                                  <div className="flex flex-col gap-1">
+                                     <h3 className="font-bold text-sm text-slate-800">
+                                        {(node.type === 'flight' || node.type === 'transport') && node.details.flightNo 
+                                          ? node.details.flightNo 
+                                          : (node.details.name || node.title)}
+                                     </h3>
+                                     
+                                     {/* Sub-header Info Line */}
+                                     <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                                        {(node.type === 'flight' || node.type === 'transport') ? (
+                                            <>
+                                                <span>{node.details.dep || '出发地'}</span>
+                                                <ArrowRight size={8} />
+                                                <span>{node.details.arr || '目的地'}</span>
+                                            </>
+                                        ) : node.type === 'group_meal' ? (
+                                            <>
+                                                <span className="text-orange-600 font-bold">{node.details.standard || '团餐标准'}</span>
+                                                <span className="text-slate-300">|</span>
+                                                <span>{node.details.seats || '10人/桌'}</span>
+                                            </>
+                                        ) : node.type === 'free_time' ? (
+                                            <>
+                                                <span className="bg-teal-50 text-teal-600 px-1.5 rounded font-bold">{node.details.duration || '2h'}</span>
+                                                <span>{node.details.location || '自由活动区域'}</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                               <div className="flex items-center gap-0.5">
+                                                  {[1,2,3,4,5].map(i => <Star key={i} size={8} className={`text-orange-400 ${i <= Math.round(parseFloat(node.details.score || 4.8)) ? 'fill-orange-400' : ''}`} />)}
+                                               </div>
+                                               <span className="font-bold text-slate-600">{node.details.score || '4.8'}</span>
+                                               {node.details.level && (
+                                                  <>
+                                                    <span className="text-slate-300">|</span>
+                                                    <span className="font-bold text-blue-600">{node.details.level}</span>
+                                                  </>
+                                               )}
+                                               {node.details.price && (
+                                                  <>
+                                                    <span className="text-slate-300">|</span>
+                                                    <span>
+                                                      {node.type === 'food' ? `¥${node.details.price}/人` : node.details.price}
+                                                    </span>
+                                                  </>
+                                               )}
+                                            </>
+                                        )}
                                      </div>
                                   </div>
-                                  <span className="px-2 py-1 bg-slate-50 text-slate-500 text-[10px] font-bold rounded-lg border border-slate-100">
-                                    {agent.tag}
+                                  
+                                  {/* Type Badge */}
+                                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                                     node.type === 'flight' || node.type === 'transport' ? 'bg-blue-50 text-blue-600' :
+                                     node.type === 'food' ? 'bg-orange-50 text-orange-600' :
+                                     node.type === 'group_meal' ? 'bg-orange-100 text-orange-800' :
+                                     node.type === 'hotel' ? 'bg-indigo-50 text-indigo-600' :
+                                     node.type === 'free_time' ? 'bg-teal-50 text-teal-600' :
+                                     'bg-green-50 text-green-600'
+                                  }`}>
+                                     {node.type === 'flight' ? '航班' : 
+                                      node.type === 'transport' ? '交通' : 
+                                      node.type === 'food' ? '餐饮' : 
+                                      node.type === 'group_meal' ? '团餐' :
+                                      node.type === 'hotel' ? '酒店' : 
+                                      node.type === 'free_time' ? '自由活动' : '景点'}
                                   </span>
                                </div>
 
-                               {/* Main Content */}
-                                 <div className="flex gap-4 mb-5">
-                                    {/* Left Image (Optional) or Placeholder */}
-                                    <div className="w-24 h-24 rounded-2xl bg-slate-100 shrink-0 overflow-hidden relative">
-                                      {node.image ? (
-                                          <img src={node.image} alt={node.title} className="w-full h-full object-cover" />
-                                      ) : (
-                                          <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-bold text-[10px] uppercase tracking-wider">
-                                              {node.type === 'scenic' ? 'Scenic' : node.type}
-                                          </div>
-                                      )}
-                                    </div>
-                                    
-                                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                       <h3 className="text-xl font-bold text-slate-800 mb-1 truncate">{node.title}</h3>
-                                       <p className="text-xs text-slate-500 mb-2 truncate">{node.details.desc || '暂无描述'}</p>
-                                       <div className="flex items-center gap-2">
-                                          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded font-medium">计划中</span>
-                                          {node.type === 'scenic' && (
-                                              <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-[10px] rounded font-bold">建议游玩 2h</span>
-                                          )}
-                                       </div>
-                                    </div>
-                                 </div>
+                               {/* 2. Middle: Left Image | Right Info */}
+                               <div className="flex gap-3 mb-3">
+                                  {/* Left: Image (Hidden for free_time if no image) */}
+                                  {node.type !== 'free_time' && (
+                                      <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-slate-100 relative">
+                                         {node.image ? (
+                                            <img src={node.image} alt={node.title} className="w-full h-full object-cover" />
+                                         ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-slate-300 bg-slate-50">
+                                               {node.type === 'flight' ? <Plane size={24} /> : 
+                                                node.type === 'group_meal' ? <Utensils size={24} /> :
+                                                <Camera size={20} />}
+                                            </div>
+                                         )}
+                                      </div>
+                                  )}
 
-                                 {/* Huang Xiaoxi TIPS */}
-                                 {node.tips && (
-                                    <div className="mb-4 mx-1 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-3 border border-cyan-100 flex gap-3 items-start">
-                                       <div className="w-6 h-6 rounded-full bg-cyan-100 flex items-center justify-center shrink-0 mt-0.5">
-                                          <Sparkles size={12} className="text-cyan-600" />
-                                       </div>
-                                       <div className="flex-1">
-                                          <div className="flex items-center gap-1.5 mb-1">
-                                             <span className="text-xs font-bold text-cyan-700">黄小西 TIPS</span>
-                                             <div className="px-1.5 py-0.5 rounded-full bg-cyan-100 text-[8px] font-bold text-cyan-600">AI 生成</div>
-                                          </div>
-                                          <p className="text-xs text-slate-600 leading-relaxed">{node.tips}</p>
-                                       </div>
-                                    </div>
-                                 )}
+                                  {/* Right: Address + Tags */}
+                                  <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                                     <div className="space-y-1.5">
+                                        {/* Description / Address */}
+                                        <div className="flex items-start gap-1 text-[10px] text-slate-500">
+                                           {node.type === 'free_time' ? (
+                                               <div className="flex flex-col gap-1 w-full">
+                                                   <div className="flex items-center gap-1">
+                                                       <Clock size={12} className="shrink-0 text-teal-500" />
+                                                       <span className="font-bold text-slate-700">集合时间：{node.details.gatheringTime || '待定'}</span>
+                                                   </div>
+                                                   <div className="flex items-center gap-1">
+                                                       <MapPin size={12} className="shrink-0 text-teal-500" />
+                                                       <span>{node.details.gatheringPoint || '待定'}</span>
+                                                   </div>
+                                               </div>
+                                           ) : node.type === 'group_meal' ? (
+                                               <div className="flex flex-col gap-1 w-full">
+                                                   <div className="flex items-center gap-1">
+                                                       <Utensils size={12} className="shrink-0 text-orange-500" />
+                                                       <span className="font-bold text-slate-700">餐标：{node.details.menu || '标准团餐'}</span>
+                                                   </div>
+                                                   <div className="flex items-center gap-1">
+                                                       <MapPin size={12} className="shrink-0 text-orange-500" />
+                                                       <span>桌号：{node.details.tableNo || '待定'}</span>
+                                                   </div>
+                                               </div>
+                                           ) : (
+                                               <>
+                                                   <MapPin size={12} className="shrink-0 mt-0.5 text-slate-400" />
+                                                   <span className="line-clamp-2">{node.details.desc || '贵州省贵阳市...'}</span>
+                                               </>
+                                           )}
+                                        </div>
 
-                                 {/* Action Buttons */}
-                               <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-                                  {node.type === 'scenic' ? (
-                                    <>
-                                        <button className="flex-1 min-w-[100px] py-2.5 bg-purple-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-purple-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Headphones size={16} />
-                                             语音讲解
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <MapPin size={16} />
-                                             地图导览
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Ticket size={16} />
-                                             购票/预约
-                                         </button>
-                                     </>
-                                   ) : node.type === 'hotel' ? (
-                                     <>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Navigation size={16} />
-                                             一键导航
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Phone size={16} />
-                                             联系前台
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Coffee size={16} />
-                                             客房服务
-                                         </button>
-                                     </>
-                                   ) : node.type === 'transport' ? (
-                                     <>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Phone size={16} />
-                                             联系司机
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Share size={16} />
-                                             分享行程
-                                         </button>
-                                     </>
-                                   ) : node.type === 'flight' ? (
-                                     <>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <QrCode size={16} />
-                                             电子登机牌
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-red-50 text-red-600 rounded-xl font-bold text-sm border border-red-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <AlertCircle size={16} />
-                                             遇到问题
-                                         </button>
-                                     </>
-                                   ) : node.type === 'food' ? (
-                                     <>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-orange-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-200 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Navigation size={16} />
-                                             一键导航
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <FileText size={16} />
-                                             查看菜单
-                                         </button>
-                                         <button className="flex-1 min-w-[100px] py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                             <Clock size={16} />
-                                             排队取号
-                                         </button>
-                                     </>
-                                   ) : (
-                                     <button className="flex-1 py-2.5 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm border border-slate-100 flex items-center justify-center gap-1.5 active:scale-95 transition-transform whitespace-nowrap">
-                                         <Info size={16} />
-                                         查看详情
-                                     </button>
-                                   )}
+                                        {/* Tags */}
+                                        <div className="flex flex-wrap gap-1">
+                                           {((node.type === 'flight' || node.type === 'transport') 
+                                              ? ['准点率95%', '经济舱', '有餐食'] 
+                                              : node.type === 'group_meal'
+                                              ? ['特色菜', '十人一桌', '禁酒']
+                                              : node.type === 'free_time'
+                                              ? ['自由购物', '拍照打卡', '自行解散']
+                                              : node.type === 'hotel'
+                                              ? ['含早', '无窗', '大床']
+                                              : ['必打卡', '好评如潮', '老字号']
+                                           ).map((tag, i) => (
+                                              <span key={i} className="text-[8px] px-1.5 py-0.5 bg-slate-50 text-slate-500 rounded border border-slate-100">{tag}</span>
+                                           ))}
+                                        </div>
+                                     </div>
+                                  </div>
+                               </div>
+
+                               {/* 3. TIPS Section */}
+                               {node.tips && (
+                                  <div className="bg-orange-50/50 rounded-lg p-2.5 mb-3 flex gap-2 items-start border border-orange-100/50">
+                                     <div className="mt-0.5"><Sparkles size={10} className="text-orange-500"/></div>
+                                     <div className="text-[10px] text-slate-600 leading-relaxed">
+                                        <span className="font-bold text-orange-600">黄小西Tips：</span>
+                                        {node.tips}
+                                     </div>
+                                  </div>
+                               )}
+
+                               {/* 4. Footer Service Buttons */}
+                               <div className="grid grid-cols-3 gap-2">
+                                   {serviceButtons.map((btn, idx) => (
+                                      <button
+                                          key={idx}
+                                          onClick={(e) => {
+                                              e.stopPropagation();
+                                          }}
+                                          className={`py-2 rounded-xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all active:scale-95 ${btn.color} ${serviceButtons.length === 1 ? 'col-span-3 flex-row py-3 text-xs' : ''}`}
+                                      >
+                                          <btn.icon size={serviceButtons.length === 1 ? 14 : 16} />
+                                          {btn.label}
+                                      </button>
+                                   ))}
                                </div>
                             </motion.div>
                          </Reorder.Item>

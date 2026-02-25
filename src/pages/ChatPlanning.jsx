@@ -825,26 +825,92 @@ const ItineraryCard = ({ onAdopt, tripData }) => {
                   }
                   title={item.title}
                 >
-                  <div className="mt-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                     {item.details.desc || item.details.name}
-                     {item.image && (
-                        <div className="mt-2 w-full h-32 rounded-lg overflow-hidden">
-                           <img src={item.image} alt="" className="w-full h-full object-cover" />
-                        </div>
-                     )}
-                     
-                     {/* Yellow Xiaoxi Tips */}
-                     {item.tips && (
-                        <div className="mt-3 pt-3 border-t border-slate-200/50 flex gap-2 items-start">
-                           <div className="w-3.5 h-3.5 rounded-full bg-orange-100 flex items-center justify-center shrink-0 mt-0.5">
-                              <Sparkles size={8} className="text-orange-500" />
+                  <div className={`bg-white rounded-[2rem] p-4 shadow-sm border ${item.type === 'flight' || item.type === 'transport' ? 'border-blue-100' : item.type === 'food' ? 'border-orange-100' : item.type === 'hotel' ? 'border-indigo-100' : 'border-green-100'} overflow-hidden cursor-pointer active:scale-98 transition-transform mt-2`}>
+                     {/* 1. Header: H3 Theme Name + Rating */}
+                     <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-50">
+                        <div className="flex flex-col gap-1">
+                           <h3 className="font-bold text-sm text-slate-800">{item.details?.name || item.title}</h3>
+                           <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-0.5">
+                                 {[1,2,3,4,5].map(i => <Star key={i} size={8} className="text-orange-400 fill-orange-400" />)}
+                              </div>
+                              <span className="text-[10px] font-bold text-slate-600">4.9</span>
+                              <span className="text-[9px] text-slate-300">|</span>
+                              <span className="text-[9px] text-slate-400">{item.details?.price || '¥88'}/人</span>
                            </div>
-                           <div className="text-[10px] text-slate-500 leading-relaxed">
+                        </div>
+                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                           item.type === 'flight' || item.type === 'transport' ? 'bg-blue-50 text-blue-600' :
+                           item.type === 'food' ? 'bg-orange-50 text-orange-600' :
+                           item.type === 'hotel' ? 'bg-indigo-50 text-indigo-600' :
+                           'bg-green-50 text-green-600'
+                        }`}>
+                           {item.type === 'flight' ? '航班' : 
+                            item.type === 'transport' ? '交通' : 
+                            item.type === 'food' ? '餐饮' : 
+                            item.type === 'hotel' ? '酒店' : '景点'}
+                        </span>
+                     </div>
+
+                     {/* 2. Middle: Left Image | Right Info */}
+                     <div className="flex gap-3 mb-3">
+                        {/* Left: Image */}
+                        <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-slate-100 relative">
+                           {item.image ? (
+                              <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                           ) : (
+                              <div className="w-full h-full flex items-center justify-center text-slate-300 bg-slate-50">
+                                 <Camera size={20} />
+                              </div>
+                           )}
+                        </div>
+
+                        {/* Right: Address + Tags */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                           <div className="space-y-1.5">
+                              <div className="flex items-start gap-1 text-[10px] text-slate-500">
+                                 <MapPin size={12} className="shrink-0 mt-0.5 text-slate-400" />
+                                 <span className="line-clamp-2">{item.details?.desc || '贵州省贵阳市...'}</span>
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                 {['必打卡', '好评如潮', '老字号'].map((tag, i) => (
+                                    <span key={i} className="text-[8px] px-1.5 py-0.5 bg-slate-50 text-slate-500 rounded border border-slate-100">{tag}</span>
+                                 ))}
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* 3. TIPS Section */}
+                     {item.tips && (
+                        <div className="bg-orange-50/50 rounded-lg p-2.5 mb-3 flex gap-2 items-start border border-orange-100/50">
+                           <div className="mt-0.5"><Sparkles size={10} className="text-orange-500"/></div>
+                           <div className="text-[10px] text-slate-600 leading-relaxed">
                               <span className="font-bold text-orange-600">黄小西Tips：</span>
                               {item.tips}
                            </div>
                         </div>
                      )}
+
+                     {/* 4. Footer Service Button */}
+                     <button
+                        onClick={(e) => {
+                           e.stopPropagation();
+                           // Logic for primary action
+                           console.log('Action clicked for', item.title);
+                        }}
+                        className={`w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all active:scale-95 shadow-sm ${
+                           item.type === 'flight' || item.type === 'transport' ? 'bg-blue-600 text-white shadow-blue-200' :
+                           item.type === 'food' ? 'bg-orange-500 text-white shadow-orange-200' :
+                           item.type === 'hotel' ? 'bg-indigo-600 text-white shadow-indigo-200' :
+                           'bg-green-600 text-white shadow-green-200'
+                        }`}
+                     >
+                        {item.type === 'flight' || item.type === 'transport' ? '预订行程' : 
+                         item.type === 'food' ? '立即订座' : 
+                         item.type === 'hotel' ? '查看房型' : '购买门票'}
+                        <ArrowRight size={12} />
+                     </button>
                   </div>
                 </TimelineItem>
               ))}

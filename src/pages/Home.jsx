@@ -51,31 +51,40 @@ const NewsMarquee = ({ className }) => {
   }, []);
 
   return (
-    <button 
-      onClick={() => navigate('/news')}
-      className={`bg-white/80 backdrop-blur-md rounded-full py-1.5 px-3 flex items-center gap-2 shadow-sm border border-slate-100 active:scale-98 transition-transform w-full max-w-[280px] mx-auto ${className}`}
-    >
-      <div className="bg-indigo-100 p-1 rounded-full shrink-0">
-        <Volume2 size={12} className="text-indigo-600" />
-      </div>
-      <div className="flex-1 h-4 relative overflow-hidden text-left">
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key={index}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="absolute inset-0 flex items-center"
-          >
-            <span className="text-[10px] text-slate-600 truncate font-medium block w-full">
-              {news[index]}
-            </span>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-      <ChevronRight size={12} className="text-slate-400 shrink-0" />
-    </button>
+    <div className={`flex items-center gap-2 w-full max-w-[300px] mx-auto ${className}`}>
+      <button 
+        onClick={() => navigate('/news')}
+        className="bg-white/80 backdrop-blur-md rounded-full py-1.5 px-3 flex items-center gap-2 shadow-sm border border-slate-100 active:scale-98 transition-transform flex-1 min-w-0"
+      >
+        <div className="bg-indigo-100 p-1 rounded-full shrink-0">
+          <Volume2 size={12} className="text-indigo-600" />
+        </div>
+        <div className="flex-1 h-4 relative overflow-hidden text-left">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={index}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 flex items-center"
+            >
+              <span className="text-[10px] text-slate-600 truncate font-medium block w-full">
+                {news[index]}
+              </span>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+        <ChevronRight size={12} className="text-slate-400 shrink-0" />
+      </button>
+
+      <button
+        onClick={() => navigate('/language-guide')}
+        className="bg-white/80 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center shadow-sm border border-slate-100 active:scale-90 transition-transform shrink-0"
+      >
+        <Languages size={14} className="text-slate-600" />
+      </button>
+    </div>
   );
 };
 

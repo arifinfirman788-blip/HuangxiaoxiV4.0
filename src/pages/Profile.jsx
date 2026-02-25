@@ -21,7 +21,9 @@ import {
   Plus,
   LayoutDashboard,
   ShieldCheck,
-  X
+  X,
+  Heart,
+  Calendar
 } from 'lucide-react';
 import avatarImage from '../image/托腮_1.png';
 import CreateAgentModal from '../components/CreateAgentModal';
@@ -223,44 +225,43 @@ const Profile = ({ isAuthenticated, onLogout }) => {
         </div>
       </div>
 
-      {/* My Orders Section */}
+      {/* My Services Section */}
       <div className="px-6 mb-6">
-        <h3 className="text-base font-bold text-slate-800 mb-4 px-1">我的订单</h3>
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-          <div className="grid grid-cols-3 gap-y-6">
-            <OrderItem icon={Map} label="线路" color="text-emerald-500" bg="bg-emerald-50" />
-            <OrderItem icon={Mountain} label="景区" color="text-cyan-500" bg="bg-cyan-50" />
-            <OrderItem icon={Bed} label="酒店" color="text-orange-500" bg="bg-orange-50" />
-            <OrderItem icon={Ticket} label="活动" color="text-purple-500" bg="bg-purple-50" />
-            <OrderItem icon={Car} label="出行" color="text-blue-500" bg="bg-blue-50" />
-            <OrderItem icon={ShoppingBag} label="零售" color="text-pink-500" bg="bg-pink-50" />
+        <h3 className="text-base font-bold text-slate-800 mb-4 px-1">我的服务</h3>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+          
+          {/* Top Actions */}
+          <div className="flex justify-between items-center mb-6">
+             <OrderItem icon={Heart} label="我的收藏" color="text-rose-500" bg="bg-rose-50" />
+             <OrderItem icon={ShoppingBag} label="购物车" color="text-orange-500" bg="bg-orange-50" />
+             <OrderItem icon={Ticket} label="优惠券" color="text-pink-500" bg="bg-pink-50" />
+             <OrderItem icon={Calendar} label="我的行程" color="text-indigo-500" bg="bg-indigo-50" />
           </div>
+
+          <div className="h-px w-full bg-slate-100 mb-6" />
+
+          {/* Order Center */}
+          <div>
+             <h4 className="text-sm font-bold text-slate-700 mb-4">订单中心</h4>
+             <div className="grid grid-cols-3 gap-y-6">
+                <OrderItem icon={Map} label="线路" color="text-emerald-500" bg="bg-emerald-50" />
+                <OrderItem icon={Mountain} label="景区" color="text-cyan-500" bg="bg-cyan-50" />
+                <OrderItem icon={Bed} label="酒店" color="text-orange-500" bg="bg-orange-50" />
+                <OrderItem icon={Ticket} label="活动" color="text-purple-500" bg="bg-purple-50" />
+                <OrderItem icon={Car} label="出行" color="text-blue-500" bg="bg-blue-50" />
+                <OrderItem icon={ShoppingBag} label="零售" color="text-pink-500" bg="bg-pink-50" />
+             </div>
+          </div>
+
         </div>
       </div>
 
       {/* General Content Section */}
       <div className="px-6 mb-8 space-y-3">
-        <MenuItem 
-          icon={ShieldCheck} 
-          label={isCertified ? "本地人认证 (已认证)" : "本地人认证"} 
-          onClick={() => setShowCertModal(true)}
-          rightElement={isCertified ? <span className="text-green-500 text-xs font-bold flex items-center gap-1"><ShieldCheck size={12} /> 已认证</span> : null}
-        />
         <MenuItem icon={CreditCard} label="常用证件信息" />
         <MenuItem icon={FileText} label="协议规则" />
         <MenuItem icon={Phone} label="客服电话" />
         <MenuItem icon={Settings} label="设置" isLast />
-        
-        {isAuthenticated && (
-          <motion.button 
-            whileTap={{ scale: 0.98 }}
-            onClick={onLogout}
-            className="w-full flex items-center justify-center gap-2 p-4 bg-red-50 text-red-500 rounded-2xl border border-red-100 shadow-sm mt-6 font-bold text-sm"
-          >
-            <LogOut size={18} />
-            退出登录
-          </motion.button>
-        )}
       </div>
 
       {/* Footer Info */}

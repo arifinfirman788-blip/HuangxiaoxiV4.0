@@ -250,19 +250,25 @@ const BottomNav = ({ onAdoptTrip, isAuthenticated, hasTrip }) => {
 
 const ImportModal = ({ isOpen, onClose, onConfirm, guideStep, setGuideStep }) => {
   const [isScanning, setIsScanning] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
         setIsScanning(true);
         // Mock scanning process
         const timer = setTimeout(() => {
-            setIsScanning(false);
-            // Auto confirm and navigate
-            onConfirm({
+            const scannedData = {
                 title: "识别到的行程：黄果树瀑布2日游",
+                agency: {
+                    name: "贵州风光国际旅行社",
+                    license: "L-GZ-CJ0022",
+                    level: "AAAA",
+                    operator: "李四",
+                    operatorId: "8888",
+                    createTime: "2026-05-01 10:00"
+                },
                 days: 2,
                 date: "05.01-05.02",
-                // ... mock data ...
                 itinerary: [
                     {
                         date: "05.01",
@@ -273,13 +279,30 @@ const ImportModal = ({ isOpen, onClose, onConfirm, guideStep, setGuideStep }) =>
                         tips: "建议穿着舒适的运动鞋，注意防晒。",
                         timeline: [
                           {
+                            id: 'p-arrival',
+                            time: '08:30',
+                            title: '抵达贵阳',
+                            type: 'flight',
+                            status: 'planned',
+                            details: { 
+                                flightNo: 'CZ3681', 
+                                dep: '北京大兴', 
+                                arr: '贵阳龙洞堡', 
+                                desc: '准点率 98%' 
+                            }
+                          },
+                          {
                             id: 'p-1',
-                            time: '09:00',
+                            time: '10:30',
                             title: '黄果树大瀑布',
                             type: 'scenic',
                             status: 'planned',
                             image: getPlaceholder(400, 300, 'Waterfall'),
-                            details: { name: '黄果树大瀑布', desc: '亚洲第一大瀑布' }
+                            details: { 
+                                name: '黄果树大瀑布', 
+                                desc: '亚洲第一大瀑布',
+                                address: '安顺市关岭布依族苗族自治县'
+                            }
                           },
                           {
                             id: 'p-stay',
@@ -287,12 +310,86 @@ const ImportModal = ({ isOpen, onClose, onConfirm, guideStep, setGuideStep }) =>
                             title: '入住酒店',
                             type: 'hotel',
                             status: 'planned',
-                            details: { name: '黄果树景区附近客栈', desc: '已确认入住' }
+                            details: { 
+                                name: '黄果树景区附近客栈', 
+                                desc: '高级大床房 | 含早',
+                                roomType: '高级大床房',
+                                address: '黄果树风景名胜区新城'
+                            }
+                          }
+                        ]
+                    },
+                    {
+                        date: "05.02",
+                        dayLabel: "Day 2",
+                        tag: "文化探索",
+                        weather: { temp: "22°C", desc: "多云" }, 
+                        highlights: "龙宫 — 屯堡文化 — 返程",
+                        tips: "龙宫内气温较低，建议带件薄外套。",
+                        timeline: [
+                          {
+                            id: 'p-2-1',
+                            time: '09:30',
+                            title: '龙宫景区',
+                            type: 'scenic',
+                            status: 'planned',
+                            image: getPlaceholder(400, 300, 'DragonCave'),
+                            details: { 
+                                name: '龙宫', 
+                                desc: '中国最美水溶洞',
+                                address: '安顺市西秀区龙宫镇'
+                            }
+                          },
+                          {
+                             id: 'p-group-meal',
+                             time: '12:00',
+                             title: '团队午餐',
+                             type: 'group_meal',
+                             status: 'planned',
+                             details: {
+                                name: '屯堡特色餐厅',
+                                standard: '50元/人',
+                                menu: '八菜一汤',
+                                desc: '标准团餐',
+                                address: '安顺市平坝区天龙屯堡景区内'
+                             }
+                          },
+                          {
+                            id: 'p-2-2',
+                            time: '13:30',
+                            title: '天龙屯堡',
+                            type: 'scenic',
+                            status: 'planned',
+                            image: getPlaceholder(400, 300, 'Village'),
+                            details: { 
+                                name: '天龙屯堡', 
+                                desc: '600年大明遗风',
+                                address: '安顺市平坝区天龙镇'
+                            }
+                          },
+                          {
+                            id: 'p-2-end',
+                            time: '17:00',
+                            title: '行程结束',
+                            type: 'transport',
+                            status: 'planned',
+                            details: { 
+                                name: '送机返程', 
+                                flightNo: 'CZ3682', 
+                                dep: '贵阳龙洞堡', 
+                                arr: '北京大兴', 
+                                desc: '预计19:30抵达' 
+                            }
                           }
                         ]
                     }
                 ]
-            });
+            };
+            
+            setIsScanning(false);
+            onClose();
+            navigate('/trip/confirm', { state: { scannedData } });
+            
         }, 2000);
         return () => clearTimeout(timer);
     } else {
@@ -303,27 +400,36 @@ const ImportModal = ({ isOpen, onClose, onConfirm, guideStep, setGuideStep }) =>
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 text-white">
-        <div className="flex flex-col items-center gap-6">
-            <div className="relative w-64 h-64 border-2 border-cyan-500/50 rounded-3xl flex items-center justify-center overflow-hidden">
-                <ScanLine size={48} className="text-cyan-400 animate-pulse" />
-                <motion.div 
-                    initial={{ top: 0 }}
-                    animate={{ top: "100%" }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                    className="absolute left-0 right-0 h-1 bg-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.8)]"
-                />
-                {/* Corner markers */}
-                <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-cyan-500 rounded-tl-xl" />
-                <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-cyan-500 rounded-tr-xl" />
-                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-cyan-500 rounded-bl-xl" />
-                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-cyan-500 rounded-br-xl" />
-            </div>
-            <p className="text-slate-300 font-medium">正在扫描行程码...</p>
-            <button onClick={onClose} className="mt-8 text-sm text-slate-500 border border-slate-700 px-6 py-2 rounded-full hover:bg-slate-800 transition-colors">
-                取消
-            </button>
-        </div>
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-6">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      <AnimatePresence mode="wait">
+        {isScanning && (
+          <motion.div 
+            key="scanning"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="relative z-10 w-full max-w-sm aspect-square bg-transparent border-2 border-cyan-500/50 rounded-[2rem] flex flex-col items-center justify-center overflow-hidden"
+          >
+             <div className="absolute inset-0 border-2 border-cyan-500 rounded-[2rem] opacity-50" />
+             <motion.div 
+               className="absolute top-0 left-0 right-0 h-1 bg-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.8)]"
+               animate={{ top: ['0%', '100%', '0%'] }}
+               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+             />
+             <ScanLine size={48} className="text-cyan-400 mb-4 animate-pulse" />
+             <p className="text-white font-bold text-lg">正在识别行程码...</p>
+             <p className="text-white/60 text-xs mt-2">请将取景框对准行程二维码</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

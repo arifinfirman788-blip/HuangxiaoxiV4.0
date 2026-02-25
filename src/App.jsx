@@ -24,6 +24,8 @@ import FoodAgent from './pages/agent/FoodAgent';
 import PersonalAgent from './pages/agent/PersonalAgent';
 import AgentService from './pages/AgentService';
 import BusinessCardPage from './pages/BusinessCardPage';
+import TripConfirmPage from './pages/TripConfirmPage';
+import LanguageGuide from './pages/LanguageGuide';
 
 // Auth Guard Component
 const RequireAuth = ({ children, isAuthenticated }) => {
@@ -194,6 +196,7 @@ function App() {
       >
         <Routes>
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/language-guide" element={<LanguageGuide />} />
           
           <Route element={<Layout onAdoptTrip={handleAdoptTrip} isAuthenticated={isAuthenticated} hasTrip={!!adoptedTrip} isBottomNavVisible={isBottomNavVisible} />}>
             <Route path="/" element={
@@ -226,6 +229,11 @@ function App() {
             <Route path="/agent/personal/:id" element={<PersonalAgent toggleBottomNav={setIsBottomNavVisible} onConnectAgent={handleConnectAgent} />} />
             <Route path="/agent-service/:id" element={<AgentService />} />
             <Route path="/business-card" element={<BusinessCardPage />} />
+            <Route path="/trip/confirm" element={
+              <RequireAuth isAuthenticated={isAuthenticated}>
+                <TripConfirmPage onAdoptTrip={handleAdoptTrip} />
+              </RequireAuth>
+            } />
           </Route>
 
           {/* Protected Routes */}

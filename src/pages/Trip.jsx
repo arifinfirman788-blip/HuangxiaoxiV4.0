@@ -1,20 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, ChevronRight, Users, Clock, ArrowUpRight, Scale, CheckCircle2, Circle, X, Play, Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar, MapPin, ChevronRight, ChevronDown, Users, Clock, ArrowUpRight, Scale, CheckCircle2, Circle, X, Play, Calendar as CalendarIcon, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getPlaceholder } from '../utils/imageUtils';
+
+const FilterDropdown = ({ options, value, onChange, label }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const selectedOption = options.find(o => o.value === value);
+  const displayLabel = value === 'all' ? label : selectedOption?.label || label;
+
+  return (
+    <div className="relative z-20">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-1 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 shadow-sm hover:bg-slate-50 transition-all active:scale-95"
+      >
+        <span>{displayLabel}</span>
+        <ChevronDown size={12} className={`text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.95 }}
+              transition={{ duration: 0.1 }}
+              className="absolute top-full right-0 mt-2 min-w-[100px] bg-white rounded-xl shadow-xl border border-slate-100 z-20 overflow-hidden py-1"
+            >
+              {options.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => {
+                    onChange(option.value);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-[10px] font-bold transition-colors flex items-center justify-between ${
+                    value === option.value 
+                      ? 'bg-slate-50 text-slate-900' 
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                  }`}
+                >
+                  {option.label}
+                  {value === option.value && <CheckCircle2 size={10} className="text-cyan-500" />}
+                </button>
+              ))}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const Trip = ({ adoptedTrip, onUpdateTrip }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'planned' | 'upcoming' | 'completed'
   const [isCompareMode, setIsCompareMode] = useState(false);
   const [selectedTrips, setSelectedTrips] = useState([]);
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
   const [tempStartDate, setTempStartDate] = useState('');
   const [tripToStart, setTripToStart] = useState(null);
+  const [activeTripId, setActiveTripId] = useState(null); // Track the currently active trip ID
 
-  // Mock Data for Demo Purposes if adoptedTrip is the only one
-  const mockHistoryTrips = [
+  // Mock Data for Demo Purposes
+  const [localTrips, setLocalTrips] = useState([
     {
       id: 'mock-1',
       title: '黔东南苗寨深度体验3日游',
@@ -23,7 +77,7 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
       distance: '320km',
       rating: '9.6',
       image: getPlaceholder(400, 300, 'Miao Village Trip'),
-      status: 'planned' // Changed from completed to planned for demo
+      status: 'planned'
     },
     {
       id: 'mock-2',
@@ -33,14 +87,31 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
       distance: '180km',
       rating: '9.5',
       image: getPlaceholder(400, 300, 'Zunyi Trip'),
-      status: 'planned' // Changed from completed to planned for demo
+      status: 'planned'
     }
-  ];
+  ]);
 
-  const myTrips = adoptedTrip ? [adoptedTrip, ...mockHistoryTrips] : [...mockHistoryTrips];
+  const myTrips = adoptedTrip ? [adoptedTrip, ...localTrips] : [...localTrips];
+
+  useEffect(() => {
+    const active = myTrips.find(t => t.startTime && t.status !== 'completed');
+    if (active) {
+        setActiveTripId(active.id);
+    } else {
+        setActiveTripId(null);
+    }
+  }, [adoptedTrip, localTrips]);
 
   const handleOpenStartModal = (trip, e) => {
     e.stopPropagation();
+    
+    // Check for conflict
+    if (activeTripId && activeTripId !== trip.id) {
+        const activeTrip = myTrips.find(t => t.id === activeTripId);
+        alert(`行程 "${activeTrip?.title || '未知行程'}" 正在进行中，请先结束该行程后再开始新的行程。`);
+        return;
+    }
+
     setTripToStart(trip);
     setIsStartModalOpen(true);
   };
@@ -53,12 +124,19 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
         return;
     }
     
+    // Set active trip ID
+    setActiveTripId(tripToStart.id);
+
     // If it's the adopted trip, update it
     if (adoptedTrip && tripToStart.id === adoptedTrip.id) {
         onUpdateTrip({ startTime: date.toISOString(), status: 'upcoming' });
     } else {
-        // For mock trips, we can't really update global state effectively without a real backend or more complex state
-        // But for demo, we'll just alert
+        // Update local trips
+        setLocalTrips(prev => prev.map(t => 
+            t.id === tripToStart.id 
+                ? { ...t, startTime: date.toISOString(), status: 'upcoming' }
+                : t
+        ));
         alert(`行程 "${tripToStart.title}" 已开启！`);
     }
     
@@ -70,15 +148,21 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
   const handleTerminateTrip = (trip, e) => {
       e.stopPropagation();
       if (window.confirm('确定要提前结束该行程吗？结束行程后将停止行程提醒。')) {
+          // Clear active trip ID
+          setActiveTripId(null);
+
           if (adoptedTrip && trip.id === adoptedTrip.id) {
               onUpdateTrip({ startTime: null, status: 'completed' });
           } else {
+              setLocalTrips(prev => prev.map(t => 
+                  t.id === trip.id 
+                      ? { ...t, startTime: null, status: 'completed' }
+                      : t
+              ));
               alert(`行程 "${trip.title}" 已结束！`);
           }
       }
   };
-
-  const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
 
   // Dynamically generate tabs based on trips
   const getMonth = (dateStr) => {
@@ -90,10 +174,40 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
       return dateStr;
   };
 
-  const filteredTrips = activeTab === 'all' 
-    ? myTrips 
-    : myTrips.filter(t => {
-        return getMonth(t.date) === activeTab;
+  const uniqueMonths = Array.from(new Set(
+      myTrips.map(t => getMonth(t.date))
+      .filter(m => m) // Filter out empty/null
+  )).sort((a, b) => {
+      // Simple sort for "X月" strings
+      return parseInt(a) - parseInt(b);
+  });
+
+  const statusOptions = [
+    { value: 'all', label: '状态' },
+    { value: 'planned', label: '计划中' },
+    { value: 'upcoming', label: '进行中' },
+    { value: 'completed', label: '已完成' }
+  ];
+
+  const monthOptions = [
+    { value: 'all', label: '月份' },
+    ...uniqueMonths.map(m => ({ value: m, label: m }))
+  ];
+
+  const filteredTrips = myTrips.filter(t => {
+      // Status Filter
+      if (statusFilter !== 'all' && t.status !== statusFilter) return false;
+      // Month Filter
+      if (activeTab !== 'all') {
+          const month = getMonth(t.date);
+          if (month !== activeTab) return false;
+      }
+      return true;
+  }).sort((a, b) => {
+        // Active trip comes first
+        if (a.id === activeTripId) return -1;
+        if (b.id === activeTripId) return 1;
+        return 0;
     });
 
   const toggleTripSelection = (tripId) => {
@@ -125,104 +239,37 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
       {/* Featured Routes (Horizontal Scroll) - Shrunk */}
       <div className="overflow-x-auto scrollbar-hide -mx-6 px-6 mb-8 flex gap-3">
         <HorizontalTripCard 
-          country="中国·贵州"
           title="黄果树瀑布深度游"
-          date="05/01 - 05/03"
-          users={[getPlaceholder(100, 100, 'U1'), getPlaceholder(100, 100, 'U2'), getPlaceholder(100, 100, 'U3')]}
-          extraUsers={22}
+          tags={['5A景区', '瀑布奇观', '亲子优选']}
+          price="1280"
           bgImage={getPlaceholder(600, 300, 'Waterfall Trip')}
-          icon="🌊"
         />
         <HorizontalTripCard 
-          country="中国·贵州"
           title="西江千户苗寨"
-          date="05/04 - 05/06"
-          users={[getPlaceholder(100, 100, 'U4'), getPlaceholder(100, 100, 'U5')]}
-          extraUsers={15}
+          tags={['苗族风情', '长桌宴', '夜景迷人']}
+          price="980"
           bgImage={getPlaceholder(600, 300, 'Miao Village')}
-          icon="🏮"
         />
       </div>
 
       {/* My Trips Section */}
       <section>
-        <div className="flex flex-col gap-4 mb-4">
-          <div className="flex justify-between items-center mr-2">
-            <h2 className="text-xl font-bold text-slate-800 whitespace-nowrap">我的行程</h2>
-            
-            <div className="relative">
-              <button 
-                onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-100 shadow-sm active:scale-95 transition-transform"
-              >
-                <CalendarIcon size={14} className="text-cyan-500" />
-                <span>{activeTab === 'all' ? '全部月份' : activeTab}</span>
-                <ChevronRight size={14} className={`text-slate-400 transition-transform ${isMonthPickerOpen ? 'rotate-90' : ''}`} />
-              </button>
-
-              <AnimatePresence>
-                {isMonthPickerOpen && (
-                  <>
-                    <motion.div 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="fixed inset-0 z-40"
-                      onClick={() => setIsMonthPickerOpen(false)}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 p-4"
-                    >
-                      <div className="flex items-center justify-between mb-3 px-1">
-                        <span className="text-xs font-bold text-slate-400">选择月份</span>
-                        <button 
-                          onClick={() => {
-                            setActiveTab('all');
-                            setIsMonthPickerOpen(false);
-                          }}
-                          className="text-xs font-bold text-cyan-600 hover:text-cyan-700"
-                        >
-                          显示全部
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-4 gap-2">
-                        {Array.from({ length: 12 }, (_, i) => i + 1).map(month => {
-                          const monthStr = `${month}月`;
-                          const isActive = activeTab === monthStr;
-                          const hasTrips = myTrips.some(t => getMonth(t.date) === monthStr);
-                          
-                          return (
-                            <button
-                              key={month}
-                              onClick={() => {
-                                setActiveTab(monthStr);
-                                setIsMonthPickerOpen(false);
-                              }}
-                              className={`
-                                aspect-square rounded-xl flex items-center justify-center text-sm font-bold relative
-                                transition-all
-                                ${isActive 
-                                  ? 'bg-slate-900 text-white shadow-md' 
-                                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
-                                }
-                              `}
-                            >
-                              {month}
-                              {hasTrips && !isActive && (
-                                <span className="absolute bottom-1.5 w-1 h-1 rounded-full bg-cyan-500" />
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
-            </div>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-slate-800 whitespace-nowrap">我的行程</h2>
+          
+          <div className="flex gap-2 relative z-20">
+            <FilterDropdown 
+              options={monthOptions} 
+              value={activeTab} 
+              onChange={setActiveTab} 
+              label="月份"
+            />
+            <FilterDropdown 
+              options={statusOptions} 
+              value={statusFilter} 
+              onChange={setStatusFilter} 
+              label="状态"
+            />
           </div>
         </div>
 
@@ -342,45 +389,33 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
   );
 };
 
-const HorizontalTripCard = ({ country, title, date, users, extraUsers, bgImage, icon }) => (
-  // Shrunk dimensions: w-[70%] h-48 (was w-[85%] h-64)
+const HorizontalTripCard = ({ title, tags, price, bgImage }) => (
   <div className="flex-shrink-0 w-[70%] h-48 rounded-[2rem] p-5 text-white relative overflow-hidden group">
     {/* Background Image */}
     <div className="absolute inset-0">
-      <img src={bgImage} alt={title} className="w-full h-full object-cover" />
+      <img src={bgImage} alt={title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
     </div>
 
-    <div className="absolute top-0 right-0 p-4 z-10 hidden">
-       <button className="w-6 h-6 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/10">
-         <ArrowUpRight size={12} />
-       </button>
-    </div>
-
-    <div className="relative z-10 h-full flex flex-col justify-between">
-      <div className="pt-1">
-        <div className="flex items-center gap-1.5 mb-1.5">
-           <div className="w-3 h-2 bg-cyan-500 rounded-sm" /> 
-           <span className="text-[9px] font-bold tracking-widest uppercase opacity-90 text-shadow">{country}</span>
+    <div className="relative z-10 h-full flex flex-col justify-end">
+      <div>
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1.5 mb-2">
+           {tags && tags.map((tag, i) => (
+             <span key={i} className="px-2 py-0.5 rounded-md bg-white/20 backdrop-blur-md border border-white/10 text-[9px] font-bold text-white/90">
+               {tag}
+             </span>
+           ))}
         </div>
-        <h3 className="text-lg font-bold leading-tight mb-1.5 text-shadow-sm line-clamp-2">{title}</h3>
-        <div className="flex items-center gap-1.5 text-[10px] opacity-80 font-medium">
-          <Calendar size={10} />
-          <span>{date.split(' - ')[0].split('/')[0]}月</span>
-        </div>
-      </div>
-
-      <div className="flex justify-between items-center">
-        <div className="flex -space-x-2 hidden">
-          {users.map((u, i) => (
-            <img key={i} src={u} alt="User" className="w-6 h-6 rounded-full border border-slate-900 object-cover" />
-          ))}
-          <div className="w-6 h-6 rounded-full bg-cyan-500 border border-slate-900 flex items-center justify-center text-white text-[8px] font-bold">
-            +{extraUsers}
-          </div>
-        </div>
-        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10 hidden">
-          <span className="text-base">{icon}</span>
+        
+        {/* Title */}
+        <h3 className="text-lg font-bold leading-tight mb-2 text-shadow-sm line-clamp-2">{title}</h3>
+        
+        {/* Price */}
+        <div className="flex items-baseline gap-0.5">
+          <span className="text-xs font-medium opacity-80">¥</span>
+          <span className="text-xl font-black text-cyan-400">{price}</span>
+          <span className="text-[10px] opacity-60 ml-1">起</span>
         </div>
       </div>
     </div>
@@ -459,7 +494,7 @@ const TripCard = ({ trip, isCompareMode, isSelected, onSelect, onStart, onTermin
         <h3 className="text-white text-xl font-bold leading-tight mb-1 line-clamp-2">
           {trip.title}
         </h3>
-        <p className="text-white/60 text-xs font-medium">{trip.date}</p>
+        <p className="text-white/60 text-xs font-medium">{trip.date.split('-')[0].trim()}</p>
       </div>
       
       <div className="flex items-center gap-3 text-white/80 text-xs font-medium">

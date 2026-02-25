@@ -2907,82 +2907,100 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage, recommendations, onConn
                   }
                   title={item.title}
                 >
-                  <div className={`mt-2 text-xs p-3 rounded-xl border ${
-                    item.type === 'flight' || item.type === 'transport' ? 'bg-blue-50 border-blue-100 text-blue-700' :
-                    item.type === 'food' ? 'bg-orange-50 border-orange-100 text-orange-700' :
-                    item.type === 'hotel' ? 'bg-indigo-50 border-indigo-100 text-indigo-700' :
-                    'bg-green-50 border-green-100 text-green-700'
-                  }`}>
-                     <div className="flex items-center gap-2 mb-1">
-                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
-                         item.type === 'flight' || item.type === 'transport' ? 'bg-blue-200 text-blue-700' :
-                         item.type === 'food' ? 'bg-orange-200 text-orange-700' :
-                         item.type === 'hotel' ? 'bg-indigo-200 text-indigo-700' :
-                         'bg-green-200 text-green-700'
-                       }`}>
-                         {item.type === 'flight' ? '航班' : 
-                          item.type === 'transport' ? '交通' : 
-                          item.type === 'food' ? '餐饮' : 
-                          item.type === 'hotel' ? '酒店' : '景点'}
-                       </span>
-                       <span className="font-bold">{item.details.desc || item.details.name}</span>
-                     </div>
-                     
-                     {item.image && (
-                        <div 
-                            className="mt-2 w-full h-32 rounded-lg overflow-hidden group relative cursor-pointer shadow-sm"
-                            onClick={() => onViewImage && onViewImage(item.image)}
-                        >
-                           <img src={item.image} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                           <div className="absolute top-2 right-2 bg-black/30 rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                <ZoomIn size={14} className="text-white" />
+                  <div className="mt-3 bg-white rounded-xl border border-slate-100 p-3 shadow-sm hover:shadow-md transition-shadow">
+                     {/* 1. Header: H3 Theme Name + Rating */}
+                     <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-50">
+                        <div className="flex flex-col gap-1">
+                           <h3 className="font-bold text-sm text-slate-800">{item.details.name || item.title}</h3>
+                           <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-0.5">
+                                 {[1,2,3,4,5].map(i => <Star key={i} size={8} className="text-orange-400 fill-orange-400" />)}
+                              </div>
+                              <span className="text-[10px] font-bold text-slate-600">4.9</span>
+                              <span className="text-[9px] text-slate-300">|</span>
+                              <span className="text-[9px] text-slate-400">¥{item.details.desc?.match(/\d+/)?.[0] || '88'}/人</span>
                            </div>
                         </div>
-                     )}
-                     
-                     {/* Yellow Xiaoxi Tips */}
-                     {item.tips && (
-                        <div className={`mt-3 pt-3 border-t flex gap-2 items-start ${
-                            item.type === 'flight' || item.type === 'transport' ? 'border-blue-200/50' :
-                            item.type === 'food' ? 'border-orange-200/50' :
-                            item.type === 'hotel' ? 'border-indigo-200/50' :
-                            'border-green-200/50'
+                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                           item.type === 'flight' || item.type === 'transport' ? 'bg-blue-50 text-blue-600' :
+                           item.type === 'food' ? 'bg-orange-50 text-orange-600' :
+                           item.type === 'hotel' ? 'bg-indigo-50 text-indigo-600' :
+                           'bg-green-50 text-green-600'
                         }`}>
-                           <div className="w-3.5 h-3.5 rounded-full bg-orange-100 flex items-center justify-center shrink-0 mt-0.5">
-                              <Sparkles size={8} className="text-orange-500" />
+                           {item.type === 'flight' ? '航班' : 
+                            item.type === 'transport' ? '交通' : 
+                            item.type === 'food' ? '餐饮' : 
+                            item.type === 'hotel' ? '酒店' : '景点'}
+                        </span>
+                     </div>
+
+                     {/* 2. Middle: Left Image | Right Info */}
+                     <div className="flex gap-3 mb-3">
+                        {/* Left: Image */}
+                        <div 
+                           className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-slate-100 cursor-pointer group relative"
+                           onClick={() => onViewImage && onViewImage(item.image)}
+                        >
+                           {item.image ? (
+                              <img src={item.image} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                           ) : (
+                              <div className="w-full h-full flex items-center justify-center text-slate-300 bg-slate-50">
+                                 <Camera size={20} />
+                              </div>
+                           )}
+                        </div>
+
+                        {/* Right: Address + Tags */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                           <div className="space-y-1.5">
+                              <div className="flex items-start gap-1 text-[10px] text-slate-500">
+                                 <MapPin size={12} className="shrink-0 mt-0.5 text-slate-400" />
+                                 <span className="line-clamp-2">{item.details.desc || '贵州省贵阳市云岩区...'}</span>
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                 {['必打卡', '好评如潮', '老字号'].map((tag, i) => (
+                                    <span key={i} className="text-[8px] px-1.5 py-0.5 bg-slate-50 text-slate-500 rounded border border-slate-100">{tag}</span>
+                                 ))}
+                              </div>
                            </div>
-                           <div className="text-[10px] text-slate-500 leading-relaxed">
+                        </div>
+                     </div>
+                     
+                     {/* 3. TIPS Section */}
+                     {item.tips && (
+                        <div className="bg-orange-50/50 rounded-lg p-2.5 mb-3 flex gap-2 items-start border border-orange-100/50">
+                           <div className="mt-0.5"><Sparkles size={10} className="text-orange-500"/></div>
+                           <div className="text-[10px] text-slate-600 leading-relaxed">
                               <span className="font-bold text-orange-600">黄小西Tips：</span>
                               {item.tips}
                            </div>
                         </div>
                      )}
-                     {/* Service Button */}
-                     <div className="mt-3 pt-2 border-t border-slate-200/50 flex justify-end">
-                       <button
-                         onClick={() => {
+
+                     {/* 4. Footer Service Button */}
+                     <button
+                        onClick={() => {
                            if (onConnectAgent) {
-                             const agentInfo = getAgentInfo(item.type);
-                             onConnectAgent({
-                               ...agentInfo,
-                               name: item.details.name,
-                               desc: item.details.desc
-                             });
+                              const agentInfo = getAgentInfo(item.type);
+                              onConnectAgent({
+                                 ...agentInfo,
+                                 name: item.details.name,
+                                 desc: item.details.desc
+                              });
                            }
-                         }}
-                         className={`px-3 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-1 transition-all active:scale-95 shadow-sm ${
-                           item.type === 'flight' || item.type === 'transport' ? 'bg-blue-500 text-white hover:bg-blue-600 shadow-blue-200' :
-                           item.type === 'food' ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-orange-200' :
-                           item.type === 'hotel' ? 'bg-indigo-500 text-white hover:bg-indigo-600 shadow-indigo-200' :
-                           'bg-green-500 text-white hover:bg-green-600 shadow-green-200'
-                         }`}
-                       >
-                         {item.type === 'flight' || item.type === 'transport' ? '预订行程' : 
-                          item.type === 'food' ? '立即订座' : 
-                          item.type === 'hotel' ? '查看房型' : '购买门票'}
-                         <ArrowRight size={10} />
-                       </button>
-                     </div>
+                        }}
+                        className={`w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all active:scale-95 shadow-sm ${
+                           item.type === 'flight' || item.type === 'transport' ? 'bg-blue-600 text-white shadow-blue-200' :
+                           item.type === 'food' ? 'bg-orange-500 text-white shadow-orange-200' :
+                           item.type === 'hotel' ? 'bg-indigo-600 text-white shadow-indigo-200' :
+                           'bg-green-600 text-white shadow-green-200'
+                        }`}
+                     >
+                        {item.type === 'flight' || item.type === 'transport' ? '预订行程' : 
+                         item.type === 'food' ? '立即订座' : 
+                         item.type === 'hotel' ? '查看房型' : '购买门票'}
+                        <ArrowRight size={12} />
+                     </button>
                   </div>
                 </TimelineItem>
               ))}
@@ -3076,10 +3094,8 @@ const TimelineItem = ({ time, icon, iconBg, title, children }) => (
     <div className={`absolute left-0 top-0 w-4 h-4 rounded-full ${iconBg} flex items-center justify-center shadow-sm z-10`}>
       {icon}
     </div>
-    <div className="flex items-center gap-2 mb-1">
-      <span className="text-xs font-bold text-slate-800">{time}</span>
-      <span className="px-1.5 py-0.5 bg-cyan-50 text-cyan-600 text-[10px] font-bold rounded-md">{title}</span>
-    </div>
+    <span className="text-xs font-bold text-slate-800 mr-2 inline-block mb-1">{time}</span>
+    <span className="px-1.5 py-0.5 bg-cyan-50 text-cyan-600 text-[10px] font-bold rounded-md inline-block mb-1">{title}</span>
     {children}
   </div>
 );
