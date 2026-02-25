@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   ArrowLeft, Calendar, MapPin, Clock, Users, 
   CheckCircle2, AlertCircle, Share2, Building2, 
-  ShieldCheck, FileText, ChevronRight
+  ShieldCheck, FileText, ChevronRight, ArrowRight
 } from 'lucide-react';
 import { getPlaceholder } from '../utils/imageUtils';
 

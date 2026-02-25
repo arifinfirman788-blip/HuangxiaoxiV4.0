@@ -27,11 +27,10 @@ import MiaoGirlVideo from '../video/miao_girl.mp4';
 
 const filters = [
     { id: 'all', label: '精选', icon: Sparkles },
-    { id: 'scenic', label: '景点', icon: Camera },
-    { id: 'food', label: '美食', icon: Utensils },
+    { id: 'scenic', label: '景区', icon: Camera },
     { id: 'hotel', label: '酒店', icon: Hotel },
-    { id: 'transport', label: '交通', icon: Car },
-    { id: 'guide', label: '向导', icon: User },
+    { id: 'food', label: '餐饮', icon: Utensils },
+    { id: 'personal', label: '数字分身', icon: UserCircle },
 ];
 
 const NewsMarquee = ({ className }) => {

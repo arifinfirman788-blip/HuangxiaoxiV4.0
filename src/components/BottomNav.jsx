@@ -328,6 +328,22 @@ const ImportModal = ({ isOpen, onClose, onConfirm, guideStep, setGuideStep }) =>
                         tips: "龙宫内气温较低，建议带件薄外套。",
                         timeline: [
                           {
+                            id: 'p-2-drive',
+                            time: '08:30',
+                            title: '自驾前往',
+                            type: 'transport',
+                            status: 'planned',
+                            tips: "早高峰路况拥堵，建议提前出发。",
+                            details: { 
+                                name: '自驾出行', 
+                                desc: '前往龙宫景区', 
+                                flightNo: '自驾',
+                                start: '酒店', 
+                                end: '龙宫景区', 
+                                duration: '1h' 
+                            }
+                          },
+                          {
                             id: 'p-2-1',
                             time: '09:30',
                             title: '龙宫景区',

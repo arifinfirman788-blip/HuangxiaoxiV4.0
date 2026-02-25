@@ -18,7 +18,15 @@ const getStatusInfo = (status) => {
   }
 };
 
-const getServiceButtons = (type) => {
+const getServiceButtons = (type, details) => {
+  if (details?.flightNo === '自驾') {
+     return [
+        { label: '开始导航', icon: Navigation, primary: true, color: 'bg-blue-600 text-white shadow-blue-200' },
+        { label: '查看路况', icon: Map, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' },
+        { label: '周边停车场', icon: Car, primary: false, color: 'bg-white text-slate-600 border border-slate-200 shadow-sm' }
+     ];
+  }
+
   switch(type) {
     case 'flight': case 'transport':
       return [
@@ -391,6 +399,22 @@ const TripDetail = ({ adoptedTrip }) => {
             tips: "今日有小雨，出行请记得携带雨具。",
             timeline: [
               { 
+                  time: "08:30", 
+                  title: "自驾前往", 
+                  type: "transport", 
+                  status: "planned", 
+                  tips: "早高峰路况拥堵，建议提前出发。", 
+                  image: null, 
+                  details: { 
+                      name: "自驾出行", 
+                      desc: "前往黔灵山公园", 
+                      flightNo: "自驾", 
+                      start: "酒店", 
+                      end: "黔灵山公园", 
+                      duration: "30m" 
+                  } 
+              },
+              { 
                   time: "09:00", 
                   title: "黔灵山公园", 
                   type: "scenic", 
@@ -468,18 +492,18 @@ const TripDetail = ({ adoptedTrip }) => {
               },
               { 
                   time: "16:00", 
-                  title: "前往机场", 
+                  title: "高铁返程", 
                   type: "transport", 
                   status: "planned", 
-                  tips: "请检查随身物品。", 
+                  tips: "请检查随身物品，提前30分钟进站。", 
                   image: null, 
                   details: { 
-                      name: "送机服务", 
-                      desc: "预计 45 分钟抵达机场",
-                      flightNo: "专车",
-                      start: "青岩古镇",
-                      end: "龙洞堡机场",
-                      duration: "45m"
+                      name: "高铁出行", 
+                      desc: "贵阳北站 - 广州南站", 
+                      flightNo: "G2986", 
+                      start: "贵阳北站", 
+                      end: "广州南站", 
+                      duration: "4h 30m" 
                   } 
               }
             ]
@@ -701,7 +725,7 @@ const TripDetail = ({ adoptedTrip }) => {
                      {day.timeline.filter(t => activeTab === 'all' || t.type === activeTab).map((node, nodeIndex) => {
                        const agent = getAgentInfo(node.type);
                        const statusInfo = getStatusInfo(node.status);
-                       const serviceButtons = getServiceButtons(node.type);
+                       const serviceButtons = getServiceButtons(node.type, node.details);
                        
                        return (
                          <div key={nodeIndex} className="relative">
