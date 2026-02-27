@@ -4,6 +4,17 @@ import { Calendar, MapPin, ChevronRight, ChevronDown, Users, Clock, ArrowUpRight
 import { useNavigate } from 'react-router-dom';
 import { getPlaceholder } from '../utils/imageUtils';
 
+const formatTripDate = (dateStr) => {
+  if (!dateStr) return '';
+  return dateStr.split('-').map(d => {
+    const s = d.trim();
+    if (s.match(/^\d{4}\//)) return s;
+    if (s.match(/^\d{2}\.\d{2}$/)) return `2026/${s.replace('.', '/')}`;
+    if (s.match(/^\d{2}\/\d{2}$/)) return `2026/${s}`;
+    return s;
+  }).join(' - ');
+};
+
 const FilterDropdown = ({ options, value, onChange, label }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -56,6 +67,100 @@ const FilterDropdown = ({ options, value, onChange, label }) => {
   );
 };
 
+const CalendarFilter = ({ value, onChange, years, availableYearMonths }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedYear, setSelectedYear] = useState(() => {
+    if (value === 'all') return years[0] ?? new Date().getFullYear();
+    const parts = value.split('/');
+    return parseInt(parts[0], 10) || years[0] || new Date().getFullYear();
+  });
+
+  const displayLabel = value === 'all' ? '时间' : value;
+
+  const handleConfirm = (ym) => {
+    onChange(ym);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative z-20">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-1 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 shadow-sm hover:bg-slate-50 transition-all active:scale-95"
+      >
+        <Calendar size={12} className="text-slate-400" />
+        <span>{displayLabel}</span>
+        <ChevronDown size={12} className={`text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.95 }}
+              transition={{ duration: 0.1 }}
+              className="absolute top-full right-0 mt-2 w-[220px] bg-white rounded-xl shadow-xl border border-slate-100 z-20 overflow-hidden"
+            >
+              <div className="p-3 border-b border-slate-100">
+                <button
+                  onClick={() => handleConfirm('all')}
+                  className={`w-full py-2 rounded-lg text-[11px] font-bold transition-colors flex items-center justify-center gap-1.5 ${
+                    value === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <Calendar size={12} />
+                  全部
+                </button>
+              </div>
+              <div className="p-3">
+                <div className="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">选择年</div>
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {(years.length ? years : [new Date().getFullYear()]).map(y => (
+                    <button
+                      key={y}
+                      onClick={() => setSelectedYear(y)}
+                      className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors ${
+                        selectedYear === y ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {y}年
+                    </button>
+                  ))}
+                </div>
+                <div className="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">选择月</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {[1,2,3,4,5,6,7,8,9,10,11,12].map(m => {
+                    const ym = `${selectedYear}/${String(m).padStart(2, '0')}`;
+                    const isAvailable = availableYearMonths.includes(ym);
+                    const isSelected = value === ym;
+                    return (
+                      <button
+                        key={m}
+                        onClick={() => isAvailable && handleConfirm(ym)}
+                        disabled={!isAvailable}
+                        className={`px-2 py-1.5 rounded-lg text-[10px] font-bold transition-colors min-w-[36px] ${
+                          isSelected ? 'bg-slate-900 text-white' 
+                            : isAvailable ? 'bg-slate-100 text-slate-600 hover:bg-slate-200' 
+                            : 'bg-slate-50 text-slate-300 cursor-not-allowed'
+                        }`}
+                      >
+                        {m}月
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 const Trip = ({ adoptedTrip, onUpdateTrip }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('all');
@@ -72,7 +177,7 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
     {
       id: 'mock-1',
       title: '黔东南苗寨深度体验3日游',
-      date: '04/15 - 04/17',
+      date: '2026/04/15 - 2026/04/17',
       days: 3,
       distance: '320km',
       rating: '9.6',
@@ -82,7 +187,7 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
     {
       id: 'mock-2',
       title: '遵义红色记忆之旅2日游',
-      date: '03/10 - 03/11',
+      date: '2026/03/10 - 2026/03/11',
       days: 2,
       distance: '180km',
       rating: '9.5',
@@ -164,23 +269,34 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
       }
   };
 
-  // Dynamically generate tabs based on trips
-  const getMonth = (dateStr) => {
+  const getYearMonth = (dateStr) => {
       if (!dateStr) return '';
-      const parts = dateStr.split('/');
-      if (parts.length > 0) {
-          return parseInt(parts[0], 10) + '月';
+      const start = dateStr.split('-')[0].trim();
+      let year = '', month = '';
+      if (start.match(/^\d{4}\/\d{1,2}/)) {
+          const parts = start.split('/');
+          year = parts[0];
+          month = String(parseInt(parts[1], 10)).padStart(2, '0');
+      } else if (start.match(/^\d{2}\.\d{2}$/)) {
+          const [m, d] = start.split('.');
+          year = '2026';
+          month = String(parseInt(m, 10)).padStart(2, '0');
+      } else if (start.match(/^\d{2}\/\d{2}$/)) {
+          const [m, d] = start.split('/');
+          year = '2026';
+          month = String(parseInt(m, 10)).padStart(2, '0');
       }
-      return dateStr;
+      return year && month ? `${year}/${month}` : start;
   };
 
-  const uniqueMonths = Array.from(new Set(
-      myTrips.map(t => getMonth(t.date))
-      .filter(m => m) // Filter out empty/null
-  )).sort((a, b) => {
-      // Simple sort for "X月" strings
-      return parseInt(a) - parseInt(b);
-  });
+  const availableYearMonths = Array.from(new Set(
+      myTrips.map(t => getYearMonth(t.date))
+      .filter(d => d)
+  )).sort();
+
+  const years = Array.from(new Set(
+      availableYearMonths.map(ym => parseInt(ym.split('/')[0], 10))
+  )).sort();
 
   const statusOptions = [
     { value: 'all', label: '状态' },
@@ -189,18 +305,11 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
     { value: 'completed', label: '已完成' }
   ];
 
-  const monthOptions = [
-    { value: 'all', label: '月份' },
-    ...uniqueMonths.map(m => ({ value: m, label: m }))
-  ];
-
   const filteredTrips = myTrips.filter(t => {
-      // Status Filter
       if (statusFilter !== 'all' && t.status !== statusFilter) return false;
-      // Month Filter
       if (activeTab !== 'all') {
-          const month = getMonth(t.date);
-          if (month !== activeTab) return false;
+          const ym = getYearMonth(t.date);
+          if (ym !== activeTab) return false;
       }
       return true;
   }).sort((a, b) => {
@@ -258,11 +367,11 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
           <h2 className="text-xl font-bold text-slate-800 whitespace-nowrap">我的行程</h2>
           
           <div className="flex gap-2 relative z-20">
-            <FilterDropdown 
-              options={monthOptions} 
+            <CalendarFilter 
               value={activeTab} 
               onChange={setActiveTab} 
-              label="月份"
+              years={years}
+              availableYearMonths={availableYearMonths}
             />
             <FilterDropdown 
               options={statusOptions} 
@@ -357,9 +466,9 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
 
               <div className="space-y-4 mb-8">
                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">选择日期与时间</label>
+                    <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">选择出发日期</label>
                     <input 
-                      type="datetime-local" 
+                      type="date" 
                       className="w-full bg-transparent text-lg font-bold text-slate-800 outline-none"
                       onChange={(e) => setTempStartDate(e.target.value)}
                     />
@@ -456,7 +565,7 @@ const TripCard = ({ trip, isCompareMode, isSelected, onSelect, onStart, onTermin
 
     {/* Start Trip Button (Only for planned/upcoming without start time) */}
     {!isCompareMode && !trip.startTime && trip.status !== 'completed' && (
-      <div className="absolute top-5 right-5 z-30">
+      <div className="absolute top-5 right-5 z-10">
         <button 
           onClick={onStart}
           className="bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg shadow-cyan-500/30 flex items-center gap-1.5 active:scale-95 transition-all"
@@ -469,7 +578,7 @@ const TripCard = ({ trip, isCompareMode, isSelected, onSelect, onStart, onTermin
 
     {/* Terminate Trip Button (For trips that have started) */}
     {!isCompareMode && trip.startTime && trip.status !== 'completed' && (
-      <div className="absolute top-5 right-5 z-30">
+      <div className="absolute top-5 right-5 z-10">
         <button 
           onClick={onTerminate}
           className="bg-red-500/80 hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg shadow-red-500/30 flex items-center gap-1.5 active:scale-95 transition-all backdrop-blur-md"
@@ -494,7 +603,7 @@ const TripCard = ({ trip, isCompareMode, isSelected, onSelect, onStart, onTermin
         <h3 className="text-white text-xl font-bold leading-tight mb-1 line-clamp-2">
           {trip.title}
         </h3>
-        <p className="text-white/60 text-xs font-medium">{trip.date.split('-')[0].trim()}</p>
+        <p className="text-white/60 text-xs font-medium">{formatTripDate(trip.date).split(' - ')[0]}</p>
       </div>
       
       <div className="flex items-center gap-3 text-white/80 text-xs font-medium">

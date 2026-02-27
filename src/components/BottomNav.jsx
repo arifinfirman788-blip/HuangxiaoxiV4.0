@@ -268,10 +268,10 @@ const ImportModal = ({ isOpen, onClose, onConfirm, guideStep, setGuideStep }) =>
                     createTime: "2026-05-01 10:00"
                 },
                 days: 2,
-                date: "05.01-05.02",
+                date: "2026/05/01 - 2026/05/02",
                 itinerary: [
                     {
-                        date: "05.01",
+                        date: "2026/05/01",
                         dayLabel: "Day 1",
                         tag: "自然奇观",
                         weather: { temp: "20°C", desc: "晴" }, 
@@ -320,7 +320,7 @@ const ImportModal = ({ isOpen, onClose, onConfirm, guideStep, setGuideStep }) =>
                         ]
                     },
                     {
-                        date: "05.02",
+                        date: "2026/05/02",
                         dayLabel: "Day 2",
                         tag: "文化探索",
                         weather: { temp: "22°C", desc: "多云" }, 

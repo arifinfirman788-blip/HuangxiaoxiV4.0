@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行程状态流程图</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 48px;
+        }
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            border: 1px solid #e2e8f0;
+        }
+        .section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section h2 .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #0f172a;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            padding: 16px 0;
+        }
+        .timeline-section {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 16px;
+            padding: 28px;
+            margin-top: 20px;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 12.5px;
+            line-height: 1.9;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .timeline-section .day-title { color: #38bdf8; font-weight: 700; font-size: 14px; }
+        .timeline-section .status-ongoing { color: #38bdf8; }
+        .timeline-section .status-done { color: #4ade80; }
+        .timeline-section .status-wait { color: #94a3b8; }
+        .timeline-section .status-auto { color: #fbbf24; }
+        .pseudo-code {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 16px;
+            padding: 28px;
+            margin-top: 20px;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .pseudo-code .kw { color: #c084fc; }
+        .pseudo-code .cm { color: #64748b; }
+        .pseudo-code .str { color: #4ade80; }
+        .pseudo-code .fn { color: #38bdf8; }
+        .linkage-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            gap: 0;
+            align-items: stretch;
+            margin-top: 20px;
+        }
+        .linkage-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+        .linkage-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .linkage-card .sub { font-size: 12px; color: #94a3b8; margin-bottom: 16px; }
+        .linkage-card .item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .linkage-card .item.plan { background: #fef3c7; color: #92400e; }
+        .linkage-card .item.active { background: #dbeafe; color: #1e40af; }
+        .linkage-card .item.done { background: #dcfce7; color: #166534; }
+        .linkage-card .item.auto { background: #fef9c3; color: #854d0e; }
+        .linkage-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #94a3b8;
+            padding: 0 8px;
+        }
+        .bug-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .bug-table th {
+            background: #0f172a;
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .bug-table th:first-child { border-radius: 12px 0 0 0; width: 40px; text-align: center; }
+        .bug-table th:last-child { border-radius: 0 12px 0 0; }
+        .bug-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+            vertical-align: top;
+        }
+        .bug-table td:first-child { text-align: center; font-weight: 700; color: #ef4444; }
+        .bug-table tr:last-child td { border-bottom: none; }
+        .bug-table tr:hover td { background: #f8fafc; }
+        .tag-fix {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+        .tag-ask {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+        @media (max-width: 768px) {
+            .linkage-grid { grid-template-columns: 1fr; gap: 12px; }
+            .linkage-arrow { transform: rotate(90deg); padding: 8px 0; }
+            .container { padding: 20px 12px; }
+            .section { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>行程状态流程图</h1>
+        <p class="subtitle">行程提醒卡片 · 我的行程 · 行程详情 — 完整状态流转逻辑 v2.0</p>
+
+        <!-- 一、整体状态流转 -->
+        <div class="section">
+            <h2><span class="badge">1</span>整体状态流转（系统入口判断）</h2>
+            <div class="mermaid">
+flowchart TD
+    Start([用户进入系统]) --> CheckActive{"是否有 进行中 的行程?"}
+    
+    CheckActive -->|无| ShowPrompt["首页行程提醒卡片显示:\n暂无进行中行程"]
+    CheckActive -->|有| CalcNodeStatus["根据当前时间\n计算所有节点状态"]
+
+    CalcNodeStatus --> FindOngoing{"是否存在 进行中 的节点?"}
+    
+    FindOngoing -->|是| ShowOngoingNode["首页行程提醒卡片\n展示该进行中的节点"]
+    FindOngoing -->|"否: 全部未开始"| ShowFirstNode["首页行程提醒卡片\n展示第一个即将开始的节点\n状态: 即将开始"]
+    FindOngoing -->|"否: 当天已结束"| ShowNextDay["首页行程提醒卡片\n展示下一天第一个节点\n状态: 即将开始"]
+    FindOngoing -->|"否: 所有节点已完成"| AutoComplete["行程自动标记为 已完成\n首页显示: 暂无进行中行程"]
+
+    style Start fill:#dbeafe,stroke:#3b82f6,color:#1e40af
+    style ShowPrompt fill:#f1f5f9,stroke:#94a3b8,color:#475569
+    style CalcNodeStatus fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    style ShowOngoingNode fill:#dbeafe,stroke:#3b82f6,color:#1e40af
+    style ShowFirstNode fill:#eff6ff,stroke:#93c5fd,color:#1e40af
+    style ShowNextDay fill:#eff6ff,stroke:#93c5fd,color:#1e40af
+    style AutoComplete fill:#dcfce7,stroke:#22c55e,color:#166534
+            </div>
+        </div>
+
+        <!-- 二、开始/结束行程操作流 -->
+        <div class="section">
+            <h2><span class="badge">2</span>我的行程 — 开始/结束行程操作流</h2>
+            <div class="mermaid">
+flowchart TD
+    Entry([进入我的行程页面]) --> ListTrips["展示行程列表"]
+    
+    ListTrips --> TripState{"行程当前状态?"}
+    
+    TripState -->|计划中| PlanUI["卡片左上角: 计划中\n显示 开始行程 按钮\n✅ 支持编辑行程"]
+    TripState -->|进行中| ActiveUI["卡片左上角: 进行中\n显示 提前结束 按钮\n❌ 禁止编辑行程"]
+    TripState -->|已完成| DoneUI["卡片左上角: 已完成\n无操作按钮\n❌ 禁止编辑行程"]
+
+    PlanUI --> ClickStart["用户点击 开始行程"]
+    ClickStart --> CheckConflict{"是否有其他\n进行中的行程?"}
+    
+    CheckConflict -->|有| BlockStart["❌ 阻止开启\n提示: 请先结束当前行程"]
+    CheckConflict -->|无| SelectTime["弹窗: 选择出发时间"]
+    
+    SelectTime --> ValidateTime{"选择时间 > 当前时间?"}
+    ValidateTime -->|否| TimeError["提示: 请选择当前时间之后"]
+    ValidateTime -->|是| ConfirmStart["确认开启"]
+    
+    ConfirmStart --> StartSync["同步动作"]
+    StartSync --> S1["1. 卡片左上角 → 进行中"]
+    StartSync --> S2["2. 卡片显示开始时间"]
+    StartSync --> S3["3. 禁用行程编辑"]
+    StartSync --> S4["4. 首页卡片 → 根据时间\n展示对应状态的节点"]
+    StartSync --> S5["5. 详情页 → 根据当前时间\n计算所有节点状态"]
+    
+    ActiveUI --> ClickEnd["用户点击 提前结束"]
+    ClickEnd --> ConfirmEnd{"二次确认:\n确定要提前结束?"}
+    ConfirmEnd -->|取消| ActiveUI
+    ConfirmEnd -->|确定| EndSync["同步动作"]
+    
+    EndSync --> E1["1. 卡片左上角 → 已完成"]
+    EndSync --> E2["2. 首页 → 暂无进行中行程"]
+    EndSync --> E3["3. 详情页所有节点 → 已完成"]
+    EndSync --> E4["4. 停止行程提醒"]
+
+    style Entry fill:#dbeafe,stroke:#3b82f6,color:#1e40af
+    style PlanUI fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    style ActiveUI fill:#dbeafe,stroke:#3b82f6,color:#1e40af
+    style DoneUI fill:#dcfce7,stroke:#22c55e,color:#166534
+    style BlockStart fill:#fee2e2,stroke:#ef4444,color:#991b1b
+    style TimeError fill:#fee2e2,stroke:#ef4444,color:#991b1b
+    style StartSync fill:#eff6ff,stroke:#93c5fd,color:#1e40af
+    style EndSync fill:#fee2e2,stroke:#ef4444,color:#991b1b
+            </div>
+        </div>
+
+        <!-- 三、节点状态计算规则 -->
+        <div class="section">
+            <h2><span class="badge">3</span>详情页节点状态计算规则（核心算法）</h2>
+            <div class="mermaid">
+flowchart TD
+    TripActive(["行程状态 = 进行中"]) --> GetNodes["获取所有节点按天+时间排序:\nA-t1, B-t2, C-t3 ..."]
+    
+    GetNodes --> GetNow["获取当前时间 now"]
+    GetNow --> Compare{"now vs 所有节点时间"}
+    
+    Compare -->|"now < t1\n早于第一个节点"| AllWaiting["所有节点: 未开始\n首页展示A节点-即将开始"]
+    
+    Compare -->|"t(n) ≤ now < t(n+1)\n在节点n和n+1之间"| SplitStatus["节点1 ~ n-1: 已完成 ✅\n节点n: 进行中 🔵\n节点n+1 ~ 末尾: 未开始\n首页展示节点n"]
+    
+    Compare -->|"now ≥ 最后节点时间"| LastCheck{"now < 当天24:00?"}
+    
+    LastCheck -->|是| LastOngoing["之前节点: 已完成 ✅\n最后节点: 进行中 🔵\n首页展示最后节点"]
+    
+    LastCheck -->|否-跨天| DayDone["当天所有节点: 已完成 ✅"]
+    DayDone --> HasNext{"还有下一天行程?"}
+    HasNext -->|有| NextDay["进入下一天\n重复判断逻辑"]
+    HasNext -->|"无: 整个行程最后一天"| TripEnd["所有节点: 已完成 ✅\n行程自动标记已完成\n首页: 暂无进行中行程"]
+    
+    NextDay --> Compare
+
+    style TripActive fill:#dbeafe,stroke:#3b82f6,color:#1e40af
+    style AllWaiting fill:#f1f5f9,stroke:#94a3b8,color:#475569
+    style SplitStatus fill:#eff6ff,stroke:#3b82f6,color:#1e40af
+    style LastOngoing fill:#dbeafe,stroke:#3b82f6,color:#1e40af
+    style DayDone fill:#dcfce7,stroke:#22c55e,color:#166534
+    style TripEnd fill:#fef3c7,stroke:#f59e0b,color:#92400e
+            </div>
+
+            <h3 style="margin-top:24px;margin-bottom:8px;font-size:16px;font-weight:700;">节点状态计算伪代码</h3>
+            <div class="pseudo-code"><span class="kw">function</span> <span class="fn">calcNodeStatuses</span>(allNodes, now):
+    currentNode = <span class="kw">null</span>
+    
+    <span class="kw">for</span> i = 0 <span class="kw">to</span> allNodes.length - 1:
+        node = allNodes[i]
+        nextNode = allNodes[i + 1]  <span class="cm">// 可能为 null</span>
+        
+        <span class="kw">if</span> now < node.startTime:
+            <span class="cm">// 当前时间早于该节点 → 该节点及之后全部"未开始"</span>
+            node.status = <span class="str">"未开始"</span>
+            <span class="cm">// 后续节点也全部"未开始"（break）</span>
+            <span class="kw">break</span>
+            
+        <span class="kw">else if</span> nextNode == <span class="kw">null</span> || now < nextNode.startTime:
+            <span class="cm">// 当前时间 ≥ 该节点时间，且 < 下一个节点时间</span>
+            <span class="cm">// → 该节点"进行中"</span>
+            node.status = <span class="str">"进行中"</span>
+            currentNode = node
+            
+            <span class="cm">// 特殊: 当天最后一个节点 + 已过零点</span>
+            <span class="kw">if</span> <span class="fn">isDayLastNode</span>(node) && now >= <span class="fn">endOfDay</span>(node.date):
+                node.status = <span class="str">"已完成"</span>
+                currentNode = <span class="kw">null</span>
+            <span class="kw">break</span>
+            
+        <span class="kw">else</span>:
+            <span class="cm">// 当前时间 ≥ 该节点 且 ≥ 下一个节点时间</span>
+            <span class="cm">// → 该节点"已完成"</span>
+            node.status = <span class="str">"已完成"</span>
+    
+    <span class="kw">return</span> currentNode  <span class="cm">// 首页展示该节点; null 则展示第一个"未开始"节点</span></div>
+        </div>
+
+        <!-- 四、首页行程提醒卡片逻辑 -->
+        <div class="section">
+            <h2><span class="badge">4</span>首页行程提醒卡片逻辑</h2>
+            <div class="mermaid">
+flowchart TD
+    HomeEntry([首页加载/刷新]) --> CheckTrip{"是否有 进行中 的行程?"}
+    
+    CheckTrip -->|否| ShowEmpty["显示提示:\n暂无进行中行程"]
+    CheckTrip -->|是| CalcStatus["调用节点状态计算\n找到 currentNode"]
+    
+    CalcStatus --> HasCurrent{"currentNode 是否存在?"}
+    
+    HasCurrent -->|"否: 全部未开始"| ShowUpcoming["展示第一个节点\n状态: 即将开始"]
+    HasCurrent -->|"否: 全部已完成"| TripDone["行程自动完成\n显示: 暂无进行中行程"]
+    HasCurrent -->|是| NodeType{"currentNode 类型?"}
+    
+    NodeType -->|航班| ShowFlight["航班卡片\n航班号/起降地/时间"]
+    NodeType -->|高铁| ShowTrain["高铁卡片\n车次/起终点/时间"]
+    NodeType -->|自驾| ShowDrive["自驾卡片\n起终点/导航信息"]
+    NodeType -->|美食| ShowFood["美食卡片\n美食名称/相关信息"]
+    NodeType -->|景区| ShowScenic["景区卡片\n景点名/地址"]
+    NodeType -->|酒店| ShowHotel["酒店卡片\n酒店名/位置"]
+    NodeType -->|自定义活动| ShowFree["自定义活动卡片\n活动名/描述"]
+
+    style HomeEntry fill:#dbeafe,stroke:#3b82f6,color:#1e40af
+    style ShowEmpty fill:#f1f5f9,stroke:#94a3b8,color:#475569
+    style TripDone fill:#dcfce7,stroke:#22c55e,color:#166534
+    style ShowFlight fill:#eff6ff,stroke:#3b82f6,color:#1e40af
+    style ShowTrain fill:#eff6ff,stroke:#3b82f6,color:#1e40af
+    style ShowDrive fill:#eff6ff,stroke:#3b82f6,color:#1e40af
+    style ShowFood fill:#fff7ed,stroke:#f97316,color:#9a3412
+    style ShowScenic fill:#f0fdf4,stroke:#22c55e,color:#166534
+    style ShowHotel fill:#eef2ff,stroke:#6366f1,color:#3730a3
+    style ShowFree fill:#f0fdfa,stroke:#14b8a6,color:#115e59
+            </div>
+        </div>
+
+        <!-- 五、状态对照表 -->
+        <div class="section">
+            <h2><span class="badge">5</span>状态对照表</h2>
+            <div class="mermaid">
+stateDiagram-v2
+    [*] --> 计划中: 用户创建/导入行程
+    计划中 --> 进行中: 点击开始行程+选择时间
+    进行中 --> 已完成: 点击提前结束 或 所有节点自然结束
+    
+    state 计划中 {
+        [*] --> 可编辑
+        可编辑: 支持编辑行程内容
+        可编辑: 首页不显示行程卡片
+        可编辑: 详情页节点无状态流转
+    }
+    
+    state 进行中 {
+        [*] --> 不可编辑
+        不可编辑: 禁止编辑行程
+        不可编辑: 首页显示当前节点
+        不可编辑: 详情页节点按时间自动流转
+        不可编辑: 同一时间仅允许一个行程进行中
+    }
+    
+    state 已完成 {
+        [*] --> 归档
+        归档: 首页显示暂无进行中行程
+        归档: 详情页所有节点标记已完成
+    }
+            </div>
+        </div>
+
+        <!-- 六、时间线示例 -->
+        <div class="section">
+            <h2><span class="badge">6</span>节点状态时间线示例</h2>
+            <div class="timeline-section"><span class="day-title">假设行程已开始，节点按时间排列:</span>
+Day 1: A(08:00) → B(10:00) → C(12:30) → D(14:00)
+Day 2: E(08:30) → F(12:30) → G(18:00)
+Day 3: H(10:00) → I(16:00)
+
+<span class="day-title">━━━ Day 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+now = 07:00  │ <span class="status-wait">A未开始  B未开始  C未开始  D未开始</span>  │ 首页 → A(<span class="status-wait">即将开始</span>)
+now = 08:00  │ <span class="status-ongoing">A进行中🔵</span> <span class="status-wait">B未开始  C未开始  D未开始</span>  │ 首页 → A
+now = 09:30  │ <span class="status-ongoing">A进行中🔵</span> <span class="status-wait">B未开始  C未开始  D未开始</span>  │ 首页 → A
+now = 10:00  │ <span class="status-done">A已完成✅</span> <span class="status-ongoing">B进行中🔵</span> <span class="status-wait">C未开始  D未开始</span>  │ 首页 → B
+now = 12:30  │ <span class="status-done">A已完成✅ B已完成✅</span> <span class="status-ongoing">C进行中🔵</span> <span class="status-wait">D未开始</span>  │ 首页 → C
+now = 14:00  │ <span class="status-done">A已完成✅ B已完成✅ C已完成✅</span> <span class="status-ongoing">D进行中🔵</span> │ 首页 → D
+now = 24:00  │ <span class="status-done">A已完成✅ B已完成✅ C已完成✅ D已完成✅</span> │ <span class="status-auto">当天结束</span>
+
+<span class="day-title">━━━ Day 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+now = 07:00  │ <span class="status-wait">E未开始  F未开始  G未开始</span>            │ 首页 → E(<span class="status-wait">即将开始</span>)
+now = 08:30  │ <span class="status-ongoing">E进行中🔵</span> <span class="status-wait">F未开始  G未开始</span>            │ 首页 → E
+now = 12:30  │ <span class="status-done">E已完成✅</span> <span class="status-ongoing">F进行中🔵</span> <span class="status-wait">G未开始</span>            │ 首页 → F
+now = 18:00  │ <span class="status-done">E已完成✅ F已完成✅</span> <span class="status-ongoing">G进行中🔵</span>           │ 首页 → G
+now = 24:00  │ <span class="status-done">E已完成✅ F已完成✅ G已完成✅</span>            │ <span class="status-auto">当天结束</span>
+
+<span class="day-title">━━━ Day 3 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+now = 10:00  │ <span class="status-ongoing">H进行中🔵</span> <span class="status-wait">I未开始</span>                     │ 首页 → H
+now = 16:00  │ <span class="status-done">H已完成✅</span> <span class="status-ongoing">I进行中🔵</span>                    │ 首页 → I
+now = 24:00  │ <span class="status-done">H已完成✅ I已完成✅</span>                     │ <span class="status-auto">行程自动完成</span>
+             │                                       │ 首页 → <span class="status-wait">暂无进行中行程</span></div>
+        </div>
+
+        <!-- 七、关键联动关系 -->
+        <div class="section">
+            <h2><span class="badge">7</span>关键联动关系</h2>
+            <div class="linkage-grid">
+                <div class="linkage-card">
+                    <h3>我的行程</h3>
+                    <div class="sub">Trip 页面</div>
+                    <div class="item plan">📋 计划中</div>
+                    <div class="item active">▶️ 开始行程（进行中）</div>
+                    <div class="item done">⏹️ 提前结束（已完成）</div>
+                    <div class="item auto">⏰ 自然结束（已完成）</div>
+                </div>
+                <div class="linkage-arrow">→</div>
+                <div class="linkage-card">
+                    <h3>首页卡片</h3>
+                    <div class="sub">Home 页面</div>
+                    <div class="item plan">🚫 暂无进行中行程</div>
+                    <div class="item active">📍 展示当前进行中/即将开始的节点</div>
+                    <div class="item done">🚫 暂无进行中行程</div>
+                    <div class="item auto">🚫 暂无进行中行程</div>
+                </div>
+                <div class="linkage-arrow">→</div>
+                <div class="linkage-card">
+                    <h3>详情页</h3>
+                    <div class="sub">TripDetail 页面</div>
+                    <div class="item plan">⏸️ 节点无状态流转</div>
+                    <div class="item active">⏱️ 节点按时间自动流转状态</div>
+                    <div class="item done">✅ 所有节点标记已完成</div>
+                    <div class="item auto">✅ 所有节点标记已完成</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 八、逻辑漏洞 -->
+        <div class="section">
+            <h2><span class="badge">8</span>已识别的逻辑漏洞及补充</h2>
+            <table class="bug-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>漏洞描述</th>
+                        <th>补充方案</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>原流程仅判断"是否有行程"，未区分行程状态</td>
+                        <td><span class="tag-fix">已修复</span> 改为判断"是否有<b>进行中</b>的行程"</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>节点状态仅对比精确相等（=），忽略了时间区间（如 08:00 到 10:00 之间应为进行中）</td>
+                        <td><span class="tag-fix">已修复</span> 改为区间判断：t(n) ≤ now < t(n+1) 时，节点n为进行中；之前节点全部已完成</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>结束行程后首页未明确显示内容</td>
+                        <td><span class="tag-fix">已修复</span> 结束后首页显示"暂无进行中行程"</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>未处理"行程自然结束"场景（最后一天最后节点完成后）</td>
+                        <td><span class="tag-fix">已补充</span> 最后一天最后节点过零点后，行程自动标记已完成</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>未限制同时只能有一个进行中的行程</td>
+                        <td><span class="tag-fix">已补充</span> 开始新行程前检查是否有其他进行中行程，有则阻止并提示</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>首页未处理"全部未开始"的情况（如 07:00 进入，第一个节点 08:00）</td>
+                        <td><span class="tag-fix">已补充</span> 当无进行中节点且有未开始节点时，展示第一个节点并标注"即将开始"</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>未考虑跨天间隙（当天最后节点结束到次日第一个节点之间）</td>
+                        <td><span class="tag-fix">已补充</span> 当天24:00后当天节点全部完成，次日节点根据时间判断状态</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>首页卡片类型遗漏了自定义活动（free_time）和团餐（group_meal）</td>
+                        <td><span class="tag-fix">已补充</span> 补充 free_time 类型的卡片展示</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>未说明"已完成"行程是否可重新开始</td>
+                        <td><span class="tag-ask">待确认</span> 需产品确认：已完成行程是否支持重新开启</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#dbeafe',
+                primaryTextColor: '#1e40af',
+                primaryBorderColor: '#3b82f6',
+                lineColor: '#94a3b8',
+                secondaryColor: '#f1f5f9',
+                tertiaryColor: '#f8fafc',
+                fontFamily: '-apple-system, BlinkMacSystemFont, PingFang SC, Microsoft YaHei, sans-serif',
+                fontSize: '13px'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>

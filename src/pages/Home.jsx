@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, User, ChevronDown, MessageCircle, Star, Coffee, Building, Landmark, Mic, Plus, Home as HomeIcon, Compass, UserCircle, X, Check, Bell, Languages, Volume2, ArrowUpRight, Plane, Clock, Sparkles, Camera, Car, Play, Calendar as CalendarIcon, Ticket, Hotel, Utensils, RefreshCcw, ArrowRight, Heart, Send, BadgeCheck, MoreHorizontal, ShoppingBag, Tag, Map, AlertCircle, CloudRain, Sun, Wind, ChevronRight } from 'lucide-react';
+import { Search, MapPin, User, ChevronDown, MessageCircle, Star, Coffee, Building, Landmark, Mic, Plus, Home as HomeIcon, Compass, UserCircle, X, Check, Bell, Languages, Volume2, ArrowUpRight, Plane, Clock, Sparkles, Camera, Car, Play, Calendar as CalendarIcon, Ticket, Hotel, Utensils, RefreshCcw, ArrowRight, Heart, Send, BadgeCheck, MoreHorizontal, ShoppingBag, Tag, Map, AlertCircle, CloudRain, Sun, Wind, ChevronRight, Train, Navigation } from 'lucide-react';
 import { categories } from '../data/agents';
 import TuoSaiImage from '../image/huangxiaoxi_new.png';
 import RunningImage from '../image/张手跑_1.png';
@@ -343,9 +343,11 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
 
   const roles = ['黄小西', '酒店助手', '景区向导', '美食专家', '政务助手'];
 
-  // --- NEW: Trip Reminder Logic ---
-  const activeTripNode = adoptedTrip?.itinerary?.flatMap(day => day.timeline)?.[0]; // Just getting first for demo, usually calculate based on time
-  const hasTrip = !!adoptedTrip;
+  // --- Trip Reminder Logic (per flowchart) ---
+  const hasActiveTrip = adoptedTrip && (adoptedTrip.status === 'upcoming' || adoptedTrip.startTime);
+  const allNodes = adoptedTrip?.itinerary?.flatMap(day => day.timeline) || [];
+  const activeTripNode = allNodes[0]; // TODO: 按当前时间计算进行中/即将开始的节点
+  const isUpcoming = activeTripNode?.status === 'planned' || activeTripNode?.status === 'upcoming';
 
   return (
     <div className="h-full w-full relative bg-slate-50">
@@ -408,49 +410,73 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                         className="bg-white/95 backdrop-blur-xl rounded-[1.5rem] p-3 pl-8 shadow-2xl border border-slate-100 h-full flex flex-col relative overflow-hidden cursor-pointer"
                         onClick={() => navigate('/trip')}
                     >
-                        {/* Header: Title + Status */}
-                        <div className="flex items-center justify-between mb-2 relative z-10 pr-6">
-                             <div className="flex items-center gap-2 min-w-0">
-                                 <h3 className="font-black text-sm text-slate-800 truncate">
-                                    {activeTripNode?.title || '入住·贵阳大十字亚朵酒店'}
-                                 </h3>
-                                 <span className="bg-indigo-100 text-indigo-600 text-[9px] px-1.5 py-0.5 rounded-md font-bold shrink-0">
-                                    进行中
-                                 </span>
-                             </div>
-                        </div>
-
-                        {/* Middle: Icon + Details */}
-                        <div className="flex items-start gap-2 mb-2 relative z-10">
-                             {/* Icon Box */}
-                             <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center shrink-0 text-indigo-500">
-                                <Hotel size={20} />
-                             </div>
-                             
-                             {/* Details */}
-                             <div className="flex-1 min-w-0">
-                                <div className="flex items-baseline gap-2 mb-1">
-                                    <span className="text-xs font-bold text-slate-700">
-                                        14:00后入住
-                                    </span>
-                                    <span className="text-[10px] text-slate-500 truncate">
-                                        几木大床房
-                                    </span>
-                                </div>
-                                <div className="flex gap-1 flex-wrap">
-                                    {['健身房', '洗衣房', '深夜粥到'].map(tag => (
-                                        <span key={tag} className="text-[9px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
-                                            {tag}
+                        {!hasActiveTrip || !activeTripNode ? (
+                            /* 暂无进行中行程 */
+                            <div className="flex flex-col items-center justify-center h-full gap-2 py-4 pr-6">
+                                <CalendarIcon size={28} className="text-slate-300" />
+                                <span className="text-sm font-bold text-slate-500">暂无进行中行程</span>
+                                <p className="text-[10px] text-slate-400">请先规划或导入您的行程</p>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Header: Title + Status */}
+                                <div className="flex items-center justify-between mb-2 relative z-10 pr-6">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <h3 className="font-black text-sm text-slate-800 truncate">
+                                            {(() => {
+                                                const d = activeTripNode.details || {};
+                                                const t = activeTripNode.type;
+                                                const isDriving = t === 'transport' && d.flightNo === '自驾';
+                                                const isTrain = t === 'transport' && !isDriving;
+                                                if (t === 'flight') return `${d.dep || ''} → ${d.arr || ''}`;
+                                                if (isTrain) return `${d.start || ''} → ${d.end || ''}`;
+                                                if (isDriving) return `${d.start || ''} → ${d.end || ''}`;
+                                                return d.name || activeTripNode.title;
+                                            })()}
+                                        </h3>
+                                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold shrink-0 ${
+                                            isUpcoming ? 'bg-orange-100 text-orange-600' : 'bg-indigo-100 text-indigo-600'
+                                        }`}>
+                                            {isUpcoming ? '即将开始' : '进行中'}
                                         </span>
-                                    ))}
+                                    </div>
                                 </div>
-                             </div>
-                        </div>
 
-                        {/* Bottom: Assistant Message REMOVED for compact view */}
-                        
-                        {/* Background Decoration */}
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                                {/* Middle: Icon + Details (按节点类型展示) */}
+                                <div className="flex items-start gap-2 mb-2 relative z-10">
+                                    {(() => {
+                                        const d = activeTripNode.details || {};
+                                        const t = activeTripNode.type;
+                                        const isDriving = t === 'transport' && d.flightNo === '自驾';
+                                        const isTrain = t === 'transport' && !isDriving;
+                                        const iconCls = t === 'flight' ? 'bg-blue-50 text-blue-600' : t === 'transport' ? 'bg-green-50 text-green-600' : t === 'scenic' ? 'bg-emerald-50 text-emerald-600' : t === 'food' || t === 'group_meal' ? 'bg-orange-50 text-orange-600' : t === 'hotel' ? 'bg-indigo-50 text-indigo-600' : 'bg-teal-50 text-teal-600';
+                                        const Icon = t === 'flight' ? Plane : isDriving ? Car : isTrain ? Train : t === 'scenic' ? Camera : t === 'food' || t === 'group_meal' ? Utensils : t === 'hotel' ? Hotel : Coffee;
+                                        let line1 = '', line2 = '';
+                                        if (t === 'flight') { line1 = d.flightNo || ''; line2 = `${d.depTime || ''} - ${d.arrTime || ''}`; }
+                                        else if (isTrain) { line1 = d.flightNo || ''; line2 = d.depTime ? `${d.depTime} 发车 · ${d.duration || ''}` : (d.duration || ''); }
+                                        else if (isDriving) { line2 = d.desc || '导航信息'; }
+                                        else if (t === 'food' || t === 'group_meal') { line1 = d.mustEat || d.menu || ''; line2 = [d.cuisine, d.price && `¥${d.price}/人`, d.score && `${d.score}分`].filter(Boolean).join(' · '); }
+                                        else if (t === 'scenic') { line1 = d.desc || ''; line2 = d.address || ''; }
+                                        else if (t === 'hotel') { line1 = d.level || d.star || '星级'; line2 = d.desc || d.address || '位置'; }
+                                        else if (t === 'free_time') { line1 = d.name || activeTripNode.title; line2 = d.desc || ''; }
+                                        return (
+                                            <>
+                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${iconCls}`}>
+                                                    <Icon size={20} />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    {line1 && <div className="truncate text-xs font-bold text-slate-700">{line1}</div>}
+                                                    {line2 && <div className="truncate mt-0.5 text-xs font-bold text-slate-700">{line2}</div>}
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
+                                </div>
+
+                                {/* Background Decoration */}
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                            </>
+                        )}
 
                         {/* Close Button */}
                         <button 
