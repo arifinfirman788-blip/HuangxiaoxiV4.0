@@ -12,12 +12,14 @@ import ReservationLetterCard from './ReservationLetterCard';
 const ReservationVideo = 'https://cdn.jsdelivr.net/gh/arifinfirman788-blip/HuangxiaoxiV4.0@main/src/video/03d28efefa5d12a142ffcf8e57225ede.mp4';
 
 const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerchantReply, isHumanMode, onToggleHumanMode }) => {
+  const isScenicQaAgent = agent?.id === 'scenic-xiaoqikong' || agent?.name?.includes('小七孔');
+  const isScenicTicketOrder = isScenicQaAgent && data?.intent === 'ticket_order';
   const [activeRequest, setActiveRequest] = useState(null);
   const [aiInsight, setAiInsight] = useState(null);
   const [processingState, setProcessingState] = useState('idle'); // idle, analyzing, ready, completed
   const [showReservationPreview, setShowReservationPreview] = useState(false); // New state for preview
   const hasInitialized = useRef(false);
-  const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, messages
+  const [activeTab, setActiveTab] = useState(isScenicQaAgent ? 'messages' : 'dashboard'); // dashboard, messages
   // const [isHumanMode, setIsHumanMode] = useState(false); // Managed by parent
   const [merchantInput, setMerchantInput] = useState('');
   const chatScrollRef = useRef(null);
@@ -28,6 +30,13 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
         chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
   }, [chatHistory, activeTab]);
+
+  // Keep scenic agent in QA chat mode.
+  useEffect(() => {
+    if (isScenicQaAgent) {
+      setActiveTab('messages');
+    }
+  }, [isScenicQaAgent]);
 
   const hasUnread = chatHistory && chatHistory.length > 0;
 
@@ -190,40 +199,44 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
            <button onClick={onClose} className="p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-600">
               <ArrowLeft size={20} />
            </button>
-           <span className="font-bold text-slate-800">商家工作台</span>
+           <span className="font-bold text-slate-800">{isScenicQaAgent ? '景区智能体问答' : '商家工作台'}</span>
            <div className="flex items-center gap-3">
-               <button 
-                 onClick={() => setActiveTab('messages')}
-                 className={`relative p-2 rounded-full transition-colors ${activeTab === 'messages' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500'}`}
-               >
-                  <MessageSquare size={20} />
-                  {hasUnread && (
-                      <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-                  )}
-               </button>
-               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 relative">
-                  <Bell size={16} />
-                  <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></div>
-               </div>
+               {!isScenicQaAgent && (
+                 <>
+                   <button 
+                     onClick={() => setActiveTab('messages')}
+                     className={`relative p-2 rounded-full transition-colors ${activeTab === 'messages' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500'}`}
+                   >
+                      <MessageSquare size={20} />
+                      {hasUnread && (
+                          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                      )}
+                   </button>
+                   <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 relative">
+                      <Bell size={16} />
+                      <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></div>
+                   </div>
+                 </>
+               )}
            </div>
         </div>
         
         {/* Merchant Profile Mini */}
         <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-md border-2 border-white">
-                <Store size={20} />
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md border-2 border-white ${isScenicQaAgent ? 'bg-emerald-600' : 'bg-blue-600'}`}>
+                {isScenicQaAgent ? <MapPin size={20} /> : <Store size={20} />}
             </div>
             <div>
                 <h2 className="text-sm font-bold text-slate-800">{agent?.name || "商家服务终端"}</h2>
                 <div className="flex items-center gap-1 text-xs text-slate-500">
-                    <div className={`w-1.5 h-1.5 rounded-full ${isHumanMode ? 'bg-orange-500' : 'bg-green-500'}`}></div>
-                    <span>{isHumanMode ? '人工介入中' : 'AI自动接单中'}</span>
+                    <div className={`w-1.5 h-1.5 rounded-full ${isScenicQaAgent ? 'bg-emerald-500' : (isHumanMode ? 'bg-orange-500' : 'bg-green-500')}`}></div>
+                    <span>{isScenicQaAgent ? '在线答疑中' : (isHumanMode ? '人工介入中' : 'AI自动接单中')}</span>
                 </div>
             </div>
         </div>
       </div>
 
-      {activeTab === 'messages' ? (
+      {activeTab === 'messages' || isScenicQaAgent ? (
         <div className="flex-1 flex flex-col bg-slate-50">
             {/* Chat Header / Mode Switch */}
             <div className="bg-white p-3 border-b border-slate-100 flex justify-between items-center shadow-sm z-10">
@@ -247,6 +260,22 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
                     {isHumanMode ? '退出人工' : '人工介入'}
                 </button>
             </div>
+
+            {isScenicTicketOrder && (
+              <div className="mx-3 mt-3 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-3 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-bold text-emerald-700">已打开门票订购页面</div>
+                    <div className="text-[11px] text-slate-600 mt-1">
+                      {data?.scenicName || '小七孔景区'} · {data?.defaultPackage || '成人票'} · {data?.defaultPrice || '¥50起'}
+                    </div>
+                  </div>
+                  <button className="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-sm">
+                    立即订购
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Chat History */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={chatScrollRef}>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>总览/每日卡片三方案</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 24px;
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; }
+    h1 { font-size: 24px; margin-bottom: 6px; }
+    .sub { color: #64748b; font-size: 13px; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(320px, 1fr)); gap: 16px; }
+    .panel {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .title { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #334155; }
+
+    /* 手机画布 */
+    .phone {
+      width: 100%;
+      min-height: 760px;
+      background: #f8fafc;
+      border-radius: 28px;
+      border: 8px solid #0f172a;
+      overflow: hidden;
+      position: relative;
+    }
+    .map {
+      height: 130px;
+      background: linear-gradient(120deg, #8aa1bd, #9bb8a0);
+      position: relative;
+    }
+    .map::after {
+      content: '地图区域';
+      position: absolute;
+      right: 14px;
+      bottom: 10px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(0,0,0,.28);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    /* 需求1：白色卡片上方圆角 */
+    .content {
+      margin-top: -2px;
+      background: #fff;
+      border-radius: 30px 30px 0 0;
+      overflow: hidden;
+      min-height: 628px;
+      padding: 14px;
+    }
+
+    /* 需求1：分类胶囊，无图片 */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      margin-bottom: 12px;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .pill {
+      white-space: nowrap;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid #dbe3ef;
+      background: #f8fafc;
+      color: #334155;
+      flex-shrink: 0;
+    }
+    .pill.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+
+    .day {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 0 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .node {
+      border: 1px solid #dbeafe;
+      border-radius: 24px;
+      padding: 12px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .meta .left { font-size: 22px; font-weight: 800; }
+    .meta .agent {
+      font-size: 11px; font-weight: 700;
+      color: #4f46e5; background: #eef2ff;
+      padding: 4px 8px; border-radius: 10px;
+    }
+    .desc { font-size: 12px; color: #059669; margin-bottom: 10px; }
+    .route {
+      font-size: 26px; font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+    .time {
+      color: #2563eb;
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .tag {
+      font-size: 10px;
+      color: #475569;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 3px 6px;
+    }
+    .tips {
+      font-size: 12px;
+      border: 1px solid #fde6cc;
+      background: #fff7ed;
+      color: #c2410c;
+      border-radius: 12px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+    }
+
+    /* 需求2：去 icon + 文本不换行 + 可横滑 */
+    .services {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .services::-webkit-scrollbar { height: 6px; }
+    .services::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+    .svc {
+      flex-shrink: 0;
+      min-width: 92px;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid #dbe4f2;
+      background: #fff;
+      color: #334155;
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .svc.primary {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+
+    /* 三种视觉方案细化 */
+    .v2 .pill { background: #fff; border-color: #cfd9ea; }
+    .v2 .pill.active { background: linear-gradient(90deg, #4f46e5, #2563eb); border-color: transparent; }
+    .v2 .node { border-color: #bfdbfe; }
+    .v2 .svc { border-radius: 999px; }
+
+    .v3 .content { border-radius: 28px 28px 0 0; padding-top: 12px; }
+    .v3 .tabs { gap: 10px; }
+    .v3 .pill { background: #f1f5f9; font-size: 13px; }
+    .v3 .pill.active { background: #3b82f6; }
+    .v3 .svc { min-width: 98px; }
+
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>图三改版：总览/每日卡片三种方案</h1>
+    <p class="sub">已按你的要求：白色区域顶部圆角、分类改胶囊（无图片）、服务按钮去图标且可横向滑动。</p>
+
+    <div class="grid">
+      <section class="panel v1">
+        <div class="title">方案一（标准胶囊）</div>
+        <div class="phone">
+          <div class="map"></div>
+          <div class="content">
+            <div class="tabs">
+              <button class="pill">全部</button>
+              <button class="pill active">交通</button>
+              <button class="pill">餐饮</button>
+              <button class="pill">景点</button>
+              <button class="pill">住宿</button>
+              <button class="pill">自定义</button>
+            </div>
+
+            <div class="day"><span>Day 1 · 交通</span><span>12月11日</span></div>
+            <div class="node">
+              <div class="meta"><span class="left">CZ3685</span><span class="agent">智能体</span></div>
+              <div class="desc">预计提前10分钟抵达</div>
+              <div class="route">北京大兴 → 龙洞堡T2</div>
+              <div class="time">06:00 - 08:10</div>
+              <div class="tags"><span class="tag">准点率95%</span><span class="tag">经济舱</span><span class="tag">飞行中</span></div>
+              <div class="tips">黄小西Tips：建议提前2小时到达机场。</div>
+              <div class="services">
+                <button class="svc primary">一键导航</button>
+                <button class="svc">值机选座</button>
+                <button class="svc">改签退票</button>
+                <button class="svc">接送服务</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel v2">
+        <div class="title">方案二（描边+渐变激活）</div>
+        <div class="phone">
+          <div class="map"></div>
+          <div class="content">
+            <div class="tabs">
+              <button class="pill">全部</button>
+              <button class="pill active">交通</button>
+              <button class="pill">餐饮</button>
+              <button class="pill">景点</button>
+              <button class="pill">住宿</button>
+            </div>
+
+            <div class="day"><span>Day 1 · 交通</span><span>12月11日</span></div>
+            <div class="node">
+              <div class="meta"><span class="left">CZ3685</span><span class="agent">智能体</span></div>
+              <div class="desc">预计提前10分钟抵达</div>
+              <div class="route">北京大兴 → 龙洞堡T2</div>
+              <div class="time">06:00 - 08:10</div>
+              <div class="tags"><span class="tag">准点率95%</span><span class="tag">经济舱</span><span class="tag">飞行中</span></div>
+              <div class="tips">黄小西Tips：建议提前2小时到达机场。</div>
+              <div class="services">
+                <button class="svc primary">一键导航</button>
+                <button class="svc">值机选座</button>
+                <button class="svc">改签退票</button>
+                <button class="svc">接送服务</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel v3">
+        <div class="title">方案三（紧凑版，滑动优先）</div>
+        <div class="phone">
+          <div class="map"></div>
+          <div class="content">
+            <div class="tabs">
+              <button class="pill">全部</button>
+              <button class="pill active">交通</button>
+              <button class="pill">餐饮</button>
+              <button class="pill">景点</button>
+              <button class="pill">住宿</button>
+              <button class="pill">自定义</button>
+            </div>
+
+            <div class="day"><span>Day 1 · 交通</span><span>12月11日</span></div>
+            <div class="node">
+              <div class="meta"><span class="left">CZ3685</span><span class="agent">智能体</span></div>
+              <div class="desc">预计提前10分钟抵达</div>
+              <div class="route">北京大兴 → 龙洞堡T2</div>
+              <div class="time">06:00 - 08:10</div>
+              <div class="tags"><span class="tag">准点率95%</span><span class="tag">经济舱</span><span class="tag">飞行中</span></div>
+              <div class="tips">黄小西Tips：建议提前2小时到达机场。</div>
+              <div class="services">
+                <button class="svc primary">一键导航</button>
+                <button class="svc">值机选座</button>
+                <button class="svc">改签退票</button>
+                <button class="svc">接送服务</button>
+                <button class="svc">延误保障</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

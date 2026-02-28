@@ -1311,8 +1311,38 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
     }
 
     // Direct QA demo: show Xiaoqikong ticket card immediately
-    const isXiaoqikongTicketQuery = /小七孔.*门票|门票.*小七孔|订购小七孔门票|购买小七孔门票/.test(content);
+    const isXiaoqikongTicketQuery = /小七孔.*门票|门票.*小七孔|订购小七孔(?:门票)?|购买小七孔(?:门票)?/.test(content);
     if (isXiaoqikongTicketQuery) {
+      const answerText = '已为您匹配小七孔景区智能体，并打开门票订购页；您可直接确认日期与人数后下单。';
+      const scenicAgentContext = {
+        id: 'scenic-xiaoqikong',
+        name: '小七孔景区智能体',
+        desc: '门票预订、路线导览、游玩咨询',
+        type: 'scenic',
+        role: 'guide',
+        services: ['购票', '路线导览', '咨询'],
+        avatar: ScenicAvatar,
+        initialData: {
+          intent: 'ticket_order',
+          scenicName: '小七孔景区',
+          defaultPackage: '成人票',
+          defaultPrice: '¥50起'
+        },
+        initialChatHistory: [
+          {
+            id: `${Date.now()}-q`,
+            sender: 'user',
+            text: content,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: `${Date.now()}-a`,
+            sender: 'agent',
+            text: answerText,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      };
       setTimeout(() => {
         setIsTyping(false);
         const cardMsg = {
@@ -1322,6 +1352,15 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         dispatchAiResponse(cardMsg);
+        dispatchAiResponse({
+          id: Date.now() + 2,
+          sender: 'agent',
+          text: answerText,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        // Auto-enter scenic agent QA workspace while keeping current chat history.
+        if (onConnectAgent) onConnectAgent(scenicAgentContext);
       }, 600);
       return;
     }
@@ -2364,6 +2403,11 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
                 </div>
               ) : msg.type === 'xiaoqikong_ticket_card' ? (
                 <div className="w-full min-w-[300px]">
+                  <div className="mb-2 px-1">
+                    <p className="text-xs leading-relaxed text-slate-600 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
+                      已为你匹配小七孔景区智能体卡片，更多订票与行程操作可进入智能体继续办理。
+                    </p>
+                  </div>
                   <XiaoqikongTicketCard />
                 </div>
               ) : msg.type === 'agent_generated_card' ? (
@@ -3345,36 +3389,36 @@ const ServiceAgentCard = ({ node, agentInfo, onConnect, autoConnect }) => {
 
 const XiaoqikongTicketCard = () => {
   return (
-    <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-4 space-y-4">
+    <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm p-3 space-y-3">
       <div className="flex items-start justify-between">
-        <h3 className="text-2xl font-extrabold text-slate-800">小七孔景区智能体</h3>
-        <span className="px-3 py-1 rounded-xl text-sm font-bold bg-purple-100 text-purple-600">智能体</span>
+        <h3 className="text-lg font-extrabold text-slate-800">小七孔景区智能体</h3>
+        <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-100 text-purple-600">智能体</span>
       </div>
 
-      <div className="flex items-center gap-2 text-slate-500">
+      <div className="flex items-center gap-1.5 text-slate-500">
         <div className="flex items-center gap-0.5 text-orange-500">
           {[1, 2, 3, 4, 5].map((i) => (
-            <Star key={i} size={16} className="fill-orange-500" />
+            <Star key={i} size={12} className="fill-orange-500" />
           ))}
         </div>
-        <span className="text-3xl leading-none text-slate-300">·</span>
-        <span className="text-2xl font-bold text-slate-700">4.8</span>
+        <span className="text-base leading-none text-slate-300">·</span>
+        <span className="text-xl font-bold text-slate-700">4.8</span>
         <span className="text-slate-300">|</span>
-        <span className="text-xl font-bold text-slate-400">免费</span>
+        <span className="text-sm font-bold text-slate-400">免费</span>
       </div>
 
       <div className="flex gap-3">
-        <div className="w-28 h-28 rounded-3xl overflow-hidden bg-slate-100 shrink-0">
+        <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 shrink-0">
           <img src={ScenicAvatar} alt="小七孔景区" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2 text-slate-600">
-            <Clock size={18} className="text-emerald-500" />
-            <span className="text-2xl font-medium">建议游览时长 3h</span>
+            <Clock size={15} className="text-emerald-500" />
+            <span className="text-sm font-medium">建议游览时长 3h</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {['必打卡', '好评如潮', '老字号'].map((tag) => (
-              <span key={tag} className="px-2.5 py-1 rounded-xl border border-slate-200 bg-slate-50 text-lg text-slate-500">
+              <span key={tag} className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 text-xs text-slate-500">
                 {tag}
               </span>
             ))}
@@ -3382,9 +3426,9 @@ const XiaoqikongTicketCard = () => {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-orange-50 border border-orange-100 p-3 text-slate-700">
-        <p className="text-lg leading-relaxed">
-          <Sparkles size={16} className="inline mr-1 text-orange-500" />
+      <div className="rounded-xl bg-orange-50 border border-orange-100 p-2.5 text-slate-700">
+        <p className="text-xs leading-relaxed">
+          <Sparkles size={14} className="inline mr-1 text-orange-500" />
           <span className="font-bold text-orange-600">黄小西Tips：</span>
           小七孔旺季建议提前 1 天预约门票，上午入园体验更佳。
         </p>
@@ -3392,13 +3436,13 @@ const XiaoqikongTicketCard = () => {
 
       <div className="overflow-x-auto pb-1 scrollbar-hide">
         <div className="flex gap-2 min-w-max">
-          <button className="h-12 px-6 rounded-2xl bg-green-600 text-white text-lg font-bold flex items-center gap-2">
+          <button className="h-10 px-4 rounded-xl bg-green-600 text-white text-sm font-bold flex items-center gap-1.5">
             <Ticket size={16} /> 购买门票
           </button>
-          <button className="h-12 px-6 rounded-2xl bg-white border border-slate-200 text-slate-600 text-lg font-bold flex items-center gap-2">
+          <button className="h-10 px-4 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold flex items-center gap-1.5">
             <Navigation size={16} /> 一键导航
           </button>
-          <button className="h-12 px-6 rounded-2xl bg-white border border-slate-200 text-slate-600 text-lg font-bold flex items-center gap-2">
+          <button className="h-10 px-4 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold flex items-center gap-1.5">
             <Phone size={16} /> 电话咨询
           </button>
         </div>

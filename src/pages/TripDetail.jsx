@@ -745,6 +745,21 @@ const TripDetail = ({ adoptedTrip }) => {
         {/* DAILY MODE */}
         {viewMode === 'daily' && (
            <div className="flex flex-col min-h-full">
+              {/* Map Placeholder - Also visible in Daily */}
+              <div className="w-full h-48 bg-slate-200 relative mb-4 group cursor-pointer overflow-hidden">
+                 <img 
+                   src={getPlaceholder(800, 400, 'Map Overview')} 
+                   className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" 
+                   alt="Trip Map" 
+                 />
+                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-sm font-bold text-slate-800">
+                       <Map size={16} className="text-blue-600" />
+                       查看路线地图
+                    </div>
+                 </div>
+              </div>
+
               {/* Day Selector */}
               <div className="bg-white border-b border-slate-100 sticky top-0 z-40">
                  <div className="flex overflow-x-auto scrollbar-hide px-4 py-3 gap-3">

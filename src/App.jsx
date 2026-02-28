@@ -114,8 +114,8 @@ function App() {
     setSplitViewState({
       isOpen: true,
       agent: agentContext,
-      data: null, // No data yet, just connecting
-      merchantChatHistory: [] // Reset history on new connection
+      data: agentContext?.initialData || null,
+      merchantChatHistory: agentContext?.initialChatHistory || []
     });
   };
 
