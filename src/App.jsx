@@ -70,6 +70,14 @@ function App() {
     localStorage.setItem('adoptedTrip', JSON.stringify(newTrip));
   };
 
+  const handleDeleteTrip = (tripId) => {
+    if (!adoptedTrip) return;
+    if (adoptedTrip.id === tripId) {
+      setAdoptedTrip(null);
+      localStorage.removeItem('adoptedTrip');
+    }
+  };
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isBottomNavVisible, setIsBottomNavVisible] = useState(true);
 
@@ -215,7 +223,7 @@ function App() {
             } />
             <Route path="/trip" element={
               <RequireAuth isAuthenticated={isAuthenticated}>
-                <Trip adoptedTrip={adoptedTrip} onUpdateTrip={handleUpdateTrip} />
+                <Trip adoptedTrip={adoptedTrip} onUpdateTrip={handleUpdateTrip} onDeleteTrip={handleDeleteTrip} />
               </RequireAuth>
             } />
             <Route path="/shop" element={<Shop />} />

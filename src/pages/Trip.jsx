@@ -161,7 +161,7 @@ const CalendarFilter = ({ value, onChange, years, availableYearMonths }) => {
   );
 };
 
-const Trip = ({ adoptedTrip, onUpdateTrip }) => {
+const Trip = ({ adoptedTrip, onUpdateTrip, onDeleteTrip }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'planned' | 'upcoming' | 'completed'
@@ -171,12 +171,16 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
   const [tempStartDate, setTempStartDate] = useState('');
   const [tripToStart, setTripToStart] = useState(null);
   const [activeTripId, setActiveTripId] = useState(null); // Track the currently active trip ID
+  const [noticeMessage, setNoticeMessage] = useState('');
+  const [terminateTargetTrip, setTerminateTargetTrip] = useState(null);
+  const [deleteTargetTrip, setDeleteTargetTrip] = useState(null);
 
   // Mock Data for Demo Purposes
   const [localTrips, setLocalTrips] = useState([
     {
       id: 'mock-1',
       title: '黔东南苗寨深度体验3日游',
+      sourceType: 'imported',
       date: '2026/04/15 - 2026/04/17',
       days: 3,
       distance: '320km',
@@ -187,6 +191,7 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
     {
       id: 'mock-2',
       title: '遵义红色记忆之旅2日游',
+      sourceType: 'imported',
       date: '2026/03/10 - 2026/03/11',
       days: 2,
       distance: '180km',
@@ -196,7 +201,9 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
     }
   ]);
 
-  const myTrips = adoptedTrip ? [adoptedTrip, ...localTrips] : [...localTrips];
+  const myTrips = adoptedTrip
+    ? [{ ...adoptedTrip, sourceType: adoptedTrip.sourceType || 'favorite' }, ...localTrips]
+    : [...localTrips];
 
   useEffect(() => {
     const active = myTrips.find(t => t.startTime && t.status !== 'completed');
@@ -213,7 +220,7 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
     // Check for conflict
     if (activeTripId && activeTripId !== trip.id) {
         const activeTrip = myTrips.find(t => t.id === activeTripId);
-        alert(`行程 "${activeTrip?.title || '未知行程'}" 正在进行中，请先结束该行程后再开始新的行程。`);
+        setNoticeMessage(`行程“${activeTrip?.title || '未知行程'}”已开始，请先结束该行程后再开始当前行程。`);
         return;
     }
 
@@ -225,7 +232,7 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
     if (!tempStartDate || !tripToStart) return;
     const date = new Date(tempStartDate);
     if (date <= new Date()) {
-        alert("请选择当前时间之后的时间");
+        setNoticeMessage("请选择当前时间之后的时间");
         return;
     }
     
@@ -242,8 +249,8 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
                 ? { ...t, startTime: date.toISOString(), status: 'upcoming' }
                 : t
         ));
-        alert(`行程 "${tripToStart.title}" 已开启！`);
     }
+    setNoticeMessage(`行程“${tripToStart.title}”已开始！`);
     
     setIsStartModalOpen(false);
     setTripToStart(null);
@@ -252,21 +259,47 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
 
   const handleTerminateTrip = (trip, e) => {
       e.stopPropagation();
-      if (window.confirm('确定要提前结束该行程吗？结束行程后将停止行程提醒。')) {
-          // Clear active trip ID
-          setActiveTripId(null);
+      setTerminateTargetTrip(trip);
+  };
 
-          if (adoptedTrip && trip.id === adoptedTrip.id) {
-              onUpdateTrip({ startTime: null, status: 'completed' });
-          } else {
-              setLocalTrips(prev => prev.map(t => 
-                  t.id === trip.id 
-                      ? { ...t, startTime: null, status: 'completed' }
-                      : t
-              ));
-              alert(`行程 "${trip.title}" 已结束！`);
-          }
+  const handleConfirmTerminateTrip = () => {
+      if (!terminateTargetTrip) return;
+      const trip = terminateTargetTrip;
+      setActiveTripId(null);
+
+      if (adoptedTrip && trip.id === adoptedTrip.id) {
+          onUpdateTrip({ startTime: null, status: 'completed' });
+      } else {
+          setLocalTrips(prev => prev.map(t =>
+              t.id === trip.id
+                  ? { ...t, startTime: null, status: 'completed' }
+                  : t
+          ));
       }
+      setTerminateTargetTrip(null);
+      setNoticeMessage(`行程“${trip.title}”已结束。`);
+  };
+
+  const handleDeleteTrip = (trip, e) => {
+      e.stopPropagation();
+      setDeleteTargetTrip(trip);
+  };
+
+  const handleConfirmDeleteTrip = () => {
+      if (!deleteTargetTrip) return;
+      const trip = deleteTargetTrip;
+
+      // If deleting current active trip, clear active flag.
+      if (activeTripId === trip.id) setActiveTripId(null);
+
+      if (adoptedTrip && trip.id === adoptedTrip.id) {
+          onDeleteTrip?.(trip.id);
+      } else {
+          setLocalTrips(prev => prev.filter(t => t.id !== trip.id));
+      }
+
+      setDeleteTargetTrip(null);
+      setNoticeMessage(`行程“${trip.title}”已删除。`);
   };
 
   const getYearMonth = (dateStr) => {
@@ -305,6 +338,34 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
     { value: 'completed', label: '已完成' }
   ];
 
+  const statusRank = {
+    upcoming: 0, // 进行中
+    planned: 1,  // 计划中
+    completed: 2 // 已完成（自动置底）
+  };
+
+  const getStartDateTs = (trip) => {
+    const raw = trip?.date?.split('-')?.[0]?.trim() || '';
+    if (!raw) return Number.MAX_SAFE_INTEGER;
+
+    // 2026/04/15
+    if (/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(raw)) {
+      const [y, m, d] = raw.split('/').map(n => parseInt(n, 10));
+      return new Date(y, m - 1, d).getTime();
+    }
+    // 04/15
+    if (/^\d{1,2}\/\d{1,2}$/.test(raw)) {
+      const [m, d] = raw.split('/').map(n => parseInt(n, 10));
+      return new Date(2026, m - 1, d).getTime();
+    }
+    // 04.15
+    if (/^\d{1,2}\.\d{1,2}$/.test(raw)) {
+      const [m, d] = raw.split('.').map(n => parseInt(n, 10));
+      return new Date(2026, m - 1, d).getTime();
+    }
+    return Number.MAX_SAFE_INTEGER;
+  };
+
   const filteredTrips = myTrips.filter(t => {
       if (statusFilter !== 'all' && t.status !== statusFilter) return false;
       if (activeTab !== 'all') {
@@ -313,7 +374,17 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
       }
       return true;
   }).sort((a, b) => {
-        // Active trip comes first
+        // 1) 先按状态排序：进行中 -> 计划中 -> 已完成（置底）
+        const rankA = statusRank[a.status] ?? 9;
+        const rankB = statusRank[b.status] ?? 9;
+        if (rankA !== rankB) return rankA - rankB;
+
+        // 2) 再按时间从近到远
+        const timeA = getStartDateTs(a);
+        const timeB = getStartDateTs(b);
+        if (timeA !== timeB) return timeA - timeB;
+
+        // 3) 最后保障：进行中的 activeTripId 在同级中优先
         if (a.id === activeTripId) return -1;
         if (b.id === activeTripId) return 1;
         return 0;
@@ -394,6 +465,7 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
                 onSelect={() => toggleTripSelection(trip.id)}
                 onStart={(e) => handleOpenStartModal(trip, e)}
                 onTerminate={(e) => handleTerminateTrip(trip, e)}
+                onDelete={(e) => handleDeleteTrip(trip, e)}
               />
             ))}
           </AnimatePresence>
@@ -494,6 +566,111 @@ const Trip = ({ adoptedTrip, onUpdateTrip }) => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Confirm Terminate Modal */}
+      <AnimatePresence>
+        {terminateTargetTrip && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setTerminateTargetTrip(null)}
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white w-full max-w-sm rounded-[2rem] p-6 relative z-10 shadow-2xl"
+            >
+              <h3 className="text-lg font-bold text-slate-800 mb-2">提前结束确认</h3>
+              <p className="text-sm text-slate-500 mb-6">确定要提前结束该行程吗？结束行程后将停止行程提醒。</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setTerminateTargetTrip(null)}
+                  className="flex-1 py-3.5 rounded-xl font-bold text-slate-500 bg-slate-100 active:scale-95 transition-transform"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleConfirmTerminateTrip}
+                  className="flex-1 py-3.5 rounded-xl font-bold text-white bg-red-500 shadow-lg shadow-red-200 active:scale-95 transition-transform"
+                >
+                  确定结束
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Confirm Delete Modal */}
+      <AnimatePresence>
+        {deleteTargetTrip && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setDeleteTargetTrip(null)}
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white w-full max-w-sm rounded-[2rem] p-6 relative z-10 shadow-2xl"
+            >
+              <h3 className="text-lg font-bold text-slate-800 mb-2">删除行程确认</h3>
+              <p className="text-sm text-slate-500 mb-6">确定删除该行程吗？此操作将同时用于取消收藏行程和删除导入行程。</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteTargetTrip(null)}
+                  className="flex-1 py-3.5 rounded-xl font-bold text-slate-500 bg-slate-100 active:scale-95 transition-transform"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleConfirmDeleteTrip}
+                  className="flex-1 py-3.5 rounded-xl font-bold text-white bg-red-500 shadow-lg shadow-red-200 active:scale-95 transition-transform"
+                >
+                  确定删除
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Notice Modal */}
+      <AnimatePresence>
+        {noticeMessage && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={() => setNoticeMessage('')}
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white w-full max-w-sm rounded-[2rem] p-6 relative z-10 shadow-2xl"
+            >
+              <p className="text-sm text-slate-700 leading-relaxed mb-6">{noticeMessage}</p>
+              <button
+                onClick={() => setNoticeMessage('')}
+                className="w-full py-3.5 rounded-xl font-bold text-white bg-cyan-500 shadow-lg shadow-cyan-200 active:scale-95 transition-transform"
+              >
+                我知道了
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -531,7 +708,7 @@ const HorizontalTripCard = ({ title, tags, price, bgImage }) => (
   </div>
 );
 
-const TripCard = ({ trip, isCompareMode, isSelected, onSelect, onStart, onTerminate }) => {
+const TripCard = ({ trip, isCompareMode, isSelected, onSelect, onStart, onTerminate, onDelete }) => {
   const navigate = useNavigate();
   
   return (
@@ -563,27 +740,39 @@ const TripCard = ({ trip, isCompareMode, isSelected, onSelect, onStart, onTermin
        </span>
     </div>
 
-    {/* Start Trip Button (Only for planned/upcoming without start time) */}
-    {!isCompareMode && !trip.startTime && trip.status !== 'completed' && (
-      <div className="absolute top-5 right-5 z-10">
-        <button 
-          onClick={onStart}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg shadow-cyan-500/30 flex items-center gap-1.5 active:scale-95 transition-all"
+    {/* Delete Trip Button */}
+    {!isCompareMode && (
+      <div className="absolute top-5 right-5 z-20">
+        <button
+          onClick={(e) => { e.stopPropagation(); onDelete(e); }}
+          className="px-2.5 py-1 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold transition-all active:scale-95"
         >
-          <Play size={12} fill="currentColor" />
+          删除
+        </button>
+      </div>
+    )}
+
+    {/* 方案三：右下角胶囊（开始行程） */}
+    {!isCompareMode && !trip.startTime && trip.status !== 'completed' && (
+      <div className="absolute bottom-6 right-6 z-30">
+        <button 
+          onClick={(e) => { e.stopPropagation(); onStart(e); }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/25 hover:bg-white/35 backdrop-blur-md border border-white/30 text-white text-[11px] font-bold transition-all active:scale-95"
+        >
+          <Play size={11} fill="currentColor" />
           开始行程
         </button>
       </div>
     )}
 
-    {/* Terminate Trip Button (For trips that have started) */}
+    {/* 方案三：右下角胶囊（提前结束） */}
     {!isCompareMode && trip.startTime && trip.status !== 'completed' && (
-      <div className="absolute top-5 right-5 z-10">
+      <div className="absolute bottom-6 right-6 z-30">
         <button 
-          onClick={onTerminate}
-          className="bg-red-500/80 hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg shadow-red-500/30 flex items-center gap-1.5 active:scale-95 transition-all backdrop-blur-md"
+          onClick={(e) => { e.stopPropagation(); onTerminate(e); }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/30 hover:bg-red-500/40 backdrop-blur-md border border-red-400/40 text-white text-[11px] font-bold transition-all active:scale-95"
         >
-          <X size={12} />
+          <X size={11} />
           提前结束
         </button>
       </div>

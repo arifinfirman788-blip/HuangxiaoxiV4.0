@@ -434,13 +434,15 @@ const ChatPlanning = ({ onAdoptTrip }) => {
          aiText = '收到！根据您的需求，我为您规划了“贵阳3日经典游”方案。第一天入住市中心，第二天游览地标景点，第三天体验古镇风情。详情如下👇';
       }
 
-      const aiMsg = {
-        id: Date.now() + 1,
-        sender: 'agent',
-        text: aiText,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, aiMsg]);
+      if (activeAgent) {
+        const aiMsg = {
+          id: Date.now() + 1,
+          sender: 'agent',
+          text: aiText,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, aiMsg]);
+      }
 
       if (!activeAgent) {
           setTimeout(() => {

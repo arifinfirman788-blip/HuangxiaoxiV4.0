@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ArrowLeft, Send, Mic, Plane, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, ChevronRight, Star, Info, Car, Camera, Hotel, Loader2, Wand2, RefreshCcw, ArrowRight, Bed, MapPin, X, ZoomIn, ZoomOut, MessageSquare, Phone, BadgeCheck, MoreHorizontal, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Send, Mic, Plane, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, ChevronRight, Star, Info, Car, Camera, Hotel, Loader2, Wand2, RefreshCcw, ArrowRight, Bed, MapPin, X, ZoomIn, ZoomOut, MessageSquare, Phone, BadgeCheck, MoreHorizontal, MessageCircle, ThumbsUp, ThumbsDown, Copy, Clock, Ticket, Navigation } from 'lucide-react';
 import TuoSaiImage from '../image/托腮_1.png';
 import { agents as availableAgents } from '../data/agents';
 import { getPlaceholder } from '../utils/imageUtils';
@@ -120,9 +120,9 @@ const HotelServiceCard = ({ title, requirements, onSubmit, onViewImage }) => {
     const hasAutoFill = requirements.some(req => getAutoFilledValue(req));
 
     const rooms = [
-        { id: 1, name: '高级大床房', price: '¥458', image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=300&auto=format&fit=crop', tags: ['25㎡', '大窗', '含早'] },
-        { id: 2, name: '行政双床房', price: '¥588', image: 'https://images.unsplash.com/photo-1590490360182-c87295ecc059?q=80&w=300&auto=format&fit=crop', tags: ['35㎡', '浴缸', '双早'] },
-        { id: 3, name: '全景套房', price: '¥888', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=300&auto=format&fit=crop', tags: ['50㎡', '落地窗', '行政礼遇'] },
+        { id: 1, name: '高级大床房', price: '¥50起', image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=300&auto=format&fit=crop', tags: ['25㎡', '大窗', '含早'] },
+        { id: 2, name: '行政双床房', price: '¥50起', image: 'https://images.unsplash.com/photo-1590490360182-c87295ecc059?q=80&w=300&auto=format&fit=crop', tags: ['35㎡', '浴缸', '双早'] },
+        { id: 3, name: '全景套房', price: '¥50起', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=300&auto=format&fit=crop', tags: ['50㎡', '落地窗', '行政礼遇'] },
     ];
 
     const handleSubmit = () => {
@@ -785,7 +785,7 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
             image: getPlaceholder(200, 200, 'Food'),
             details: {
               name: '老凯里酸汤鱼',
-              desc: '人均 ¥80'
+              desc: '人均 ¥50起'
             }
           },
           {
@@ -834,7 +834,7 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
             image: getPlaceholder(200, 200, 'Breakfast'),
             details: {
               name: '金牌罗记肠旺面',
-              desc: '人均 ¥15'
+              desc: '人均 ¥50起'
             }
           },
           {
@@ -860,7 +860,7 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
             image: getPlaceholder(200, 200, 'Food'),
             details: {
               name: '王万妈卤猪脚',
-              desc: '人均 ¥45'
+              desc: '人均 ¥50起'
             }
           },
           {
@@ -922,7 +922,7 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
             image: getPlaceholder(200, 200, 'Food'),
             details: {
               name: '丝恋红汤丝娃娃',
-              desc: '人均 ¥40'
+              desc: '人均 ¥50起'
             }
           },
           {
@@ -1308,6 +1308,22 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
     // Sync to App if agent active
     if (activeAgent && onUserMessage) {
         onUserMessage(newMsg);
+    }
+
+    // Direct QA demo: show Xiaoqikong ticket card immediately
+    const isXiaoqikongTicketQuery = /小七孔.*门票|门票.*小七孔|订购小七孔门票|购买小七孔门票/.test(content);
+    if (isXiaoqikongTicketQuery) {
+      setTimeout(() => {
+        setIsTyping(false);
+        const cardMsg = {
+          id: Date.now() + 1,
+          sender: 'agent',
+          type: 'xiaoqikong_ticket_card',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        dispatchAiResponse(cardMsg);
+      }, 600);
+      return;
     }
 
     // Check for "Generate Agent" intent
@@ -2165,13 +2181,15 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
          aiText = '收到！根据您的需求，我为您规划了“贵阳3日经典游”方案。第一天入住市中心，第二天游览地标景点，第三天体验古镇风情。详情如下👇';
       }
 
-      const aiMsg = {
-        id: Date.now() + 1,
-        sender: 'agent',
-        text: aiText,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      dispatchAiResponse(aiMsg);
+      if (activeAgent) {
+        const aiMsg = {
+          id: Date.now() + 1,
+          sender: 'agent',
+          text: aiText,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        dispatchAiResponse(aiMsg);
+      }
 
       if (!activeAgent) {
           setTimeout(() => {
@@ -2226,7 +2244,6 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
 
   const handleAdopt = () => {
     if (onAdoptTrip) onAdoptTrip(currentTrip);
-    if (onClose) onClose();
   };
 
   return (
@@ -2344,6 +2361,10 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
                         }, 1500);
                      }} 
                    />
+                </div>
+              ) : msg.type === 'xiaoqikong_ticket_card' ? (
+                <div className="w-full min-w-[300px]">
+                  <XiaoqikongTicketCard />
                 </div>
               ) : msg.type === 'agent_generated_card' ? (
                 <div className="w-full min-w-[300px]">
@@ -2624,10 +2645,25 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage, recommendations, onConn
   const [isBudgetExpanded, setIsBudgetExpanded] = useState(false);
   const [isAdopted, setIsAdopted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [feedbackType, setFeedbackType] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleAdoptClick = () => {
-    setIsAdopted(true);
-    onAdopt();
+    setIsAdopted((prev) => {
+      const next = !prev;
+      if (next) onAdopt();
+      return next;
+    });
+  };
+
+  const handleCopy = async (content) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1500);
+    } catch (error) {
+      console.error('复制失败:', error);
+    }
   };
 
   if (!tripData) return null;
@@ -2711,6 +2747,69 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage, recommendations, onConn
 🌟 **小贴士**：贵州多山路，自驾注意安全；景区内步行多，建议轻装出行！
     `;
 
+    const unifiedServiceCards = [
+      {
+        id: 'agent-scenic',
+        cardKind: 'agent',
+        serviceType: '景点',
+        name: '黄果树景区智能体',
+        desc: '实时讲解 + 智能导览 + 排队提醒',
+        tags: ['官方接入', '讲解服务'],
+        price: '¥50起',
+        image: ScenicAvatar
+      },
+      {
+        id: 'agent-hotel',
+        cardKind: 'agent',
+        serviceType: '酒店',
+        name: '酒店管家智能体',
+        desc: '房型推荐、入住办理、行李协助',
+        tags: ['24h在线', '快速入住'],
+        price: '¥50起',
+        image: HotelAvatar
+      },
+      {
+        id: 'agent-digital',
+        cardKind: 'agent',
+        serviceType: '数字分身',
+        name: '辣子鸡王阿婆数字分身',
+        desc: '本地辣子鸡口味顾问，帮你推荐不踩雷店铺',
+        tags: ['招牌辣子鸡', '地道黔味'],
+        price: '¥50起',
+        image: WangAyiAvatar
+      },
+      {
+        id: 'product-scenic',
+        cardKind: 'product',
+        serviceType: '景点',
+        name: '黄果树瀑布联票',
+        desc: '大瀑布 + 天星桥 + 陡坡塘',
+        tags: ['今日可订', '快速入园'],
+        price: '¥50起',
+        image: getPlaceholder(500, 700, 'Scenic Ticket')
+      },
+      {
+        id: 'product-hotel',
+        cardKind: 'product',
+        serviceType: '酒店',
+        name: '桔子水晶酒店2晚套餐',
+        desc: '含双早 + 延迟退房 + 接送机',
+        tags: ['限时特惠', '免费取消'],
+        price: '¥50起',
+        image: getPlaceholder(500, 700, 'Hotel Package')
+      },
+      {
+        id: 'product-food',
+        cardKind: 'product',
+        serviceType: '美食',
+        name: '老凯里酸汤鱼双人餐',
+        desc: '招牌酸汤鱼 + 小吃拼盘',
+        tags: ['到店即用', '本地推荐'],
+        price: '¥50起',
+        image: getPlaceholder(500, 700, 'Food Package')
+      }
+    ];
+
     return (
       <div className="space-y-3">
         <div className="p-4 bg-white rounded-2xl rounded-tl-none border border-slate-100 shadow-sm text-sm text-slate-700 leading-relaxed markdown-content">
@@ -2749,87 +2848,131 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage, recommendations, onConn
            >
              {tripOverviewMarkdown}
            </ReactMarkdown>
-        </div>
-        
-        <div className="px-1 grid grid-cols-3 gap-3">
-          <button
-            onClick={() => setIsExpanded(true)}
-            className="py-2.5 rounded-xl bg-slate-50 text-slate-600 text-xs font-bold hover:bg-slate-100 transition-colors shadow-sm border border-slate-100"
-          >
-            查看详情
-          </button>
-          <button
-            className="py-2.5 rounded-xl bg-slate-50 text-slate-600 text-xs font-bold hover:bg-slate-100 transition-colors shadow-sm border border-slate-100"
-          >
-            一键购买
-          </button>
-          <button
-            onClick={handleAdoptClick}
-            disabled={isAdopted}
-            className={`py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-lg ${
-              isAdopted 
-                ? 'bg-green-50 text-green-600 border border-green-200 shadow-none' 
-                : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200'
-            }`}
-          >
-            {isAdopted ? (
-              <>
-                <Check size={14} /> 已采纳
-              </>
-            ) : (
-              <>
-                <Check size={14} /> 采纳行程
-              </>
-            )}
-          </button>
+           <div className="mt-3 pt-2 border-t border-slate-100">
+             <div className="rounded-xl bg-slate-50/80 border border-slate-100 p-2.5 space-y-2">
+               <div className="flex items-center justify-end gap-1.5">
+                 <button
+                   type="button"
+                   title="点赞"
+                   aria-label="点赞"
+                   onClick={() => setFeedbackType('up')}
+                   className={`w-7 h-7 rounded-full border transition-colors flex items-center justify-center ${
+                     feedbackType === 'up'
+                       ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                       : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-100'
+                   }`}
+                 >
+                   <ThumbsUp size={13} />
+                 </button>
+                 <button
+                   type="button"
+                   title="点踩"
+                   aria-label="点踩"
+                   onClick={() => setFeedbackType('down')}
+                   className={`w-7 h-7 rounded-full border transition-colors flex items-center justify-center ${
+                     feedbackType === 'down'
+                       ? 'bg-rose-50 text-rose-600 border-rose-200'
+                       : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-100'
+                   }`}
+                 >
+                   <ThumbsDown size={13} />
+                 </button>
+                 <button
+                   type="button"
+                   title={isCopied ? '已复制' : '复制'}
+                   aria-label={isCopied ? '已复制' : '复制'}
+                   onClick={() => handleCopy(tripOverviewMarkdown)}
+                   className={`w-7 h-7 rounded-full border transition-colors flex items-center justify-center ${
+                     isCopied
+                       ? 'bg-cyan-50 text-cyan-600 border-cyan-200'
+                       : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-100'
+                   }`}
+                 >
+                   {isCopied ? <Check size={13} /> : <Copy size={13} />}
+                 </button>
+               </div>
+               <div className="grid grid-cols-3 gap-2">
+                 <button
+                   type="button"
+                   onClick={() => setIsExpanded(true)}
+                   className="h-8 rounded-lg bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 text-xs font-bold transition-colors"
+                 >
+                   查看详情
+                 </button>
+                 <button
+                   type="button"
+                   className="h-8 rounded-lg bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 text-xs font-bold transition-colors"
+                 >
+                   一键购买
+                 </button>
+                 <button
+                   type="button"
+                   onClick={handleAdoptClick}
+                   className={`h-8 rounded-lg text-xs font-bold transition-colors ${
+                     isAdopted
+                       ? 'bg-green-50 text-green-600 border border-green-200'
+                       : 'bg-slate-900 text-white border border-slate-900 hover:bg-slate-800'
+                   }`}
+                 >
+                   {isAdopted ? '已采纳' : '采纳行程'}
+                 </button>
+               </div>
+             </div>
+           </div>
         </div>
 
         {/* Recommendations Section */}
-        {recommendations && recommendations.length > 0 && (
-           <div className="mt-4 space-y-3">
-              <h4 className="font-bold text-sm text-slate-800 flex items-center gap-2 px-1">
-                 <Sparkles size={16} className="text-cyan-500" />
-                 行程配套服务推荐
-              </h4>
-              <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1 scrollbar-hide">
-                 {recommendations.map((agent) => (
-                   <div 
-                     key={agent.id}
-                     onClick={() => onConnectAgent && onConnectAgent(agent)}
-                     className="shrink-0 w-40 h-56 rounded-[1.5rem] overflow-hidden relative border-[3px] border-white shadow-lg cursor-pointer group bg-slate-900"
-                   >
-                      <img 
-                        src={agent.avatar} 
-                        alt={agent.name} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" />
-                      
-                      {/* Hover Overlay */}
-                      <div className="absolute right-3 top-[35%] -translate-y-1/2 flex flex-col gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                         <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
-                           <ArrowRight size={14} className="-rotate-45" />
-                         </div>
-                         <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
-                           <MessageCircle size={14} />
-                         </div>
-                      </div>
-
-                      <div className="absolute bottom-2 left-2 right-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl p-3 text-white shadow-sm z-20">
-                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5 min-w-0">
-                               <h3 className="text-xs font-bold leading-none text-white shadow-sm truncate">{agent.name}</h3>
-                               {agent.type === 'enterprise' && <BadgeCheck size={12} className="text-blue-400 shrink-0" fill="currentColor" stroke="white" />}
-                               <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)] shrink-0" />
-                            </div>
-                         </div>
-                         <p className="text-[9px] text-white/80 font-medium line-clamp-1 mt-1">{agent.desc}</p>
-                      </div>
-                   </div>
-                 ))}
-              </div>
-           </div>
-        )}
+        <div className="mt-4 space-y-3">
+          <h4 className="font-bold text-sm text-slate-800 flex items-center gap-2 px-1">
+            <Sparkles size={16} className="text-cyan-500" />
+            行程配套服务推荐
+          </h4>
+          <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1 scrollbar-hide">
+            {unifiedServiceCards.map((card) => (
+              <button
+                key={card.id}
+                type="button"
+                onClick={() => {
+                  if (card.cardKind === 'agent' && onConnectAgent) {
+                    onConnectAgent({
+                      id: card.id,
+                      name: card.name,
+                      desc: card.desc,
+                      avatar: card.image,
+                      type: 'personal'
+                    });
+                    return;
+                  }
+                  setIsExpanded(true);
+                }}
+                className="shrink-0 w-44 h-56 rounded-2xl overflow-hidden relative border border-white/60 shadow-md cursor-pointer group text-left"
+              >
+                <img
+                  src={card.image}
+                  alt={card.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <span className="absolute top-3 left-3 px-2 py-1 rounded-md bg-white/90 text-[10px] font-bold text-slate-700">
+                  {card.cardKind === 'agent' ? '智能体' : card.serviceType}
+                </span>
+                <div className="absolute bottom-3 left-3 right-3 text-white">
+                  <p className="text-xs font-bold truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">{card.name}</p>
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {card.tags.map((tag) => (
+                      <span
+                        key={`${card.id}-${tag}`}
+                        className="text-[9px] px-1.5 py-0.5 rounded bg-black/35 border border-white/20"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="mt-2 block text-xs font-bold text-amber-200 whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">{card.price}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -3039,15 +3182,15 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage, recommendations, onConn
                     <div className="divide-y divide-slate-50">
                        <div className="grid grid-cols-2 p-2.5 text-xs text-slate-700">
                           <div className="text-center">往返交通</div>
-                          <div className="text-center font-bold">¥ 1080 起</div>
+                          <div className="text-center font-bold">¥50起</div>
                        </div>
                        <div className="grid grid-cols-2 p-2.5 text-xs text-slate-700">
                           <div className="text-center">住宿</div>
-                          <div className="text-center font-bold">¥ 1000 起</div>
+                          <div className="text-center font-bold">¥50起</div>
                        </div>
                        <div className="grid grid-cols-2 p-2.5 text-xs text-slate-700">
                           <div className="text-center">门票</div>
-                          <div className="text-center font-bold">¥ 980 起</div>
+                          <div className="text-center font-bold">¥50起</div>
                        </div>
                     </div>
                  </div>
@@ -3196,6 +3339,70 @@ const ServiceAgentCard = ({ node, agentInfo, onConnect, autoConnect }) => {
              </button>
          </div>
        </div>
+    </div>
+  );
+};
+
+const XiaoqikongTicketCard = () => {
+  return (
+    <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-4 space-y-4">
+      <div className="flex items-start justify-between">
+        <h3 className="text-2xl font-extrabold text-slate-800">小七孔景区智能体</h3>
+        <span className="px-3 py-1 rounded-xl text-sm font-bold bg-purple-100 text-purple-600">智能体</span>
+      </div>
+
+      <div className="flex items-center gap-2 text-slate-500">
+        <div className="flex items-center gap-0.5 text-orange-500">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Star key={i} size={16} className="fill-orange-500" />
+          ))}
+        </div>
+        <span className="text-3xl leading-none text-slate-300">·</span>
+        <span className="text-2xl font-bold text-slate-700">4.8</span>
+        <span className="text-slate-300">|</span>
+        <span className="text-xl font-bold text-slate-400">免费</span>
+      </div>
+
+      <div className="flex gap-3">
+        <div className="w-28 h-28 rounded-3xl overflow-hidden bg-slate-100 shrink-0">
+          <img src={ScenicAvatar} alt="小七孔景区" className="w-full h-full object-cover" />
+        </div>
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center gap-2 text-slate-600">
+            <Clock size={18} className="text-emerald-500" />
+            <span className="text-2xl font-medium">建议游览时长 3h</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {['必打卡', '好评如潮', '老字号'].map((tag) => (
+              <span key={tag} className="px-2.5 py-1 rounded-xl border border-slate-200 bg-slate-50 text-lg text-slate-500">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-orange-50 border border-orange-100 p-3 text-slate-700">
+        <p className="text-lg leading-relaxed">
+          <Sparkles size={16} className="inline mr-1 text-orange-500" />
+          <span className="font-bold text-orange-600">黄小西Tips：</span>
+          小七孔旺季建议提前 1 天预约门票，上午入园体验更佳。
+        </p>
+      </div>
+
+      <div className="overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-2 min-w-max">
+          <button className="h-12 px-6 rounded-2xl bg-green-600 text-white text-lg font-bold flex items-center gap-2">
+            <Ticket size={16} /> 购买门票
+          </button>
+          <button className="h-12 px-6 rounded-2xl bg-white border border-slate-200 text-slate-600 text-lg font-bold flex items-center gap-2">
+            <Navigation size={16} /> 一键导航
+          </button>
+          <button className="h-12 px-6 rounded-2xl bg-white border border-slate-200 text-slate-600 text-lg font-bold flex items-center gap-2">
+            <Phone size={16} /> 电话咨询
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -711,7 +711,6 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
               initialContext={chatInitialContext}
               onAdoptTrip={(trip) => {
                  onUpdateTrip(trip);
-                 handleCloseChat();
               }}
               onServiceSubmit={onServiceSubmit}
               onConnectAgent={onConnectAgent}
