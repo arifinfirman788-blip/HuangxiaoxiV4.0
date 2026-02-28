@@ -1,19 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, MoreHorizontal, Battery, Signal, Wifi, 
-  Check, AlertTriangle, User, MapPin, ChevronRight, 
-  Store, Calendar, MessageSquare, Phone, ShieldCheck, 
-  Home, Bell, Clock, CheckCircle, XCircle, Zap,
-  TrendingUp, Users, Activity, Play, FileCheck
-} from 'lucide-react';
+import { Activity, AlertTriangle, ArrowLeft, Battery, Bell, Calendar, Check, CheckCircle, ChevronRight, Clock, FileCheck, Home, MapPin, MessageSquare, MoreHorizontal, Phone, Play, ShieldCheck, Signal, Star, Store, TrendingUp, User, Users, Wifi, XCircle, Zap } from 'lucide-react';
 import ReservationLetterCard from './ReservationLetterCard';
 // 使用 CDN 加速视频加载
 const ReservationVideo = 'https://cdn.jsdelivr.net/gh/arifinfirman788-blip/HuangxiaoxiV4.0@main/src/video/03d28efefa5d12a142ffcf8e57225ede.mp4';
 
 const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerchantReply, isHumanMode, onToggleHumanMode }) => {
   const isScenicQaAgent = agent?.id === 'scenic-xiaoqikong' || agent?.name?.includes('小七孔');
-  const isScenicTicketOrder = isScenicQaAgent && data?.intent === 'ticket_order';
+  const isHotelBookingAgent = agent?.id === 'hotel-guizhou-fandian' || agent?.name?.includes('贵州饭店');
+  const isTrainBookingAgent = agent?.id === 'train-beijing-guiyang' || (agent?.name?.includes('高铁') && agent?.role === 'transport');
   const [activeRequest, setActiveRequest] = useState(null);
   const [aiInsight, setAiInsight] = useState(null);
   const [processingState, setProcessingState] = useState('idle'); // idle, analyzing, ready, completed
@@ -181,6 +176,16 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
 
   const historyItems = getHistoryItems();
 
+  if (isScenicQaAgent) {
+    return <ScenicTicketDetailView onClose={onClose} />;
+  }
+  if (isHotelBookingAgent) {
+    return <HotelTicketDetailView onClose={onClose} />;
+  }
+  if (isTrainBookingAgent) {
+    return <TrainTicketDetailView onClose={onClose} />;
+  }
+
   return (
     <div className="w-full h-full bg-slate-50 flex flex-col relative overflow-hidden font-sans">
       {/* Status Bar */}
@@ -260,22 +265,6 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
                     {isHumanMode ? '退出人工' : '人工介入'}
                 </button>
             </div>
-
-            {isScenicTicketOrder && (
-              <div className="mx-3 mt-3 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-3 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs font-bold text-emerald-700">已打开门票订购页面</div>
-                    <div className="text-[11px] text-slate-600 mt-1">
-                      {data?.scenicName || '小七孔景区'} · {data?.defaultPackage || '成人票'} · {data?.defaultPrice || '¥50起'}
-                    </div>
-                  </div>
-                  <button className="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-sm">
-                    立即订购
-                  </button>
-                </div>
-              </div>
-            )}
 
             {/* Chat History */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={chatScrollRef}>
@@ -579,5 +568,183 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
     </div>
   );
 };
+
+function ScenicTicketDetailView({ onClose }) {
+  return (
+    <div className="w-full h-full bg-slate-50 flex flex-col relative overflow-hidden font-sans">
+      <div className="px-6 py-3 flex justify-between items-center text-xs font-bold z-20 text-slate-800">
+        <span>9:41</span>
+        <div className="flex gap-1.5">
+          <Signal size={12} />
+          <Wifi size={12} />
+          <Battery size={12} />
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        <div className="bg-white px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+          <button onClick={onClose} className="p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-600">
+            <ArrowLeft size={20} />
+          </button>
+          <span className="font-bold text-slate-800">景区详情</span>
+          <div className="flex items-center gap-2">
+            <button className="p-2 rounded-full hover:bg-slate-50 text-slate-500">
+              <MoreHorizontal size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="w-full h-52 bg-slate-200 overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1463695973559-94b3c95eb73e?w=1200&h=700&fit=crop"
+            alt="小七孔景区"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        <div className="bg-white rounded-t-3xl -mt-4 relative z-10 p-4 space-y-3">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-2xl font-extrabold text-slate-800">大小七孔景区</h2>
+              <p className="text-sm text-slate-500 mt-1">黔南州荔波樟江旅游景区</p>
+            </div>
+            <div className="flex items-center gap-1 text-orange-500 mt-1">
+              <Star size={14} className="fill-orange-500" />
+              <span className="text-lg font-bold">4.8</span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {['最佳游玩4月-8月', '建议游玩5小时', '天然氧吧', '漂流', '瀑布'].map((tag) => (
+              <span key={tag} className="px-2 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-[10px] text-slate-500">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="rounded-xl bg-amber-50 border border-amber-100 px-3 py-2 text-xs text-amber-700">
+            tips：当前正值旅游旺季，景区可能客流密集，请注意安全。
+          </div>
+
+          <div className="rounded-xl bg-slate-50 border border-slate-100 p-3 text-sm text-slate-600 flex items-center justify-between gap-2">
+            <span className="line-clamp-2">贵州省黔南布依族苗族自治州荔波县206省道</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <button className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500">
+                <MapPin size={14} />
+              </button>
+              <button className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500">
+                <Phone size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white mt-2 p-4">
+          <div className="flex items-center gap-8 border-b border-slate-100 mb-3">
+            <span className="pb-2 text-lg font-bold text-slate-900 border-b-2 border-indigo-400">预定</span>
+            <span className="pb-2 text-lg font-bold text-slate-400">景区介绍</span>
+          </div>
+
+          <div className="space-y-3">
+            <div className="text-lg font-bold text-slate-800">门票</div>
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              <button className="px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap bg-indigo-50 text-indigo-600 border border-indigo-200">今天</button>
+              <button className="px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap bg-slate-100 text-slate-500">明天</button>
+              <button className="px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap bg-slate-100 text-slate-500">后天</button>
+              <button className="px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap bg-slate-100 text-slate-500">更多日期</button>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-2">
+              <div className="text-sm font-bold text-slate-800">黔南籍免票（团）+观光车+景险（西门）</div>
+              <div className="text-xs text-slate-400">购票须知</div>
+              <div className="flex items-end justify-between">
+                <span className="text-3xl font-extrabold text-rose-500">¥50<span className="text-base font-bold text-slate-400 ml-0.5">起</span></span>
+                <button className="h-10 px-6 rounded-full bg-indigo-500 text-white text-lg font-bold">购买</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HotelTicketDetailView({ onClose }) {
+  return (
+    <div className="w-full h-full bg-slate-50 flex flex-col relative overflow-hidden font-sans">
+      <div className="px-6 py-3 flex justify-between items-center text-xs font-bold z-20 text-slate-800">
+        <span>9:41</span>
+        <div className="flex gap-1.5"><Signal size={12} /><Wifi size={12} /><Battery size={12} /></div>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="bg-white px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+          <button onClick={onClose} className="p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-600"><ArrowLeft size={20} /></button>
+          <span className="font-bold text-slate-800">酒店详情</span>
+          <button className="p-2 rounded-full hover:bg-slate-50 text-slate-500"><MoreHorizontal size={18} /></button>
+        </div>
+        <div className="w-full h-52 overflow-hidden bg-slate-200">
+          <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=700&fit=crop" alt="贵州饭店" className="w-full h-full object-cover" />
+        </div>
+        <div className="bg-white rounded-t-3xl -mt-4 relative z-10 p-4 space-y-3">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-2xl font-extrabold text-slate-800">贵州饭店迎宾楼</h2>
+              <p className="text-sm text-slate-500 mt-1">贵阳市云岩区中华北路66号</p>
+            </div>
+            <div className="flex items-center gap-1 text-orange-500 mt-1"><Star size={14} className="fill-orange-500" /><span className="text-lg font-bold">4.9</span></div>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {['五星酒店', '商务出行', '免费停车', '24h前台'].map((tag) => (
+              <span key={tag} className="px-2 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-[10px] text-slate-500">{tag}</span>
+            ))}
+          </div>
+        </div>
+        <div className="bg-white mt-2 p-4 space-y-3">
+          <div className="text-lg font-bold text-slate-800">房型预订</div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-2">
+            <div className="text-sm font-bold text-slate-800">高级大床房（含双早）</div>
+            <div className="text-xs text-slate-400">可免费取消 · 立即确认</div>
+            <div className="flex items-end justify-between">
+              <span className="text-3xl font-extrabold text-rose-500">¥50<span className="text-base font-bold text-slate-400 ml-0.5">起</span></span>
+              <button className="h-10 px-6 rounded-full bg-indigo-500 text-white text-lg font-bold">预订</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TrainTicketDetailView({ onClose }) {
+  return (
+    <div className="w-full h-full bg-slate-50 flex flex-col relative overflow-hidden font-sans">
+      <div className="px-6 py-3 flex justify-between items-center text-xs font-bold z-20 text-slate-800">
+        <span>9:41</span>
+        <div className="flex gap-1.5"><Signal size={12} /><Wifi size={12} /><Battery size={12} /></div>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="bg-white px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+          <button onClick={onClose} className="p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-600"><ArrowLeft size={20} /></button>
+          <span className="font-bold text-slate-800">高铁订购</span>
+          <button className="p-2 rounded-full hover:bg-slate-50 text-slate-500"><MoreHorizontal size={18} /></button>
+        </div>
+        <div className="bg-white p-4 space-y-3">
+          <div className="text-lg font-bold text-slate-800">北京南 → 贵阳北</div>
+          <div className="text-sm text-slate-500">今日余票充足 · 推荐车次</div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-slate-800">G401（07:25 - 16:58）</span>
+              <span className="text-xs text-emerald-600 font-bold">二等座有票</span>
+            </div>
+            <div className="flex items-end justify-between">
+              <span className="text-3xl font-extrabold text-rose-500">¥50<span className="text-base font-bold text-slate-400 ml-0.5">起</span></span>
+              <button className="h-10 px-6 rounded-full bg-indigo-500 text-white text-lg font-bold">购买</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default AgentWorkspace;

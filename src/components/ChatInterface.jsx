@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ArrowLeft, Send, Mic, Plane, Utensils, Flag, Sparkles, Check, ChevronDown, ChevronUp, ChevronRight, Star, Info, Car, Camera, Hotel, Loader2, Wand2, RefreshCcw, ArrowRight, Bed, MapPin, X, ZoomIn, ZoomOut, MessageSquare, Phone, BadgeCheck, MoreHorizontal, MessageCircle, ThumbsUp, ThumbsDown, Copy, Clock, Ticket, Navigation } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BadgeCheck, Bed, Camera, Car, Check, CheckCircle, ChevronDown, ChevronRight, ChevronUp, Clock, Contact, Copy, Flag, Hotel, Image, Info, Loader2, Map, MapPin, MessageCircle, MessageSquare, Mic, MoreHorizontal, Navigation, Phone, Plane, RefreshCcw, Send, Sparkles, Star, ThumbsDown, ThumbsUp, Ticket, Train, User, Utensils, Wand2, X, ZoomIn, ZoomOut } from 'lucide-react';
 import TuoSaiImage from '../image/托腮_1.png';
 import { agents as availableAgents } from '../data/agents';
 import { getPlaceholder } from '../utils/imageUtils';
@@ -1313,7 +1313,6 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
     // Direct QA demo: show Xiaoqikong ticket card immediately
     const isXiaoqikongTicketQuery = /小七孔.*门票|门票.*小七孔|订购小七孔(?:门票)?|购买小七孔(?:门票)?/.test(content);
     if (isXiaoqikongTicketQuery) {
-      const answerText = '已为您匹配小七孔景区智能体，并打开门票订购页；您可直接确认日期与人数后下单。';
       const scenicAgentContext = {
         id: 'scenic-xiaoqikong',
         name: '小七孔景区智能体',
@@ -1322,26 +1321,6 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
         role: 'guide',
         services: ['购票', '路线导览', '咨询'],
         avatar: ScenicAvatar,
-        initialData: {
-          intent: 'ticket_order',
-          scenicName: '小七孔景区',
-          defaultPackage: '成人票',
-          defaultPrice: '¥50起'
-        },
-        initialChatHistory: [
-          {
-            id: `${Date.now()}-q`,
-            sender: 'user',
-            text: content,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          },
-          {
-            id: `${Date.now()}-a`,
-            sender: 'agent',
-            text: answerText,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }
-        ]
       };
       setTimeout(() => {
         setIsTyping(false);
@@ -1352,15 +1331,87 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         dispatchAiResponse(cardMsg);
-        dispatchAiResponse({
-          id: Date.now() + 2,
-          sender: 'agent',
-          text: answerText,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        });
 
         // Auto-enter scenic agent QA workspace while keeping current chat history.
         if (onConnectAgent) onConnectAgent(scenicAgentContext);
+      }, 600);
+      return;
+    }
+
+    const isGuizhouHotelQuery = /订购贵州饭店房间|贵州饭店.*房间|贵州饭店.*订房|订贵州饭店/.test(content);
+    if (isGuizhouHotelQuery) {
+      const hotelAgentContext = {
+        id: 'hotel-guizhou-fandian',
+        name: '贵州饭店酒店智能体',
+        desc: '房型查询、预订办理、入住咨询',
+        type: 'hotel',
+        role: 'hotel',
+        services: ['订房', '入住', '咨询'],
+        avatar: HotelAvatar,
+      };
+
+      setTimeout(() => {
+        setIsTyping(false);
+        dispatchAiResponse({
+          id: Date.now() + 1,
+          sender: 'agent',
+          type: 'quick_agent_card',
+          cardData: {
+            intro: '已为你匹配贵州饭店酒店智能体卡片，更多订票与行程操作可进入智能体继续办理。',
+            typeLabel: '智能体',
+            name: '贵州饭店酒店智能体',
+            rating: '4.9',
+            metaText: '官方',
+            durationText: '建议入住时长 1-2晚',
+            tags: ['官方接入', '快速入住'],
+            tips: '周末入住较满，建议提前预订并备注到店时间。',
+            primaryActionTheme: 'indigo',
+            actions: ['一键导航', '联系前台', '设施问询', '客房服务', '周边推荐'],
+            price: '¥50起',
+            image: HotelAvatar
+          },
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        if (onConnectAgent) onConnectAgent(hotelAgentContext);
+      }, 600);
+      return;
+    }
+
+    const isTrainBookingQuery = /订购从北京到贵阳的高铁|北京到贵阳.*高铁|北京到贵阳.*火车|订购.*北京.*贵阳.*高铁/.test(content);
+    if (isTrainBookingQuery) {
+      const trainAgentContext = {
+        id: 'train-beijing-guiyang',
+        name: '高铁出行智能体',
+        desc: '车次推荐、余票查询、改签退票',
+        type: 'transport',
+        role: 'transport',
+        services: ['高铁票', '改签', '退票'],
+        avatar: CarAvatar,
+      };
+
+      setTimeout(() => {
+        setIsTyping(false);
+        dispatchAiResponse({
+          id: Date.now() + 1,
+          sender: 'agent',
+          type: 'quick_agent_card',
+          cardData: {
+            intro: '已为你匹配高铁出行智能体卡片，更多订票与行程操作可进入智能体继续办理。',
+            typeLabel: '智能体',
+            name: '高铁出行智能体',
+            rating: '4.8',
+            metaText: '实时',
+            durationText: '北京南 → 贵阳北',
+            tags: ['高铁直达', '可改签', '有充电口'],
+            tips: '早高峰车次余票波动较快，建议尽快下单锁座。',
+            primaryActionTheme: 'blue',
+            actions: ['一键导航', '在线选座', '改签退票', '接送服务'],
+            price: '¥50起',
+            image: getPlaceholder(500, 700, 'Train Booking')
+          },
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        if (onConnectAgent) onConnectAgent(trainAgentContext);
       }, 600);
       return;
     }
@@ -2410,6 +2461,17 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
                   </div>
                   <XiaoqikongTicketCard />
                 </div>
+              ) : msg.type === 'quick_agent_card' ? (
+                <div className="w-full min-w-[300px]">
+                  {msg.cardData?.intro && (
+                    <div className="mb-2 px-1">
+                      <p className="text-xs leading-relaxed text-slate-600 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
+                        {msg.cardData.intro}
+                      </p>
+                    </div>
+                  )}
+                  <QuickAgentCard cardData={msg.cardData} />
+                </div>
               ) : msg.type === 'agent_generated_card' ? (
                 <div className="w-full min-w-[300px]">
                    <AgentGeneratedCard 
@@ -3445,6 +3507,101 @@ const XiaoqikongTicketCard = () => {
           <button className="h-10 px-4 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold flex items-center gap-1.5">
             <Phone size={16} /> 电话咨询
           </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const QuickAgentCard = ({ cardData }) => {
+  if (!cardData) return null;
+
+  const actionIconMap = {
+    default: Ticket,
+    navigation: Navigation,
+    phone: Phone,
+  };
+  const getActionIcon = (text) => {
+    if (text.includes('导航') || text.includes('到站')) return actionIconMap.navigation;
+    if (text.includes('电话')) return actionIconMap.phone;
+    if (text.includes('选座')) return CheckCircle;
+    if (text.includes('改签') || text.includes('退票')) return RefreshCcw;
+    if (text.includes('接送')) return Car;
+    if (text.includes('前台')) return Phone;
+    if (text.includes('设施') || text.includes('问询')) return Info;
+    if (text.includes('客房')) return Hotel;
+    if (text.includes('周边')) return MapPin;
+    return actionIconMap.default;
+  };
+
+  return (
+    <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm p-3 space-y-3">
+      <div className="flex items-start justify-between">
+        <h3 className="text-lg font-extrabold text-slate-800">{cardData.name}</h3>
+        <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-100 text-purple-600">{cardData.typeLabel || '智能体'}</span>
+      </div>
+
+      <div className="flex items-center gap-1.5 text-slate-500">
+        <div className="flex items-center gap-0.5 text-orange-500">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Star key={i} size={12} className="fill-orange-500" />
+          ))}
+        </div>
+        <span className="text-base leading-none text-slate-300">·</span>
+        <span className="text-xl font-bold text-slate-700">{cardData.rating || '4.8'}</span>
+        <span className="text-slate-300">|</span>
+        <span className="text-sm font-bold text-slate-400">{cardData.metaText || '推荐'}</span>
+      </div>
+
+      <div className="flex gap-3">
+        <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 shrink-0">
+          <img src={cardData.image} alt={cardData.name} className="w-full h-full object-cover" />
+        </div>
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center gap-2 text-slate-600">
+            <Clock size={15} className="text-emerald-500" />
+            <span className="text-sm font-medium">{cardData.durationText || '建议使用时长 1h'}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {(cardData.tags || []).map((tag) => (
+              <span key={tag} className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 text-xs text-slate-500">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl bg-orange-50 border border-orange-100 p-2.5 text-slate-700">
+        <p className="text-xs leading-relaxed">
+          <Sparkles size={14} className="inline mr-1 text-orange-500" />
+          <span className="font-bold text-orange-600">黄小西Tips：</span>
+          {cardData.tips || '可进入智能体页查看更多详情与服务选项。'}
+        </p>
+      </div>
+
+      <div className="overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-2 min-w-max">
+          {(cardData.actions || ['立即办理', '一键导航', '电话咨询']).map((actionText, idx) => {
+            const ActionIcon = getActionIcon(actionText);
+            const isPrimary = idx === 0;
+            return (
+              <button
+                key={actionText}
+                className={`h-10 px-4 rounded-xl text-sm font-bold flex items-center gap-1.5 ${
+                  isPrimary
+                    ? (cardData.primaryActionTheme === 'indigo'
+                      ? 'bg-indigo-600 text-white'
+                      : cardData.primaryActionTheme === 'blue'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-green-600 text-white')
+                    : 'bg-white border border-slate-200 text-slate-600'
+                }`}
+              >
+                <ActionIcon size={16} /> {actionText}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
