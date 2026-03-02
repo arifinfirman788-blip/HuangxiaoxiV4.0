@@ -1338,6 +1338,44 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
       return;
     }
 
+    const isDinnerPrivateRoomQuery = /预[定订].*贵州饭店.*(晚餐|餐厅|包厢)|贵州饭店.*(晚餐|餐厅).*(包厢|预[定订])|贵州饭店晚餐包厢/.test(content);
+    if (isDinnerPrivateRoomQuery) {
+      const restaurantAgentContext = {
+        id: 'restaurant-guizhou-fandian-dinner',
+        name: '贵州饭店餐厅智能体',
+        desc: '晚餐包厢预定、菜单咨询、到店服务',
+        type: 'enterprise',
+        role: 'food',
+        services: ['包厢预定', '点餐咨询', '到店服务'],
+        avatar: HotelAvatar,
+      };
+
+      setTimeout(() => {
+        setIsTyping(false);
+        dispatchAiResponse({
+          id: Date.now() + 1,
+          sender: 'agent',
+          type: 'quick_agent_card',
+          cardData: {
+            typeLabel: '智能体',
+            name: '贵州饭店',
+            rating: '4.8',
+            metaText: '免费',
+            durationText: '用餐时长约1.5小时',
+            tags: ['必打卡', '好评如潮', '老字号'],
+            tips: '阁楼内楼梯较陡，晚高峰包厢建议提前预约。',
+            primaryActionTheme: 'indigo',
+            actions: ['预定包厢', '一键导航', '电话咨询', '智能导览'],
+            price: '¥50起',
+            image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=600&fit=crop'
+          },
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        if (onConnectAgent) onConnectAgent(restaurantAgentContext);
+      }, 600);
+      return;
+    }
+
     const isGuizhouHotelQuery = /订购贵州饭店房间|贵州饭店.*房间|贵州饭店.*订房|订贵州饭店/.test(content);
     if (isGuizhouHotelQuery) {
       const hotelAgentContext = {
@@ -1379,6 +1417,8 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
 
     const isTrainBookingQuery = /订购从北京到贵阳的高铁|北京到贵阳.*高铁|北京到贵阳.*火车|订购.*北京.*贵阳.*高铁/.test(content);
     if (isTrainBookingQuery) {
+      const now = new Date();
+      const departDateText = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
       const trainAgentContext = {
         id: 'train-beijing-guiyang',
         name: '高铁出行智能体',
@@ -1397,11 +1437,17 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
           type: 'quick_agent_card',
           cardData: {
             intro: '已为你匹配高铁出行智能体卡片，更多订票与行程操作可进入智能体继续办理。',
+            layout: 'transport',
             typeLabel: '智能体',
-            name: '高铁出行智能体',
+            name: '火车票订购',
+            departDateText,
+            seatInfo: '二等座 · 7车厢12A',
             rating: '4.8',
             metaText: '实时',
-            durationText: '北京南 → 贵阳北',
+            departTime: '06:00',
+            arriveTime: '18:30',
+            departStation: '北京西',
+            arriveStation: '贵阳北',
             tags: ['高铁直达', '可改签', '有充电口'],
             tips: '早高峰车次余票波动较快，建议尽快下单锁座。',
             primaryActionTheme: 'blue',
@@ -1412,6 +1458,114 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         if (onConnectAgent) onConnectAgent(trainAgentContext);
+      }, 600);
+      return;
+    }
+
+    const isRestaurantRecommendQuery = /推荐.*(贵州|贵阳)?.*(餐厅|美食|餐馆|小吃|黔菜|餐饮|餐)|贵州.*(餐厅|美食|餐馆|小吃|餐饮|餐)|推荐贵州餐厅|推荐贵州餐|有什么.*(餐厅|美食|餐馆|小吃|餐饮|餐)/.test(content);
+    if (isRestaurantRecommendQuery) {
+      setTimeout(() => {
+        setIsTyping(false);
+        dispatchAiResponse({
+          id: Date.now() + 1,
+          sender: 'agent',
+          type: 'restaurant_recommendation',
+          intro: '为你推荐几家口碑较好的贵州餐厅智能体，可直接进入对应智能体咨询菜品、排队和订座。',
+          cards: [
+            {
+              id: 'food-agent-1',
+              cardKind: 'agent',
+              serviceType: '餐饮',
+              name: '美食达人王阿姨',
+              desc: '深巷美食挖掘机，跟着吃不踩雷',
+              tags: ['本地推荐', '排队提醒'],
+              price: '¥50起',
+              image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=1000&fit=crop',
+              agentContext: {
+                id: 202,
+                name: '美食达人王阿姨',
+                desc: '深巷美食挖掘机，跟着吃不踩雷',
+                avatar: WangAyiAvatar,
+                type: 'personal',
+                role: 'food'
+              }
+            },
+            {
+              id: 'food-agent-2',
+              cardKind: 'agent',
+              serviceType: '餐饮',
+              name: '老凯里酸汤鱼智能体',
+              desc: '酸汤鱼专属推荐与订座助手',
+              tags: ['招牌必点', '订座服务'],
+              price: '¥50起',
+              image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=1000&fit=crop',
+              agentContext: {
+                id: 'food-kaili',
+                name: '老凯里酸汤鱼智能体',
+                desc: '酸汤鱼专属推荐与订座助手',
+                avatar: LiuDaGeAvatar,
+                type: 'enterprise',
+                role: 'food'
+              }
+            },
+            {
+              id: 'food-agent-3',
+              cardKind: 'agent',
+              serviceType: '餐饮',
+              name: '贵州饭店餐饮智能体',
+              desc: '本地黔菜套餐推荐，支持在线预订',
+              tags: ['官方接入', '套餐推荐'],
+              price: '¥50起',
+              image: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800&h=1000&fit=crop',
+              agentContext: {
+                id: 'food-guizhou-hotel',
+                name: '贵州饭店餐饮智能体',
+                desc: '本地黔菜套餐推荐，支持在线预订',
+                avatar: HotelAvatar,
+                type: 'enterprise',
+                role: 'food'
+              }
+            }
+          ],
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+      }, 600);
+      return;
+    }
+
+    const isEntertainmentRecommendQuery = /推荐.*(贵州|贵阳)?.*(文娱|娱乐|活动)|贵州.*(文娱|娱乐).*活动|推荐贵州文娱活动|文娱活动推荐/.test(content);
+    if (isEntertainmentRecommendQuery) {
+      setTimeout(() => {
+        setIsTyping(false);
+        dispatchAiResponse({
+          id: Date.now() + 1,
+          sender: 'agent',
+          type: 'activity_recommendation',
+          intro: '为你推荐近期热门贵州文娱活动，点击卡片可查看活动详情与报名信息。',
+          cards: [
+            {
+              id: 'activity-1',
+              cardKind: 'activity',
+              serviceType: '文娱',
+              name: '苗族姊妹节',
+              desc: '黔东南苗族文化盛典',
+              tags: ['文娱', '民族文化'],
+              price: '¥50起',
+              image: 'https://images.unsplash.com/photo-1605723517503-3cadb5818a0b?w=800&h=1000&fit=crop'
+            },
+            {
+              id: 'activity-2',
+              cardKind: 'activity',
+              serviceType: '文娱',
+              name: '贵州村BA',
+              desc: '火爆全网的乡村篮球赛事',
+              tags: ['文娱', '体育赛事'],
+              price: '¥50起',
+              image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=1000&fit=crop'
+            }
+          ],
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
       }, 600);
       return;
     }
@@ -2454,23 +2608,38 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
                 </div>
               ) : msg.type === 'xiaoqikong_ticket_card' ? (
                 <div className="w-full min-w-[300px]">
-                  <div className="mb-2 px-1">
-                    <p className="text-xs leading-relaxed text-slate-600 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
-                      已为你匹配小七孔景区智能体卡片，更多订票与行程操作可进入智能体继续办理。
-                    </p>
-                  </div>
                   <XiaoqikongTicketCard />
                 </div>
               ) : msg.type === 'quick_agent_card' ? (
                 <div className="w-full min-w-[300px]">
-                  {msg.cardData?.intro && (
-                    <div className="mb-2 px-1">
-                      <p className="text-xs leading-relaxed text-slate-600 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
-                        {msg.cardData.intro}
-                      </p>
-                    </div>
-                  )}
                   <QuickAgentCard cardData={msg.cardData} />
+                </div>
+              ) : msg.type === 'restaurant_recommendation' ? (
+                <div className="w-full min-w-[300px]">
+                  <div className="mb-2 px-1">
+                    <p className="text-xs leading-relaxed text-slate-600 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
+                      {msg.intro}
+                    </p>
+                  </div>
+                  <RecommendationCards
+                    title="餐厅智能体推荐"
+                    cards={msg.cards}
+                    onCardClick={(card) => {
+                      if (card?.agentContext && onConnectAgent) onConnectAgent(card.agentContext);
+                    }}
+                  />
+                </div>
+              ) : msg.type === 'activity_recommendation' ? (
+                <div className="w-full min-w-[300px]">
+                  <div className="mb-2 px-1">
+                    <p className="text-xs leading-relaxed text-slate-600 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
+                      {msg.intro}
+                    </p>
+                  </div>
+                  <RecommendationCards
+                    title="贵州文娱活动推荐"
+                    cards={msg.cards}
+                  />
                 </div>
               ) : msg.type === 'agent_generated_card' ? (
                 <div className="w-full min-w-[300px]">
@@ -2954,6 +3123,29 @@ const ItineraryCard = ({ onAdopt, tripData, onViewImage, recommendations, onConn
            >
              {tripOverviewMarkdown}
            </ReactMarkdown>
+
+          <div className="mt-3 rounded-xl overflow-hidden border border-slate-200 bg-white relative">
+            <img
+              src={getPlaceholder(800, 400, 'Map Overview')}
+              alt="行程路线地图"
+              className="w-full h-40 object-cover"
+            />
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-4 left-6 bg-white/95 border border-indigo-200 rounded-lg shadow-sm overflow-hidden">
+                <div className="px-3 py-1 bg-indigo-500 text-white text-xs font-bold">起点/终点</div>
+                <div className="px-3 py-1.5 text-sm font-bold text-slate-700">贵阳</div>
+              </div>
+              <div className="absolute top-12 left-1/2 -translate-x-1/2 bg-white/95 border border-indigo-200 rounded-lg shadow-sm overflow-hidden">
+                <div className="px-3 py-1 bg-indigo-500 text-white text-xs font-bold">第1天</div>
+                <div className="px-3 py-1.5 text-sm font-bold text-slate-700">云岩区</div>
+              </div>
+              <div className="absolute top-20 right-6 bg-white/95 border border-indigo-200 rounded-lg shadow-sm overflow-hidden">
+                <div className="px-3 py-1 bg-indigo-500 text-white text-xs font-bold">第2天</div>
+                <div className="px-3 py-1.5 text-sm font-bold text-slate-700">南明区</div>
+              </div>
+            </div>
+          </div>
+
            <div className="mt-3 pt-2 border-t border-slate-100">
              <div className="rounded-xl bg-slate-50/80 border border-slate-100 p-2.5 space-y-2">
                <div className="flex items-center justify-end gap-1.5">
@@ -3451,62 +3643,71 @@ const ServiceAgentCard = ({ node, agentInfo, onConnect, autoConnect }) => {
 
 const XiaoqikongTicketCard = () => {
   return (
-    <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm p-3 space-y-3">
-      <div className="flex items-start justify-between">
-        <h3 className="text-lg font-extrabold text-slate-800">小七孔景区智能体</h3>
-        <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-100 text-purple-600">智能体</span>
-      </div>
-
-      <div className="flex items-center gap-1.5 text-slate-500">
-        <div className="flex items-center gap-0.5 text-orange-500">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Star key={i} size={12} className="fill-orange-500" />
-          ))}
+    <div className="bg-white rounded-[1.75rem] border border-slate-200 shadow-sm overflow-hidden">
+      <div className="p-4 pb-3">
+        <div className="flex items-start justify-between">
+          <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">文昌阁</h3>
+          <span className="px-2.5 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-fuchsia-400 to-indigo-400 flex items-center gap-1.5">
+            <Sparkles size={12} />
+            智能体
+          </span>
         </div>
-        <span className="text-base leading-none text-slate-300">·</span>
-        <span className="text-xl font-bold text-slate-700">4.8</span>
-        <span className="text-slate-300">|</span>
-        <span className="text-sm font-bold text-slate-400">免费</span>
-      </div>
 
-      <div className="flex gap-3">
-        <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 shrink-0">
-          <img src={ScenicAvatar} alt="小七孔景区" className="w-full h-full object-cover" />
-        </div>
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-2 text-slate-600">
-            <Clock size={15} className="text-emerald-500" />
-            <span className="text-sm font-medium">建议游览时长 3h</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {['必打卡', '好评如潮', '老字号'].map((tag) => (
-              <span key={tag} className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 text-xs text-slate-500">
-                {tag}
-              </span>
+        <div className="mt-2 flex items-center gap-1.5">
+          <div className="flex items-center gap-0.5 text-amber-400">
+            {[1, 2, 3, 4].map((i) => (
+              <Star key={i} size={10} className="fill-amber-400" />
             ))}
           </div>
+          <span className="text-lg leading-none text-slate-300">·</span>
+          <span className="text-2xl font-bold text-green-600">4.8</span>
+          <span className="text-green-600 text-sm">|</span>
+          <span className="text-base font-bold text-green-600">免费</span>
         </div>
       </div>
 
-      <div className="rounded-xl bg-orange-50 border border-orange-100 p-2.5 text-slate-700">
-        <p className="text-xs leading-relaxed">
-          <Sparkles size={14} className="inline mr-1 text-orange-500" />
-          <span className="font-bold text-orange-600">黄小西Tips：</span>
-          小七孔旺季建议提前 1 天预约门票，上午入园体验更佳。
-        </p>
-      </div>
+      <div className="border-t border-slate-100 p-4 space-y-3">
+        <div className="flex gap-3">
+          <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 shrink-0">
+            <img src={getPlaceholder(200, 200, 'Attraction')} alt="文昌阁" className="w-full h-full object-cover" />
+          </div>
+          <div className="flex-1">
+            <p className="text-lg font-extrabold text-slate-900">游玩时长约1.5小时</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {['必打卡', '好评如潮', '老字号'].map((tag) => (
+                <span key={tag} className="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-xs font-medium">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
 
-      <div className="overflow-x-auto pb-1 scrollbar-hide">
-        <div className="flex gap-2 min-w-max">
-          <button className="h-10 px-4 rounded-xl bg-green-600 text-white text-sm font-bold flex items-center gap-1.5">
-            <Ticket size={16} /> 购买门票
-          </button>
-          <button className="h-10 px-4 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold flex items-center gap-1.5">
-            <Navigation size={16} /> 一键导航
-          </button>
-          <button className="h-10 px-4 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold flex items-center gap-1.5">
-            <Phone size={16} /> 电话咨询
-          </button>
+        <div className="rounded-2xl bg-amber-50 border border-amber-200 px-3 py-2.5">
+          <p className="text-sm leading-relaxed text-orange-500 font-semibold">
+            <span className="font-bold">黄小西 TIPS:</span> 阁楼内楼梯较陡
+          </p>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2 pt-1">
+          {[
+            { label: '购买门票', icon: Ticket, theme: 'bg-emerald-50 text-emerald-600' },
+            { label: '一键导航', icon: Navigation, theme: 'bg-indigo-50 text-indigo-600' },
+            { label: '电话咨询', icon: Phone, theme: 'bg-rose-50 text-rose-500' },
+            { label: '智能导览', icon: MessageCircle, theme: 'bg-indigo-50 text-indigo-500' },
+          ].map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <button key={item.label} className="rounded-3xl bg-slate-50 border border-slate-200 py-3 flex flex-col items-center gap-2">
+                <span className={`w-10 h-10 rounded-full flex items-center justify-center ${item.theme}`}>
+                  <Icon size={18} />
+                </span>
+                <span className="text-[11px] leading-tight font-bold text-slate-700 text-center">
+                  {idx === 0 ? '购买\n门票' : idx === 1 ? '一键\n导航' : idx === 2 ? '电话\n咨询' : '智能\n导览'}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -3533,6 +3734,55 @@ const QuickAgentCard = ({ cardData }) => {
     if (text.includes('周边')) return MapPin;
     return actionIconMap.default;
   };
+
+  if (cardData.layout === 'transport') {
+    const now = new Date();
+    const fallbackDepartDateText = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+    return (
+      <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm p-3 space-y-3">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">火车票订购</h3>
+            <p className="text-sm text-slate-500 font-medium mt-0.5">{cardData.departDateText || fallbackDepartDateText}</p>
+          </div>
+        </div>
+
+        <div className="pt-1 border-t border-slate-100">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+            <div>
+              <div className="text-[1.5rem] leading-none font-extrabold text-slate-900 mt-1">{cardData.departStation || '北京西'}</div>
+            </div>
+            <div className="w-20 h-px border-t-2 border-dashed border-slate-300 relative mt-5">
+              <span className="absolute -left-1 -top-[5px] w-2.5 h-2.5 rounded-full bg-slate-700" />
+              <span className="absolute -right-1 -top-[5px] w-2.5 h-2.5 rounded-full bg-slate-700" />
+              <span className="absolute left-1/2 -translate-x-1/2 -top-3.5 w-7 h-7 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500">
+                <Train size={14} />
+              </span>
+            </div>
+            <div className="text-right">
+              <div className="text-[1.5rem] leading-none font-extrabold text-slate-900 mt-1">{cardData.arriveStation || '贵阳北'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-orange-50 border border-orange-100 p-2.5 text-slate-700">
+          <p className="text-xs leading-relaxed">
+            <Sparkles size={14} className="inline mr-1 text-orange-500" />
+            <span className="font-bold text-orange-600">黄小西Tips：</span>
+            更多订票信息可进入详情页查看
+          </p>
+        </div>
+
+        <div className="overflow-x-auto pb-1 scrollbar-hide">
+          <div className="flex gap-2 min-w-max">
+            <button className="h-10 px-4 rounded-xl text-sm font-bold flex items-center gap-1.5 bg-blue-600 text-white">
+              <Navigation size={16} /> 更多信息
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm p-3 space-y-3">
@@ -3603,6 +3853,48 @@ const QuickAgentCard = ({ cardData }) => {
             );
           })}
         </div>
+      </div>
+    </div>
+  );
+};
+
+const RecommendationCards = ({ title, cards, onCardClick }) => {
+  if (!cards?.length) return null;
+  return (
+    <div className="mt-4 space-y-3">
+      <h4 className="font-bold text-sm text-slate-800 flex items-center gap-2 px-1">
+        <Sparkles size={16} className="text-cyan-500" />
+        {title}
+      </h4>
+      <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1 scrollbar-hide">
+        {cards.map((card) => (
+          <button
+            key={card.id}
+            type="button"
+            onClick={() => onCardClick && onCardClick(card)}
+            className="shrink-0 w-44 h-56 rounded-2xl overflow-hidden relative border border-white/60 shadow-md cursor-pointer group text-left"
+          >
+            <img
+              src={card.image}
+              alt={card.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <span className="absolute top-3 left-3 px-2 py-1 rounded-md bg-white/90 text-[10px] font-bold text-slate-700">
+              {card.cardKind === 'agent' ? '智能体' : card.serviceType}
+            </span>
+            <div className="absolute bottom-3 left-3 right-3 text-white">
+              <p className="text-xs font-bold truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">{card.name}</p>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {card.tags.map((tag) => (
+                  <span key={`${card.id}-${tag}`} className="text-[9px] px-1.5 py-0.5 rounded bg-black/35 border border-white/20">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <span className="mt-2 block text-xs font-bold text-amber-200 whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">{card.price}</span>
+            </div>
+          </button>
+        ))}
       </div>
     </div>
   );

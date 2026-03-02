@@ -106,6 +106,42 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
   // Mock Agents for Social Card
   const [socialAgents, setSocialAgents] = useState([
     {
+      id: 201,
+      name: "旅游小助手",
+      type: "featured",
+      cardType: "agent",
+      isEnterprise: true,
+      desc: "多方案智能规划",
+      intro: "根据你的时间、预算和偏好，一键生成多条可执行行程方案，并自动匹配交通、住宿与景点节奏。",
+      likes: "6.6k",
+      avatar: GuideAvatar,
+      poster: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 202,
+      name: "旅居管家",
+      type: "featured",
+      cardType: "agent",
+      isEnterprise: true,
+      desc: "旅居生活一站式服务",
+      intro: "提供长住选房、周边配套、本地生活服务与每日行程提醒，让你的旅居更省心更舒适。",
+      likes: "5.4k",
+      avatar: HotelAvatar,
+      poster: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=1200&fit=crop"
+    },
+    {
+      id: 203,
+      name: "旅途记事官",
+      type: "featured",
+      cardType: "agent",
+      isEnterprise: false,
+      desc: "自动生成旅程回忆",
+      intro: "自动整理行程轨迹、照片与消费记录，生成图文游记和可分享旅程卡片，帮你留住每段精彩瞬间。",
+      likes: "4.9k",
+      avatar: MageAvatar,
+      poster: "https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=800&h=1200&fit=crop"
+    },
+    {
       id: 9,
       name: "贵州饭店迎宾楼",
       type: "hotel",
@@ -120,15 +156,15 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
     },
     {
       id: 101,
-      name: "老凯里酸汤鱼",
+      name: "老凯里酸汤鱼餐厅智能体",
       type: "food",
-      cardType: "product",
+      cardType: "agent",
       isEnterprise: true,
       productName: "招牌酸汤鱼双人餐",
       price: "168",
       originalPrice: "288",
-      desc: "酸辣鲜香 地道风味",
-      intro: "精选野生江团，搭配秘制红酸汤，酸爽开胃，鱼肉鲜嫩滑爽。套餐包含：酸汤鱼1份、时蔬拼盘1份、主要特色小吃2份。",
+      desc: "餐饮推荐与订座",
+      intro: "为你提供黔味招牌菜推荐、热门时段排队提醒与快速订座服务，一键了解门店环境与当日特色套餐。",
       likes: "500+",
       avatar: HotelAvatar,
       poster: "https://images.unsplash.com/photo-1555126634-323283e090fa?w=800&h=1200&fit=crop"
@@ -605,7 +641,7 @@ const Home = ({ adoptedTrip, isAuthenticated, onUpdateTrip, toggleBottomNav, onS
                                  <p className="text-sm opacity-80 line-clamp-2">{agent.intro}</p>
                                  <div className="flex items-center gap-2 mt-3">
                                      <div className="px-2 py-1 bg-white/20 rounded-lg text-xs backdrop-blur-md">
-                                        {agent.type === 'food' ? '美食' : agent.type === 'hotel' ? '酒店' : '景点'}
+                                        {agent.type === 'featured' ? '规划' : agent.type === 'food' ? '餐饮' : agent.type === 'hotel' ? '酒店' : '景点'}
                                      </div>
                                      <div className="flex items-center gap-1 text-xs opacity-80">
                                          <Heart size={12} fill="currentColor" /> {agent.likes}

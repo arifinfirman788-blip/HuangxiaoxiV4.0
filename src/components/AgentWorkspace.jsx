@@ -7,7 +7,8 @@ const ReservationVideo = 'https://cdn.jsdelivr.net/gh/arifinfirman788-blip/Huang
 
 const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerchantReply, isHumanMode, onToggleHumanMode }) => {
   const isScenicQaAgent = agent?.id === 'scenic-xiaoqikong' || agent?.name?.includes('小七孔');
-  const isHotelBookingAgent = agent?.id === 'hotel-guizhou-fandian' || agent?.name?.includes('贵州饭店');
+  const isHotelBookingAgent = agent?.id === 'hotel-guizhou-fandian' || agent?.name?.includes('酒店智能体');
+  const isRestaurantBookingAgent = agent?.id === 'restaurant-guizhou-fandian-dinner' || (agent?.name?.includes('餐厅智能体') && agent?.role === 'food');
   const isTrainBookingAgent = agent?.id === 'train-beijing-guiyang' || (agent?.name?.includes('高铁') && agent?.role === 'transport');
   const [activeRequest, setActiveRequest] = useState(null);
   const [aiInsight, setAiInsight] = useState(null);
@@ -181,6 +182,9 @@ const AgentWorkspace = ({ agent, data, chatHistory, onClose, onFeedback, onMerch
   }
   if (isHotelBookingAgent) {
     return <HotelTicketDetailView onClose={onClose} />;
+  }
+  if (isRestaurantBookingAgent) {
+    return <RestaurantTicketDetailView onClose={onClose} />;
   }
   if (isTrainBookingAgent) {
     return <TrainTicketDetailView onClose={onClose} />;
@@ -707,6 +711,57 @@ function HotelTicketDetailView({ onClose }) {
             <div className="flex items-end justify-between">
               <span className="text-3xl font-extrabold text-rose-500">¥50<span className="text-base font-bold text-slate-400 ml-0.5">起</span></span>
               <button className="h-10 px-6 rounded-full bg-indigo-500 text-white text-lg font-bold">预订</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RestaurantTicketDetailView({ onClose }) {
+  return (
+    <div className="w-full h-full bg-slate-50 flex flex-col relative overflow-hidden font-sans">
+      <div className="px-6 py-3 flex justify-between items-center text-xs font-bold z-20 text-slate-800">
+        <span>9:41</span>
+        <div className="flex gap-1.5"><Signal size={12} /><Wifi size={12} /><Battery size={12} /></div>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="bg-white px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+          <button onClick={onClose} className="p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-600"><ArrowLeft size={20} /></button>
+          <span className="font-bold text-slate-800">餐厅智能体问答</span>
+          <button className="p-2 rounded-full hover:bg-slate-50 text-slate-500"><MoreHorizontal size={18} /></button>
+        </div>
+        <div className="w-full h-52 overflow-hidden bg-slate-200">
+          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=700&fit=crop" alt="文昌阁餐厅" className="w-full h-full object-cover" />
+        </div>
+
+        <div className="bg-white rounded-t-3xl -mt-4 relative z-10 p-4 space-y-3">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-2xl font-extrabold text-slate-800">文昌阁</h2>
+              <p className="text-sm text-slate-500 mt-1">贵州饭店 · 晚餐包厢预订服务</p>
+            </div>
+            <div className="flex items-center gap-1 text-orange-500 mt-1"><Star size={14} className="fill-orange-500" /><span className="text-lg font-bold">4.8</span></div>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {['包厢可订', '老字号', '可电话确认', '到店核销'].map((tag) => (
+              <span key={tag} className="px-2 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-[10px] text-slate-500">{tag}</span>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white mt-2 p-4 space-y-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-2">
+            <div className="text-sm font-bold text-slate-800">黄小西</div>
+            <p className="text-xs text-slate-600 leading-relaxed">你好，我想预定今晚贵州饭店文昌阁包厢，4人用餐。</p>
+          </div>
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-3 space-y-2">
+            <div className="text-sm font-bold text-indigo-700">文昌阁智能体</div>
+            <p className="text-xs text-indigo-700 leading-relaxed">已为你锁定晚餐时段，可继续选择包厢规格、菜单和到店时间。</p>
+            <div className="flex items-end justify-between">
+              <span className="text-3xl font-extrabold text-rose-500">¥50<span className="text-base font-bold text-slate-400 ml-0.5">起</span></span>
+              <button className="h-10 px-6 rounded-full bg-indigo-500 text-white text-lg font-bold">继续办理</button>
             </div>
           </div>
         </div>

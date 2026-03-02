@@ -185,7 +185,7 @@ const AddSpotModal = ({ isOpen, onClose, onAdd, days, currentDayIndex }) => {
                >
                   <option value="scenic">景点</option>
                   <option value="food">餐饮</option>
-                  <option value="hotel">住宿</option>
+                  <option value="hotel">酒店</option>
                   <option value="transport">交通</option>
                   <option value="custom">自定义活动</option>
                </select>
@@ -677,7 +677,7 @@ const TripDetail = ({ adoptedTrip }) => {
             {/* Filter Tabs */}
             <div className="bg-white px-4 pb-4 pt-2 sticky top-0 z-40 shadow-sm">
               <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-                {[{ id: 'all', label: '全部' }, { id: 'transport', label: '交通' }, { id: 'food', label: '餐饮' }, { id: 'scenic', label: '景点' }, { id: 'hotel', label: '住宿' }, { id: 'free_time', label: '自定义活动' }].map(tab => (
+                {[{ id: 'all', label: '全部' }, { id: 'transport', label: '交通' }, { id: 'food', label: '餐饮' }, { id: 'scenic', label: '景点' }, { id: 'hotel', label: '酒店' }, { id: 'free_time', label: '自定义活动' }].map(tab => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
