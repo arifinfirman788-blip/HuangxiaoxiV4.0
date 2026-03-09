@@ -1361,11 +1361,11 @@ const ChatInterface = ({ onAdoptTrip, onClose, initialMode, initialContext, onSe
             name: '贵州饭店',
             rating: '4.8',
             metaText: '免费',
-            durationText: '用餐时长约1.5小时',
+            locationText: '贵阳市南明区贵州饭店',
             tags: ['必打卡', '好评如潮', '老字号'],
             tips: '阁楼内楼梯较陡，晚高峰包厢建议提前预约。',
             primaryActionTheme: 'indigo',
-            actions: ['预定包厢', '一键导航', '电话咨询', '智能导览'],
+            actions: ['预定包厢', '查看菜单', '一键导航', '电话咨询'],
             price: '¥50起',
             image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=600&fit=crop'
           },
@@ -3716,6 +3716,7 @@ const XiaoqikongTicketCard = () => {
 
 const QuickAgentCard = ({ cardData }) => {
   if (!cardData) return null;
+  const locationText = cardData.locationText || (cardData.name === '贵州饭店' ? '贵阳市南明区贵州饭店' : '');
 
   const actionIconMap = {
     default: Ticket,
@@ -3725,6 +3726,8 @@ const QuickAgentCard = ({ cardData }) => {
   const getActionIcon = (text) => {
     if (text.includes('导航') || text.includes('到站')) return actionIconMap.navigation;
     if (text.includes('电话')) return actionIconMap.phone;
+    if (text.includes('菜单')) return Utensils;
+    if (text.includes('预定') || text.includes('预约') || text.includes('包厢')) return CheckCircle;
     if (text.includes('选座')) return CheckCircle;
     if (text.includes('改签') || text.includes('退票')) return RefreshCcw;
     if (text.includes('接送')) return Car;
@@ -3809,8 +3812,10 @@ const QuickAgentCard = ({ cardData }) => {
         </div>
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2 text-slate-600">
-            <Clock size={15} className="text-emerald-500" />
-            <span className="text-sm font-medium">{cardData.durationText || '建议使用时长 1h'}</span>
+            {locationText
+              ? <MapPin size={15} className="text-emerald-500" />
+              : <Clock size={15} className="text-emerald-500" />}
+            <span className="text-sm font-medium">{locationText || cardData.durationText || '建议使用时长 1h'}</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {(cardData.tags || []).map((tag) => (
@@ -3833,7 +3838,7 @@ const QuickAgentCard = ({ cardData }) => {
       <div className="overflow-x-auto pb-1 scrollbar-hide">
         <div className="flex gap-2 min-w-max">
           {(cardData.actions || ['立即办理', '一键导航', '电话咨询']).map((actionText, idx) => {
-            const ActionIcon = getActionIcon(actionText);
+            const ActionIcon = getActionIcon(actionText) || Ticket;
             const isPrimary = idx === 0;
             return (
               <button
