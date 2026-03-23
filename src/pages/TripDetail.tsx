@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { ChevronLeft, MoreHorizontal, Map as MapIcon, Plane, MapPin, Navigation, Phone, Ticket, Sparkles, Utensils, Bed, Plus, Trash2, Calendar, Clock, X, Info, Globe, Camera, Heart, Minus } from 'lucide-react';
 import { Page } from '../types';
 
-const withBase = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
-
 type NodeType = '交通' | '景点' | '美食' | '酒店' | '自定义活动' | '数字分身';
 type NodeStatus = '未开始' | '进行中' | '已完成';
 
@@ -339,9 +337,9 @@ export default function TripDetail({ onNavigate, isPreview = false, fromChat = f
     
     let defaultImageUrl = '';
     if (addNodeData.type === '景点') {
-      defaultImageUrl = withBase('/图片/scenic_default.svg');
+      defaultImageUrl = '/图片/scenic_default.svg';
     } else if (addNodeData.type === '自定义活动') {
-      defaultImageUrl = withBase('/图片/custom_activity_default.svg'); 
+      defaultImageUrl = '/图片/custom_activity_default.svg'; 
     }
 
     const newNode: TripNode = {
@@ -545,7 +543,7 @@ export default function TripDetail({ onNavigate, isPreview = false, fromChat = f
 
               {node.aiTips && (
                 <div className="bg-orange-50 rounded-xl p-3 flex items-start gap-3 mb-4">
-                  <img src={withBase('/IP_1.png')} alt="AI" className="w-8 h-8 rounded-full object-cover bg-white" />
+                  <img src="/IP_1.png" alt="AI" className="w-8 h-8 rounded-full object-cover bg-white" />
                   <div className="text-sm text-orange-800">
                     <span className="font-bold">黄小西 TIPS:</span> {node.aiTips}
                   </div>
@@ -557,51 +555,51 @@ export default function TripDetail({ onNavigate, isPreview = false, fromChat = f
                 {/* 交通 */}
                 {node.type === '交通' && (
                   <>
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/一键导航.svg')} className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/值机选座.svg')} className="w-[18px] h-[18px]" alt="值机选座" />} label="值机选座" color="bg-green-50 text-green-600" onClick={() => onNavigate('chat')} />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/改签退票.svg')} className="w-[18px] h-[18px]" alt="改签退票" />} label="改签退票" color="bg-red-50 text-red-600" onClick={() => onNavigate('chat')} />
+                    <ActionButton icon={<img src="/icno/行程icon/一键导航.svg" className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/值机选座.svg" className="w-[18px] h-[18px]" alt="值机选座" />} label="值机选座" color="bg-green-50 text-green-600" onClick={() => onNavigate('chat')} />
+                    <ActionButton icon={<img src="/icno/行程icon/改签退票.svg" className="w-[18px] h-[18px]" alt="改签退票" />} label="改签退票" color="bg-red-50 text-red-600" onClick={() => onNavigate('chat')} />
                   </>
                 )}
                 {/* 景点 */}
                 {node.type === '景点' && (
                   <>
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/购买门票.svg')} className="w-[18px] h-[18px]" alt="购买门票" />} label="购买门票" color="bg-green-50 text-green-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/一键导航.svg')} className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/电话咨询.svg')} className="w-[18px] h-[18px]" alt="电话咨询" />} label="电话咨询" color="bg-red-50 text-red-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/智能导览.svg')} className="w-[18px] h-[18px]" alt="游玩攻略" />} label="游玩攻略" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
+                    <ActionButton icon={<img src="/icno/行程icon/购买门票.svg" className="w-[18px] h-[18px]" alt="购买门票" />} label="购买门票" color="bg-green-50 text-green-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/一键导航.svg" className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/电话咨询.svg" className="w-[18px] h-[18px]" alt="电话咨询" />} label="电话咨询" color="bg-red-50 text-red-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/智能导览.svg" className="w-[18px] h-[18px]" alt="游玩攻略" />} label="游玩攻略" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
                   </>
                 )}
                 {/* 美食 - 无智能体 */}
                 {node.type === '美食' && !node.hasAgent && (
                   <>
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/餐厅推荐.svg')} className="w-[18px] h-[18px]" alt="餐厅推荐" />} label="餐厅推荐" color="bg-orange-50 text-orange-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/餐厅推荐.svg" className="w-[18px] h-[18px]" alt="餐厅推荐" />} label="餐厅推荐" color="bg-orange-50 text-orange-600" />
                   </>
                 )}
                 {/* 美食 - 有智能体 */}
                 {node.type === '美食' && node.hasAgent && (
                   <>
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/一键导航.svg')} className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/电话咨询.svg')} className="w-[18px] h-[18px]" alt="电话咨询" />} label="电话咨询" color="bg-red-50 text-red-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/预定包厢.svg')} className="w-[18px] h-[18px]" alt="预定包厢" />} label="预定包厢" color="bg-indigo-50 text-indigo-600" onClick={() => onNavigate('chat')} />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/查看菜单.svg')} className="w-[18px] h-[18px]" alt="查看菜单" />} label="查看菜单" color="bg-indigo-50 text-indigo-600" onClick={() => onNavigate('chat')} />
+                    <ActionButton icon={<img src="/icno/行程icon/一键导航.svg" className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/电话咨询.svg" className="w-[18px] h-[18px]" alt="电话咨询" />} label="电话咨询" color="bg-red-50 text-red-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/预定包厢.svg" className="w-[18px] h-[18px]" alt="预定包厢" />} label="预定包厢" color="bg-indigo-50 text-indigo-600" onClick={() => onNavigate('chat')} />
+                    <ActionButton icon={<img src="/icno/行程icon/查看菜单.svg" className="w-[18px] h-[18px]" alt="查看菜单" />} label="查看菜单" color="bg-indigo-50 text-indigo-600" onClick={() => onNavigate('chat')} />
                   </>
                 )}
                 {/* 酒店 */}
                 {node.type === '酒店' && (
                   <>
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/在线选座.svg')} className="w-[18px] h-[18px]" alt="酒店订房" />} label="酒店订房" color="bg-green-50 text-green-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/一键导航.svg')} className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/联系前台.svg')} className="w-[18px] h-[18px]" alt="联系前台" />} label="联系前台" color="bg-red-50 text-red-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/设施问询.svg')} className="w-[18px] h-[18px]" alt="酒店服务" />} label="酒店服务" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/客房服务.svg')} className="w-[18px] h-[18px]" alt="客房服务" />} label="客房服务" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/周边推荐.svg')} className="w-[18px] h-[18px]" alt="周边推荐" />} label="周边推荐" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
+                    <ActionButton icon={<img src="/icno/行程icon/在线选座.svg" className="w-[18px] h-[18px]" alt="酒店订房" />} label="酒店订房" color="bg-green-50 text-green-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/一键导航.svg" className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/联系前台.svg" className="w-[18px] h-[18px]" alt="联系前台" />} label="联系前台" color="bg-red-50 text-red-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/设施问询.svg" className="w-[18px] h-[18px]" alt="酒店服务" />} label="酒店服务" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
+                    <ActionButton icon={<img src="/icno/行程icon/客房服务.svg" className="w-[18px] h-[18px]" alt="客房服务" />} label="客房服务" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
+                    <ActionButton icon={<img src="/icno/行程icon/周边推荐.svg" className="w-[18px] h-[18px]" alt="周边推荐" />} label="周边推荐" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
                   </>
                 )}
                 {/* 自定义活动 */}
                 {node.type === '自定义活动' && (
                   <>
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/查看地图.svg')} className="w-[18px] h-[18px]" alt="查看地图" />} label="查看地图" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src={withBase('/icno/行程icon/智能体.svg')} className="w-[18px] h-[18px]" alt="定制服务" />} label="定制服务" color="bg-gray-50 text-gray-600" onClick={handleCustomAction} />
+                    <ActionButton icon={<img src="/icno/行程icon/查看地图.svg" className="w-[18px] h-[18px]" alt="查看地图" />} label="查看地图" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src="/icno/行程icon/智能体.svg" className="w-[18px] h-[18px]" alt="定制服务" />} label="定制服务" color="bg-gray-50 text-gray-600" onClick={handleCustomAction} />
                   </>
                 )}
               </div>
@@ -757,7 +755,7 @@ export default function TripDetail({ onNavigate, isPreview = false, fromChat = f
                 return (
                   <div key={f.id} onClick={() => setOverviewFilter(f.id)} className="flex flex-col items-center gap-2 min-w-[60px] cursor-pointer group">
                     <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${isSelected ? 'scale-110 drop-shadow-md' : 'group-hover:scale-105'}`}>
-                      <img src={withBase(isSelected ? f.iconActive : f.iconInactive)} alt={f.label} className="w-full h-full object-contain" />
+                      <img src={isSelected ? f.iconActive : f.iconInactive} alt={f.label} className="w-full h-full object-contain" />
                     </div>
                     <span className={`text-xs transition-colors duration-300 ${isSelected ? `${f.labelColor} font-bold` : 'text-gray-500 font-medium'}`}>{f.label}</span>
                   </div>
@@ -1038,7 +1036,7 @@ function DayHeader({ title, date }: { title: string, date: string }) {
     <div 
       className="relative h-14 flex items-center justify-between px-4 mb-4 rounded-tl-3xl rounded-br-3xl overflow-hidden shadow-sm"
       style={{
-        backgroundImage: `url(${withBase('/图片/Day-title-bg.jpg')})`,
+        backgroundImage: 'url(/图片/Day-title-bg.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}
@@ -1048,7 +1046,7 @@ function DayHeader({ title, date }: { title: string, date: string }) {
       
       <div className="relative z-10 flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-[#F27D59] flex items-center justify-center shadow-sm">
-          <img src={withBase('/icno/行程icon/爱心-实心.svg')} alt="heart" className="w-4 h-4" />
+          <img src="/icno/行程icon/爱心-实心.svg" alt="heart" className="w-4 h-4" />
         </div>
         <span className="text-xl font-bold text-gray-800">{title}</span>
       </div>

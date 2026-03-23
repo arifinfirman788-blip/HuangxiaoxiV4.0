@@ -6,7 +6,6 @@ import {defineConfig, loadEnv} from 'vite';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    // GitHub Pages project site needs repo-name base path in production.
     base: mode === 'production' ? '/HuangxiaoxiV4.0/' : '/',
     plugins: [react(), tailwindcss()],
     define: {

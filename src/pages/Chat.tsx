@@ -19,6 +19,7 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [adopted, setAdopted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = (text: string) => {
@@ -27,7 +28,6 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
     setMessages(prev => [...prev, { id: Date.now(), type: 'user', text: text }]);
     setIsTyping(true);
 
-    // Simulate AI response
     setTimeout(() => {
       setIsTyping(false);
       
@@ -39,11 +39,11 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
 
 📅 第1天：贵阳文化古镇与现代风情之旅
 🚗 上午：青岩古镇（10:00~12:00 | 游玩2小时）
-开启旅程的第一站，穿越600年历史的【青岩古镇】！🏯 漫步青石板路，探秘明清古建筑，别忘了登上城墙俯瞰全景，感受“南方小长城”的雄浑。推荐品尝古镇特色卤猪脚和玫瑰糖，甜蜜开启旅途~
+开启旅程的第一站，穿越600年历史的【青岩古镇】！🏯 漫步青石板路，探秘明清古建筑，别忘了登上城墙俯瞰全景，感受"南方小长城"的雄浑。推荐品尝古镇特色卤猪脚和玫瑰糖，甜蜜开启旅途~
 🍜 中午：多彩贵州城（13:30~15:00 | 游玩1.5小时）
 驱车前往【多彩贵州城】，这里是贵州文化的微缩版！🎪 民族风情表演、非遗手工艺体验，还有互动式展览，让你瞬间融入贵州的多彩魅力。
 🌃 晚上：市集与夜景狂欢
-青云市集（18:00~19:00 | 游玩1小时）：贵阳最潮的市集！🍢 琳琅满目的小吃摊、创意手作，推荐试试“手搓冰粉”，清凉解暑~
+青云市集（18:00~19:00 | 游玩1小时）：贵阳最潮的市集！🍢 琳琅满目的小吃摊、创意手作，推荐试试"手搓冰粉"，清凉解暑~
 甲秀楼（19:30~20:00 | 游玩0.5小时）：贵阳地标夜景！🌉 灯光映衬下的古楼与南明河交相辉映，拍照绝美。
 太平路（20:30~21:30 | 游玩1小时）：年轻人的夜生活天堂！🍻 酒吧、Live音乐、街头小吃，结束一天的疲惫。
 🍲 美食推荐
@@ -54,7 +54,7 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
 
 📅 第2天：自然与艺术碰撞之旅
 🌿 上午：黔灵山公园（09:00~11:00 | 游玩2小时）
-“黔南第一山”名不虚传！🐒 登山看野生猕猴，探访弘福寺，泛舟黔灵湖，感受城市中的天然氧吧~
+"黔南第一山"名不虚传！🐒 登山看野生猕猴，探访弘福寺，泛舟黔灵湖，感受城市中的天然氧吧~
 🎬 中午：越界影城（12:30~15:00 | 游玩2.5小时）
 沉浸式电影主题乐园！🎞️ 4D影院、VR互动、电影场景复刻，影迷的天堂~
 🎨 下午：红飘带艺术馆（15:30到达）
@@ -67,7 +67,7 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
 
 📅 第3天：黄果树瀑布自然奇观
 💦 全天：黄果树瀑布（10:00~15:00 | 游玩5小时）
-“亚洲第一大瀑布”等你征服！🌊 近距离感受水雾扑面，穿越水帘洞（记得带雨衣），还能打卡陡坡塘瀑布（86版《西游记》取景地）。景区内步行较多，建议穿舒适运动鞋~
+"亚洲第一大瀑布"等你征服！🌊 近距离感受水雾扑面，穿越水帘洞（记得带雨衣），还能打卡陡坡塘瀑布（86版《西游记》取景地）。景区内步行较多，建议穿舒适运动鞋~
 🚗 返程贵阳（17:30抵达）
 结束震撼的自然之旅，返回贵阳散团。
 🍛 美食推荐
@@ -118,7 +118,6 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
     ]);
 
     if (!data?.query) return;
-    // 通过 cleanup 取消上一次定时器，避免重复发送
     const timer = setTimeout(() => {
       sendMessage(data.query);
     }, 500);
@@ -135,6 +134,27 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
 
   return (
     <div className="h-full bg-gray-50 flex flex-col relative">
+      <style>{`
+        @keyframes glow-pulse {
+          0%, 100% { box-shadow: 0 0 6px 2px rgba(139,92,246,0.3), 0 0 16px 4px rgba(167,139,250,0.15); }
+          50% { box-shadow: 0 0 10px 3px rgba(139,92,246,0.45), 0 0 24px 6px rgba(167,139,250,0.25); }
+        }
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        @keyframes wiggle {
+          0%, 100% { transform: rotate(0deg); }
+          25% { transform: rotate(-6deg); }
+          75% { transform: rotate(6deg); }
+        }
+        @keyframes float-up {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+      `}</style>
+
       {/* Header */}
       <div className="pt-12 pb-4 px-4 bg-white/80 backdrop-blur-md sticky top-0 z-20 flex justify-between items-center border-b border-gray-100">
         <button onClick={() => onNavigate('home')} className="p-2">
@@ -196,15 +216,35 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
                   >
                     <MapPin size={12} /> 查看行程
                   </button>
-                  <button 
-                    onClick={() => {
-                      alert('行程已采纳并加入“我的行程”！');
-                      onNavigate('trip-detail-adopted');
-                    }}
-                    className="flex-1 bg-indigo-600 text-white border border-indigo-600 rounded-xl py-2 px-3 text-xs font-bold flex items-center justify-center gap-1 hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200"
-                  >
-                    <Sparkles size={12} /> 采纳行程
-                  </button>
+                  {adopted ? (
+                    <div className="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5 text-emerald-600">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                        className="w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center text-white"
+                      >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </motion.div>
+                      已采纳
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        setAdopted(true);
+                        setTimeout(() => onNavigate('trip-detail-adopted'), 1200);
+                      }}
+                      className="flex-1 relative overflow-hidden rounded-xl py-2 px-3 text-xs font-extrabold flex items-center justify-center gap-1 text-white active:scale-95 transition-transform whitespace-nowrap"
+                      style={{
+                        background: 'linear-gradient(270deg, #7C4DFF, #A78BFA, #C084FC, #7C4DFF)',
+                        backgroundSize: '300% 300%',
+                        animation: 'gradient-shift 3s ease infinite, glow-pulse 2s ease-in-out infinite',
+                      }}
+                    >
+                      <span className="animate-[wiggle_1s_ease-in-out_infinite]"><Sparkles size={12} /></span>
+                      <span className="animate-[float-up_1.5s_ease-in-out_infinite]">采纳行程 ✨</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>

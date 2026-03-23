@@ -3,11 +3,6 @@ import { MapPin, Volume2, Send, Heart, ChevronRight, Languages, X, AlertTriangle
 import { motion, AnimatePresence } from 'motion/react';
 import { Page, Trip } from '../types';
 
-const withBase = (path: string) => {
-  if (/^(https?:)?\/\//.test(path)) return path;
-  return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
-};
-
 type NotificationType = 'welcome' | 'morning' | 'tomorrow' | 'park_entry' | 'park_companion' | 'hotel_before' | 'hotel_during' | 'food' | 'warning';
 
 interface AppNotification {
@@ -130,7 +125,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
   return (
     <div className="h-full bg-gradient-to-b from-indigo-50 to-white flex flex-col relative overflow-hidden">
       {/* 渐变背景层 */}
-      <img src={withBase('/首页.jpg')} alt="首页背景" className="absolute top-0 left-0 w-full h-[151px] object-cover z-0 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" />
+      <img src="/首页.jpg" alt="首页背景" className="absolute top-0 left-0 w-full h-[151px] object-cover z-0 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" />
       <div className="absolute top-0 left-0 w-full h-[151px] bg-gradient-to-b from-[rgba(119,134,252,0.5)] via-[rgba(119,134,252,0.2)] to-[rgba(119,134,252,0)] pointer-events-none z-10" />
       
       {/* Header & Unified Notification */}
@@ -150,7 +145,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
                   <h1 className="text-2xl font-bold text-gray-900">黄小西</h1>
                   <p className="text-sm text-gray-500">您的AI文旅助手</p>
                 </div>
-                <img src={withBase('/IP_1.png')} alt="趴着的黄小西" className="w-24 h-18 object-contain scale-x-[-1]" />
+                <img src="/IP_1.png" alt="趴着的黄小西" className="w-24 h-18 object-contain scale-x-[-1]" />
               </div>
               
               <button
@@ -174,7 +169,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.2 }}
             >
-              <img src={withBase('/张手跑.png')} alt="站着的黄小西" className="w-16 h-24 object-contain flex-shrink-0" />
+              <img src="/张手跑.png" alt="站着的黄小西" className="w-16 h-24 object-contain flex-shrink-0" />
               <div className="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-indigo-50 relative overflow-hidden min-h-[100px]">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -338,7 +333,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
           }}
           className="bg-green-50 border border-green-100 text-green-600 px-3 py-1.5 rounded-xl flex items-center justify-center flex-shrink-0"
         >
-          <img src={withBase('/icno/首页icon/中英.svg')} alt="翻译" className="w-6 h-6" />
+          <img src="/icno/首页icon/中英.svg" alt="翻译" className="w-6 h-6" />
         </button>
       </div>
 
@@ -372,7 +367,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
                 exit={{ opacity: 0, scale: 0.9 }}
                 className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md rounded-[2rem] border border-white/60 shadow-sm z-50"
               >
-                <img src={withBase('/IP_1.png')} alt="黄小西招手" className="w-28 h-28 object-contain animate-bounce mb-4 drop-shadow-lg" />
+                <img src="/IP_1.png" alt="黄小西招手" className="w-28 h-28 object-contain animate-bounce mb-4 drop-shadow-lg" />
                 <div className="flex items-center gap-2 text-[#7786FC] font-bold text-lg tracking-wide">
                   <div className="w-5 h-5 rounded-full border-[3px] border-[#7786FC] border-t-transparent animate-spin" />
                   黄小西正在赶来...
@@ -388,7 +383,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
                 className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md rounded-[2rem] border border-white/60 shadow-sm z-50"
               >
                 <motion.img 
-                  src={withBase('/张手跑.png')} 
+                  src="/张手跑.png" 
                   alt="敬请期待" 
                   className="w-28 h-28 object-contain opacity-90 mb-4 drop-shadow-md"
                   animate={{ y: [0, -8, 0] }}
@@ -435,7 +430,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
                     }}
                     transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                   >
-                    <img src={withBase(card.img)} alt={card.title} className="w-full h-full object-cover pointer-events-none" />
+                    <img src={card.img} alt={card.title} className="w-full h-full object-cover pointer-events-none" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 text-white pointer-events-none">
                       <h2 className="text-xl font-bold mb-2">{card.title}</h2>
                       <p className="text-xs text-white/80 line-clamp-2 mb-4">{card.desc}</p>
@@ -509,7 +504,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
             >
               <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-900 mb-5">黄小西负责分派任务</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-5">任务广场</h3>
               <div className="space-y-3 mb-5">
                 {SUGGESTED_TASKS.map((task, i) => (
                   <motion.div
