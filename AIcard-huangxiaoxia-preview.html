@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIcard - 黄小虾卡片预览</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: #f7f8fa;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      }
+
+      .stage {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .phone {
+        width: 393px;
+        max-width: 100%;
+      }
+
+      .card {
+        position: relative;
+        overflow: hidden;
+        min-height: 96px;
+        border-radius: 30px;
+        padding: 16px 24px;
+        border: 1px solid rgba(199, 210, 254, 0.8);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-image: linear-gradient(135deg, #dff8ff 0%, #dcf1ff 48%, #dff0ff 100%);
+        background-size: cover;
+        background-position: center;
+      }
+
+      .bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .bg .glow {
+        position: absolute;
+        left: -48px;
+        top: -40px;
+        width: 176px;
+        height: 96px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.3);
+        filter: blur(18px);
+      }
+
+      .bg .line {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 42%;
+        bottom: 16px;
+        height: 1px;
+        border-radius: 99px;
+        background: rgba(103, 232, 249, 0.55);
+      }
+
+      .content {
+        position: relative;
+        z-index: 2;
+        max-width: 220px;
+        padding-right: 8px;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #164e63;
+      }
+
+      .desc {
+        margin: 6px 0 0;
+        font-size: 12px;
+        line-height: 1.65;
+        color: rgba(22, 78, 99, 0.72);
+      }
+
+      .mini-card {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 78px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.84);
+        border: 1px solid rgba(165, 243, 252, 0.9);
+        box-shadow: 0 6px 12px rgba(56, 189, 248, 0.1);
+      }
+
+      .mini-card .a {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        background: rgba(103, 232, 249, 0.78);
+      }
+
+      .mini-card .b {
+        position: absolute;
+        left: 46px;
+        top: 16px;
+        width: 48px;
+        height: 6px;
+        border-radius: 99px;
+        background: rgba(103, 232, 249, 0.72);
+      }
+
+      .mini-card .c {
+        position: absolute;
+        left: 46px;
+        top: 32px;
+        width: 36px;
+        height: 6px;
+        border-radius: 99px;
+        background: rgba(186, 230, 253, 0.9);
+      }
+
+      .mini-card .d {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 16px;
+        height: 6px;
+        border-radius: 99px;
+        background: rgba(186, 230, 253, 0.85);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="phone">
+        <div class="card">
+          <div class="bg">
+            <div class="glow"></div>
+            <div class="line"></div>
+          </div>
+          <div class="content">
+            <h3 class="title">黄小虾</h3>
+            <p class="desc">AI数字员工团队，助力一人一公司</p>
+          </div>
+          <div class="mini-card" aria-hidden="true">
+            <div class="a"></div>
+            <div class="b"></div>
+            <div class="c"></div>
+            <div class="d"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  </html>

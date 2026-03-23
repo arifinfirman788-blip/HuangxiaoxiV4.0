@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>静态地图展示区预览</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        background: #f5f7fb;
+        padding: 24px 16px;
+      }
+
+      .phone {
+        width: 393px;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+
+      /* 静态图展示区 */
+      .map-placeholder {
+        position: relative;
+        width: 100%;
+        height: 220px;
+        border-radius: 18px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      }
+
+      .map-placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        background: linear-gradient(135deg, #dbeafe 0%, #e9d5ff 100%);
+      }
+
+      /* 覆盖在图片上的按钮区，增加点击感知 */
+      .btn-overlay {
+        position: absolute;
+        left: 50%;
+        bottom: 16px;
+        transform: translateX(-50%);
+        background: rgba(17, 24, 39, 0.72);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 13px;
+        white-space: nowrap;
+        backdrop-filter: blur(4px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone">
+      <div class="map-placeholder" id="mapPlaceholder">
+        <img
+          id="mapImg"
+          src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=104.2,24.6,109.6,29.2&bboxSR=4326&imageSR=4326&size=1200,700&format=png32&f=image"
+          alt="贵州地图静态图"
+          referrerpolicy="no-referrer"
+        />
+        <div class="btn-overlay">点击查看实时路线地图</div>
+      </div>
+    </div>
+
+    <script>
+      // 对应小程序里的 bindtap="goToFullMapPage"
+      function goToFullMapPage() {
+        // 这里替换成你的实际页面地址
+        window.location.href = "http://localhost:5174/";
+      }
+
+      document.getElementById("mapPlaceholder").addEventListener("click", goToFullMapPage);
+
+      // 图片加载失败时兜底为本地绘制的占位图，确保页面不空白
+      const fallbackSvg =
+        "data:image/svg+xml;utf8," +
+        encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+            <defs>
+              <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#dbeafe"/>
+                <stop offset="100%" stop-color="#e9d5ff"/>
+              </linearGradient>
+            </defs>
+            <rect width="1200" height="700" fill="url(#bg)"/>
+            <g fill="none" stroke="#94a3b8" stroke-width="3" opacity="0.8">
+              <path d="M120,460 C260,350 420,520 560,420 C700,320 860,430 1040,290"/>
+              <circle cx="240" cy="400" r="10" fill="#60a5fa"/>
+              <circle cx="560" cy="420" r="10" fill="#60a5fa"/>
+              <circle cx="880" cy="350" r="10" fill="#60a5fa"/>
+            </g>
+            <text x="600" y="340" text-anchor="middle" font-size="42" fill="#334155" font-family="Arial, sans-serif">贵州地图静态图</text>
+            <text x="600" y="390" text-anchor="middle" font-size="24" fill="#475569" font-family="Arial, sans-serif">（当前为兜底占位图）</text>
+          </svg>
+        `);
+
+      const imgEl = document.getElementById("mapImg");
+      imgEl.addEventListener("error", () => {
+        imgEl.src = fallbackSvg;
+      });
+    </script>
+  </body>
+  </html>

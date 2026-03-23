@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIcard - 我的数字分身卡片</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        background: #f7f8fa;
+      }
+      .stage {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .phone {
+        width: 393px;
+        max-width: 100%;
+      }
+      .card {
+        position: relative;
+        overflow: hidden;
+        min-height: 108px;
+        border-radius: 30px;
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid rgba(199, 210, 254, 0.8);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.1);
+        background-image: linear-gradient(135deg, #d9ecff 0%, #d6e7ff 46%, #e2dbff 100%);
+      }
+      .bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .bg .glow {
+        position: absolute;
+        left: -48px;
+        top: -40px;
+        width: 176px;
+        height: 96px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.28);
+        filter: blur(18px);
+      }
+      .bg .line {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 42%;
+        bottom: 16px;
+        height: 1px;
+        border-radius: 99px;
+        background: rgba(129, 140, 248, 0.45);
+      }
+      .content {
+        position: relative;
+        z-index: 2;
+        max-width: 220px;
+        padding-right: 8px;
+      }
+      .title {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #312e81;
+      }
+      .desc {
+        margin: 8px 0 0;
+        font-size: 12px;
+        line-height: 1.65;
+        color: rgba(49, 46, 129, 0.7);
+      }
+      .mini-card {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 78px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(199, 210, 254, 0.9);
+        box-shadow: 0 6px 12px rgba(99, 102, 241, 0.08);
+      }
+      .mini-card .a {
+        position: absolute;
+        left: 16px;
+        top: 16px;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(129, 140, 248, 0.78);
+      }
+      .mini-card .b {
+        position: absolute;
+        right: 24px;
+        top: 16px;
+        width: 44px;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(129, 140, 248, 0.78);
+      }
+      .mini-card .c {
+        position: absolute;
+        right: 36px;
+        top: 44px;
+        width: 32px;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(199, 210, 254, 0.92);
+      }
+      .mini-card .d {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 18px;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(199, 210, 254, 0.85);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="phone">
+        <div class="card">
+          <div class="bg">
+            <div class="glow"></div>
+            <div class="line"></div>
+          </div>
+          <div class="content">
+            <h3 class="title">我的数字分身</h3>
+            <p class="desc">创建专属AI分身与数字名片，开启智能社交</p>
+          </div>
+          <div class="mini-card" aria-hidden="true">
+            <div class="a"></div>
+            <div class="b"></div>
+            <div class="c"></div>
+            <div class="d"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  </html>

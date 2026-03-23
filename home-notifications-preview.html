@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>首页通知静态预览</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .container {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+
+      .desc {
+        margin: 0 0 20px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .tips {
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        color: #3730a3;
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        margin-bottom: 20px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      }
+
+      .head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .tag {
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-weight: 600;
+      }
+
+      .title {
+        font-size: 15px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .title-icon {
+        width: 16px;
+        height: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 0;
+      }
+
+      .text {
+        margin: 0;
+        font-size: 13px;
+        color: #374151;
+        line-height: 1.5;
+        min-height: 60px;
+      }
+
+      .action {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #4f46e5;
+        background: #eef2ff;
+        border-radius: 8px;
+        padding: 6px 8px;
+        display: inline-block;
+      }
+
+      .sub {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .pill {
+        font-size: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 999px;
+        padding: 4px 10px;
+        color: #374151;
+        background: #f9fafb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>首页通知静态预览</h1>
+      <p class="desc">
+        此页面用于集中查看和修改“首页通知”文案。只需编辑下方
+        <code>NOTIFICATIONS</code> 数据即可。
+      </p>
+      <div class="tips">
+        修改建议：优先改 <b>title</b>、<b>text</b>、<b>actionText</b>、
+        <b>target</b>。保存后刷新本页面即可看到效果。
+      </div>
+
+      <div id="grid" class="grid"></div>
+    </div>
+
+    <script>
+      // 只改这个数组就能维护所有通知类型
+      const NOTIFICATIONS = [
+        {
+          type: "warning",
+          title: "紧急预警",
+          titleIcon: "🟡⚠️",
+          text: "【德江县三级黄色预警】当前德江县有强对流天气风险，请减少户外停留，优先前往室内避险点。",
+          actionText: "查询近三天天气 >",
+          target: "跳转聊天页，带入 query: 查询近三天天气",
+          color: "#ca8a04",
+          bg: "#fefce8",
+        },
+        {
+          type: "welcome",
+          title: "欢迎语",
+          titleIcon: "👋",
+          text: "行程大纲：Day1 贵阳，Day2 安顺（黄果树），Day3 返程；预计出发时间：明早 08:30。",
+          actionText: "查看行程详情预览 >",
+          target: "跳转行程详情预览页",
+          color: "#4f46e5",
+          bg: "#eef2ff",
+        },
+        {
+          type: "morning",
+          title: "早间唤醒",
+          titleIcon: "🌤️",
+          text: "早安！今日贵阳多云转晴，18-26°C，体感舒适；建议薄外套+防晒，点击可查询更详细天气变化。",
+          actionText: "查询今天天气 >",
+          target: "跳转聊天页，带入 query: 查询今天天气",
+          color: "#ea580c",
+          bg: "#fff7ed",
+        },
+        {
+          type: "tomorrow",
+          title: "明日预告",
+          titleIcon: "📅",
+          text: "明日安顺阵雨，16-22°C；重点游玩黄果树瀑布，建议穿防滑鞋并备轻便雨衣，湿滑栈道请慢行。",
+          actionText: "查询明天天气 >",
+          target: "跳转聊天页，带入 query: 查询明天天气",
+          color: "#2563eb",
+          bg: "#eff6ff",
+        },
+        {
+          type: "park_entry",
+          title: "入园必看",
+          titleIcon: "🧭",
+          text: "离青岩古镇还有半小时，建议从北门入园（排队更短）。提前准备身份证，入园更快。",
+          actionText: "唤起微信地图导航至景区门口 >",
+          target: "唤起微信地图，导航到景区门口",
+          color: "#059669",
+          bg: "#ecfdf5",
+        },
+        {
+          type: "park_companion",
+          title: "游中锦囊",
+          titleIcon: "📸",
+          text: "嘘！左边是拍瀑布的最佳角度，光线刚好！走旁边小路更快哦。",
+          actionText: "查询景区游玩攻略 >",
+          target: "跳转聊天页，带入 query: 查询景区游玩攻略",
+          color: "#0d9488",
+          bg: "#f0fdfa",
+        },
+        {
+          type: "hotel_before",
+          title: "入住指南",
+          titleIcon: "🏨",
+          text: "快到酒店啦，身份证拿手上。前台可寄存行李，办好入住洗个澡。",
+          actionText: "唤起地图导航至酒店门口/停车场 >",
+          target: "唤起地图，导航到酒店门口或停车场",
+          color: "#7c3aed",
+          bg: "#f5f3ff",
+        },
+        {
+          type: "hotel_during",
+          title: "住中服务",
+          titleIcon: "🛎️",
+          text: "WiFi密码是88888888，有事直接拨前台电话。",
+          actions: ["查询酒店基础设施", "拨打前台电话"],
+          target: "支持拨打电话或查询酒店基础设施",
+          color: "#7c3aed",
+          bg: "#f5f3ff",
+        },
+        {
+          type: "food",
+          title: "美食推荐（午餐）",
+          titleIcon: "🍱",
+          text: "中午这顿得吃好！附近有不错的酸汤鱼。想知道哪家不踩雷？",
+          actionText: "推荐附近特色餐厅 >",
+          target: "跳转聊天页，带入 query: 推荐附近特色餐厅",
+          color: "#d97706",
+          bg: "#fffbeb",
+        },
+        {
+          type: "food_breakfast",
+          title: "美食推荐（早餐）",
+          titleIcon: "🥣",
+          text: "早安！附近有地道肠旺面和牛肉粉，适合出发前快速补能，想看高评分早餐店可点击查询。",
+          actionText: "推荐附近特色餐厅 >",
+          target: "跳转聊天页，带入 query: 推荐附近特色餐厅",
+          color: "#d97706",
+          bg: "#fffbeb",
+        },
+        {
+          type: "food_dinner",
+          title: "美食推荐（晚餐）",
+          titleIcon: "🍲",
+          text: "今晚可安排酸汤鱼或丝娃娃，建议优先选择步行 15 分钟内门店，避免排队影响休息。",
+          actionText: "推荐附近特色餐厅 >",
+          target: "跳转聊天页，带入 query: 推荐附近特色餐厅",
+          color: "#d97706",
+          bg: "#fffbeb",
+        },
+        {
+          type: "food_night",
+          title: "美食推荐（夜宵）",
+          titleIcon: "🌙",
+          text: "如果还没休息，可去夜市体验本地宵夜（烙锅/豆腐圆子），注意返程安全与营业时间。",
+          actionText: "推荐附近特色餐厅 >",
+          target: "跳转聊天页，带入 query: 推荐附近特色餐厅",
+          color: "#d97706",
+          bg: "#fffbeb",
+        },
+      ];
+
+      const grid = document.getElementById("grid");
+
+      function getTypeIcon(type, color) {
+        const icons = {
+          warning: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>`,
+          welcome: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h8"/><path d="M12 8v8"/><circle cx="12" cy="12" r="9"/></svg>`,
+          morning: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`,
+          tomorrow: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>`,
+          park_entry: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-4.35 7-10a7 7 0 1 0-14 0c0 5.65 7 10 7 10z"/><circle cx="12" cy="12" r="2.5"/></svg>`,
+          park_companion: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="14" height="10" rx="2"/><path d="m17 10 4-2v8l-4-2"/><circle cx="8" cy="12" r="1.2"/></svg>`,
+          hotel_before: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>`,
+          hotel_during: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a4 4 0 0 0-4 4v2h8V7a4 4 0 0 0-4-4z"/><path d="M6 11h12"/><path d="M8 11v8"/><path d="M16 11v8"/><path d="M5 21h14"/></svg>`,
+          food: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v8"/><path d="M8 3v8"/><path d="M6 11v10"/><path d="M14 3v18"/><path d="M14 8h4a2 2 0 0 0 0-4h-4"/></svg>`,
+          food_breakfast: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h16"/><path d="M6 13a6 6 0 0 1 12 0"/><path d="M7 17h10"/><path d="M9 9V7"/><path d="M12 8V5"/><path d="M15 9V7"/></svg>`,
+          food_dinner: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v8"/><path d="M8 3v8"/><path d="M6 11v10"/><path d="M14 3v18"/><path d="M14 8h4a2 2 0 0 0 0-4h-4"/></svg>`,
+          food_night: `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>`,
+        };
+        return `<span class="title-icon">${icons[type] || icons.welcome}</span>`;
+      }
+
+      NOTIFICATIONS.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="head">
+            <div class="title">${getTypeIcon(item.type, item.color)}${item.title}</div>
+            <span class="tag" style="color:${item.color};background:${item.bg};">小贴士</span>
+          </div>
+          <p class="text">${item.text}</p>
+          ${
+            item.actions
+              ? `<div class="actions">${item.actions
+                  .map((a) => `<span class="pill">${a}</span>`)
+                  .join("")}</div>`
+              : `<div class="action">${item.actionText || ""}</div>`
+          }
+          <div class="sub">跳转/动作：${item.target}</div>
+        `;
+        grid.appendChild(card);
+      });
+    </script>
+  </body>
+</html>
