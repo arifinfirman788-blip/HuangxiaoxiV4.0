@@ -2,12 +2,14 @@ import React from 'react';
 import { ArrowUpRight, X } from 'lucide-react';
 import { Page } from '../types';
 
+const withBase = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
+
 export default function TranslationPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
     <div className="h-full bg-gradient-to-b from-indigo-50 to-white flex flex-col relative overflow-hidden">
       {/* Fake Home Background to match "首页的样式" */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none">
-        <img src="/首页.jpg" alt="首页背景" className="absolute top-0 left-0 w-full h-[151px] object-cover z-0 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" />
+        <img src={withBase('/首页.jpg')} alt="首页背景" className="absolute top-0 left-0 w-full h-[151px] object-cover z-0 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" />
         <div className="absolute top-0 left-0 w-full h-[151px] bg-gradient-to-b from-[rgba(119,134,252,0.5)] via-[rgba(119,134,252,0.2)] to-[rgba(119,134,252,0)] z-10" />
         <div className="pt-20 px-6 relative z-10">
           <div className="flex items-end gap-4">
@@ -15,7 +17,7 @@ export default function TranslationPage({ onNavigate }: { onNavigate: (page: Pag
               <h1 className="text-2xl font-bold text-gray-900">黄小西</h1>
               <p className="text-sm text-gray-500">您的AI文旅助手</p>
             </div>
-            <img src="/IP_1.png" alt="趴着的黄小西" className="w-24 h-18 object-contain scale-x-[-1]" />
+            <img src={withBase('/IP_1.png')} alt="趴着的黄小西" className="w-24 h-18 object-contain scale-x-[-1]" />
           </div>
         </div>
         <div className="px-6 mt-8 flex gap-2 relative z-10">

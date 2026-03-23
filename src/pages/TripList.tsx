@@ -3,6 +3,8 @@ import { ChevronDown, Trash2, Plane, MapPin, XCircle, RefreshCw } from 'lucide-r
 import { Page, Trip } from '../types';
 import StartTripModal from '../components/StartTripModal';
 
+const withBase = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
+
 const TRIPS: Trip[] = [
   { id: '1', title: '黔东南苗寨深度体验3日游', status: '进行中', startTime: '2026-03-10', days: 3, imageUrl: 'https://picsum.photos/seed/waterfall2/800/600' },
   { id: '2', title: '黄果树瀑布全景游', status: '计划中', startTime: '2026-04-15', days: 2, imageUrl: 'https://picsum.photos/seed/miao2/800/600' },
@@ -101,14 +103,14 @@ export default function TripList({ onNavigate }: { onNavigate: (page: Page) => v
     <div className="min-h-full bg-gray-50 pb-24">
       {/* Header Banner */}
       <div className="relative h-64 overflow-hidden rounded-b-[2.5rem]">
-        <img src="/图片/行程-首页背景.jpg" alt="行程背景" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={withBase('/图片/行程-首页背景.jpg')} alt="行程背景" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-transparent" />
         
         <div className="relative pt-12 px-6 flex flex-col items-center">
           <h1 className="text-white text-2xl font-bold tracking-widest flex items-center gap-2">
-            <img src="/left pic.png" alt="left" className="h-6 object-contain" />
+            <img src={withBase('/left pic.png')} alt="left" className="h-6 object-contain" />
             精选线路
-            <img src="/right pic.png" alt="right" className="h-6 object-contain" />
+            <img src={withBase('/right pic.png')} alt="right" className="h-6 object-contain" />
           </h1>
           
           {/* Horizontal Scroll Items */}
