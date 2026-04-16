@@ -43,10 +43,10 @@ export default function AddSheet({ isOpen, onClose, onNavigate }: { isOpen: bool
                 </div>
               </button>
 
-              {/* 智能识别导入 — 敬请期待 */}
+              {/* 智能识别导入 */}
               <button 
-                onClick={handleComingSoon}
-                className="w-full bg-gray-50 px-6 py-4 rounded-[1.25rem] flex items-center justify-between relative overflow-hidden"
+                onClick={() => { onClose(); onNavigate('smart-import'); }}
+                className="w-full bg-gray-50 px-6 py-4 rounded-[1.25rem] flex items-center justify-between relative overflow-hidden active:scale-[0.98] transition-transform shadow-sm hover:shadow-md"
               >
                 <div className="text-left">
                   <div className="font-bold text-[15px] text-gray-800">智能识别导入</div>
@@ -59,8 +59,7 @@ export default function AddSheet({ isOpen, onClose, onNavigate }: { isOpen: bool
                   </div>
                 </div>
                 <div className="flex items-center gap-3 flex-shrink-0 ml-4">
-                  <span className="text-[10px] text-gray-400 font-medium bg-gray-200/70 px-2 py-0.5 rounded-full">敬请期待</span>
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-sm">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-indigo-500 shadow-sm border border-indigo-50">
                     <Link2 size={18} />
                   </div>
                 </div>

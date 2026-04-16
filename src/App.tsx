@@ -15,7 +15,10 @@ import DigitalCard from './pages/DigitalCard';
 import CardFavorites from './pages/CardFavorites';
 import AddSheet from './components/AddSheet';
 import OnboardingGuide from './components/OnboardingGuide';
+import SmartImport from './pages/SmartImport';
 import { Page } from './types';
+import { motion, AnimatePresence } from 'motion/react';
+import { Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -26,6 +29,23 @@ export default function App() {
   const [phoneNumber, setPhoneNumber] = useState('138****8888');
   const [hasDigitalAvatar, setHasDigitalAvatar] = useState(false);
   const [showGuide, setShowGuide] = useState(() => !sessionStorage.getItem('onboardingDone'));
+
+  // Global Toast State
+  const [globalToast, setGlobalToast] = useState<{
+    show: boolean;
+    status: 'loading' | 'success';
+    message: string;
+  }>({ show: false, status: 'loading', message: '' });
+
+  // Expose toast controller via window so any deep component can trigger it easily
+  React.useEffect(() => {
+    (window as any).showGlobalToast = (status: 'loading' | 'success', message: string) => {
+      setGlobalToast({ show: true, status, message });
+    };
+    (window as any).hideGlobalToast = () => {
+      setGlobalToast(prev => ({ ...prev, show: false }));
+    };
+  }, []);
 
   const handleNavigate = (page: Page, data?: any) => {
     setCurrentPage(page);
@@ -63,6 +83,7 @@ export default function App() {
       case 'digital-avatar': return <DigitalAvatar onNavigate={handleNavigate} onAvatarGenerated={() => setHasDigitalAvatar(true)} hasDigitalAvatar={hasDigitalAvatar} />;
       case 'digital-card': return <DigitalCard onNavigate={handleNavigate} />;
       case 'card-favorites': return <CardFavorites onNavigate={handleNavigate} />;
+      case 'smart-import': return <SmartImport onNavigate={handleNavigate} />;
       default: return <HomePage onNavigate={handleNavigate} />;
     }
   };
@@ -119,6 +140,38 @@ export default function App() {
         {showGuide && currentPage === 'home' && isLoggedIn && (
           <OnboardingGuide onFinish={() => { setShowGuide(false); sessionStorage.setItem('onboardingDone', 'true'); }} />
         )}
+
+        {/* Global Toast Capsule */}
+        <AnimatePresence>
+          {globalToast.show && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              className="absolute top-14 left-1/2 -translate-x-1/2 z-[9999] pointer-events-auto"
+            >
+              <div className="bg-gray-900/90 backdrop-blur-xl text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 cursor-pointer active:scale-95 transition-transform"
+                onClick={() => {
+                  if (globalToast.status === 'success') {
+                    handleNavigate('trip-list');
+                    (window as any).hideGlobalToast();
+                  }
+                }}
+              >
+                {globalToast.status === 'loading' ? (
+                  <div className="relative w-5 h-5 flex items-center justify-center flex-shrink-0">
+                    <div className="absolute inset-0 border-2 border-white/20 rounded-full"></div>
+                    <div className="absolute inset-0 border-2 border-indigo-400 rounded-full border-t-transparent animate-spin"></div>
+                    <Sparkles size={8} className="text-indigo-400 animate-pulse" />
+                  </div>
+                ) : (
+                  <CheckCircle2 size={20} className="text-green-400 flex-shrink-0" />
+                )}
+                <span className="text-[14px] font-bold tracking-wide whitespace-nowrap">{globalToast.message}</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -1,18 +1,26 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronDown, Trash2, Plane, MapPin, XCircle, RefreshCw } from 'lucide-react';
 import { Page, Trip } from '../types';
 import StartTripModal from '../components/StartTripModal';
-
-const TRIPS: Trip[] = [
-  { id: '1', title: '黔东南苗寨深度体验3日游', status: '进行中', startTime: '2026-03-10', days: 3, imageUrl: 'https://picsum.photos/seed/waterfall2/800/600' },
-  { id: '2', title: '黄果树瀑布全景游', status: '计划中', startTime: '2026-04-15', days: 2, imageUrl: 'https://picsum.photos/seed/miao2/800/600' },
-  { id: '3', title: '梵净山徒步', status: '已完成', startTime: '2026-02-01', days: 1, imageUrl: 'https://picsum.photos/seed/mountain/800/600' },
-];
+import { getTrips, setTripsStore } from '../store';
 
 const statusOrder = { '进行中': 0, '计划中': 1, '已完成': 2 };
 
 export default function TripList({ onNavigate }: { onNavigate: (page: Page) => void }) {
-  const [trips, setTrips] = useState(TRIPS);
+  const [trips, setTrips] = useState<Trip[]>(getTrips());
+
+  useEffect(() => {
+    setTrips(getTrips());
+  }, []);
+
+  const handleUpdateTrips = (newTrips: Trip[] | ((prev: Trip[]) => Trip[])) => {
+    setTrips(prev => {
+      const updated = typeof newTrips === 'function' ? newTrips(prev) : newTrips;
+      setTripsStore(updated);
+      return updated;
+    });
+  };
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
   const [filterYear, setFilterYear] = useState<string>('all');
@@ -70,7 +78,7 @@ export default function TripList({ onNavigate }: { onNavigate: (page: Page) => v
 
   const confirmStartTrip = (date: string) => {
     if (selectedTrip) {
-      setTrips(prev => prev.map(t => 
+      handleUpdateTrips(prev => prev.map(t => 
         t.id === selectedTrip.id ? { ...t, status: '进行中', startTime: date } : t
       ));
       showDialog('alert', `已成功开启行程：${selectedTrip.title}`);
@@ -81,7 +89,7 @@ export default function TripList({ onNavigate }: { onNavigate: (page: Page) => v
 
   const handleEndTrip = (trip: Trip) => {
     showDialog('confirm', '确定要提前结束该行程吗？结束行程后将停止行程提醒', () => {
-      setTrips(prev => prev.map(t => 
+      handleUpdateTrips(prev => prev.map(t => 
         t.id === trip.id ? { ...t, status: '已完成' } : t
       ));
     });
@@ -93,7 +101,7 @@ export default function TripList({ onNavigate }: { onNavigate: (page: Page) => v
       return;
     }
     showDialog('confirm', '确定要删除该行程吗？', () => {
-      setTrips(prev => prev.filter(t => t.id !== trip.id));
+      handleUpdateTrips(prev => prev.filter(t => t.id !== trip.id));
     });
   };
 
