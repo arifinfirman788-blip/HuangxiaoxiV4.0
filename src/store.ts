@@ -24,7 +24,7 @@ export const INITIAL_DAYS: TripDay[] = [
         status: '进行中',
         hasAgent: true,
         aiTips: '推荐品尝古镇特色卤猪脚和玫瑰糖，别忘了登上城墙俯瞰全景！',
-        imageUrl: 'https://picsum.photos/seed/qingyan/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/小七孔.jpg`,
         details: { rating: '4.7', price: '￥10门票', level: 'AAAAA', location: '贵阳市花溪区青岩镇' }
       },
       {
@@ -34,7 +34,7 @@ export const INITIAL_DAYS: TripDay[] = [
         title: '青岩特色小吃',
         status: '未开始',
         hasAgent: false,
-        imageUrl: 'https://picsum.photos/seed/food1/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/柏曼温泉酒店.jpg`,
         details: { rating: '4.8', price: '￥45/人', tags: ['卤猪脚', '糕粑稀饭', '豆腐圆子'], location: '青岩古镇内' }
       }
     ]
@@ -58,9 +58,9 @@ export const INITIAL_DAYS: TripDay[] = [
 ];
 
 export let TRIPS: Trip[] = [
-  { id: '1', title: '黔东南苗寨深度体验3日游', status: '进行中', startTime: '2026-03-10', days: 3, imageUrl: 'https://picsum.photos/seed/waterfall2/800/600', tripDays: INITIAL_DAYS },
-  { id: '2', title: '黄果树瀑布全景游', status: '计划中', startTime: '2026-04-15', days: 2, imageUrl: 'https://picsum.photos/seed/miao2/800/600' },
-  { id: '3', title: '梵净山徒步', status: '已完成', startTime: '2026-02-01', days: 1, imageUrl: 'https://picsum.photos/seed/mountain/800/600' },
+  { id: '1', title: '黔东南苗寨深度体验3日游', status: '进行中', startTime: '2026-03-10', days: 3, imageUrl: `${import.meta.env.BASE_URL}图片/旅行记录2.jpg`, tripDays: INITIAL_DAYS },
+  { id: '2', title: '黄果树瀑布全景游', status: '计划中', startTime: '2026-04-15', days: 2, imageUrl: `${import.meta.env.BASE_URL}图片/黄果树瀑布.jpg` },
+  { id: '3', title: '梵净山徒步', status: '已完成', startTime: '2026-02-01', days: 1, imageUrl: `${import.meta.env.BASE_URL}图片/miao.png` },
 ];
 
 export const getTrips = () => TRIPS;

@@ -27,33 +27,33 @@ const MOCK_NOTIFICATIONS: AppNotification[] = [
 ];
 
 const MOCK_TRIPS: Trip[] = [
-  { id: '1', title: '贵阳三日游', status: '进行中', startTime: '2026-03-10', days: 3, imageUrl: 'https://picsum.photos/seed/trip1/800/1000' },
-  { id: '2', title: '梵净山徒步', status: '计划中', startTime: '2026-04-01', days: 2, imageUrl: 'https://picsum.photos/seed/trip2/800/1000' },
+  { id: '1', title: '贵阳三日游', status: '进行中', startTime: '2026-03-10', days: 3, imageUrl: `${import.meta.env.BASE_URL}图片/黄果树瀑布.jpg` },
+  { id: '2', title: '梵净山徒步', status: '计划中', startTime: '2026-04-01', days: 2, imageUrl: `${import.meta.env.BASE_URL}图片/miao.png` },
 ];
 
 const TABS = ['精选', '景区', '酒店', '餐厅', '数字分身', '特产'];
 
 const ALL_CARDS = [
-  { id: 1, title: '旅行规划小助手', shortName: '规划助手', suggestedQuestion: '帮我规划一个贵州3日游行程', desc: '无论你想制定行程🗺️、挖掘小众景点🌴、订购门票，还是了解当地美食🍲，我都能帮你轻松搞定！', tag: '精选', likes: '9.9k', likeCount: 9900, img: '/图片/旅行规划 .jpg' },
-  { id: 3, title: '旅居设计专家', shortName: '旅居专家', suggestedQuestion: '推荐一个贵州适合旅居的小镇', desc: '为您量身定制1个月及以上的沉浸式旅居行程，发现不一样的生活方式。', tag: '精选', likes: '8.5k', likeCount: 8500, img: '/图片/旅居规划.jpg' },
-  { id: 16, title: '旅行记录小助手', shortName: '记录助手', suggestedQuestion: '帮我写一条贵州旅行的朋友圈文案', desc: '帮助您一键生成朋友圈、小红书、微博等社交媒体的精美文案。', tag: '精选', likes: '9.2k', likeCount: 9200, img: '/图片/旅行记录2.jpg' },
-  { id: 2, title: '小七孔景区智能体', shortName: '小七孔', suggestedQuestion: '小七孔景区怎么玩最合理？', desc: '为您提供荔波小七孔景区的深度导览、路线规划与避坑指南。', tag: '精选', likes: '8.8k', likeCount: 8800, img: '/图片/小七孔.jpg' },
+  { id: 1, title: '旅行规划小助手', shortName: '规划助手', suggestedQuestion: '帮我规划一个贵州3日游行程', desc: '无论你想制定行程🗺️、挖掘小众景点🌴、订购门票，还是了解当地美食🍲，我都能帮你轻松搞定！', tag: '精选', likes: '9.9k', likeCount: 9900, img: `${import.meta.env.BASE_URL}图片/旅行规划 .jpg` },
+  { id: 3, title: '旅居设计专家', shortName: '旅居专家', suggestedQuestion: '推荐一个贵州适合旅居的小镇', desc: '为您量身定制1个月及以上的沉浸式旅居行程，发现不一样的生活方式。', tag: '精选', likes: '8.5k', likeCount: 8500, img: `${import.meta.env.BASE_URL}图片/旅居规划.jpg` },
+  { id: 16, title: '旅行记录小助手', shortName: '记录助手', suggestedQuestion: '帮我写一条贵州旅行的朋友圈文案', desc: '帮助您一键生成朋友圈、小红书、微博等社交媒体的精美文案。', tag: '精选', likes: '9.2k', likeCount: 9200, img: `${import.meta.env.BASE_URL}图片/旅行记录2.jpg` },
+  { id: 2, title: '小七孔景区智能体', shortName: '小七孔', suggestedQuestion: '小七孔景区怎么玩最合理？', desc: '为您提供荔波小七孔景区的深度导览、路线规划与避坑指南。', tag: '精选', likes: '8.8k', likeCount: 8800, img: `${import.meta.env.BASE_URL}图片/小七孔.jpg` },
 
-  { id: 4, title: '黄果树瀑布智能体', shortName: '黄果树', suggestedQuestion: '黄果树瀑布最佳观赏路线是什么？', desc: '感受亚洲第一大瀑布的磅礴气势，体验水帘洞的神秘。', tag: '景区', likes: '5.2k', likeCount: 5200, img: '/图片/黄果树瀑布.jpg' },
-  { id: 5, title: '梵净山导览智能体', shortName: '梵净山', suggestedQuestion: '梵净山登山需要准备什么？', desc: '天空之城，佛教名山。为您提供最全的登山攻略。', tag: '景区', likes: '4.5k', likeCount: 4500, img: '/图片/梵净山.jpg' },
-  { id: 6, title: '西江千户苗寨智能体', shortName: '苗寨', suggestedQuestion: '苗寨夜景什么时候最美？', desc: '观赏震撼的苗寨夜景，体验长桌宴，了解苗族文化。', tag: '景区', likes: '4.8k', likeCount: 4800, img: '/图片/miao.png' },
+  { id: 4, title: '黄果树瀑布智能体', shortName: '黄果树', suggestedQuestion: '黄果树瀑布最佳观赏路线是什么？', desc: '感受亚洲第一大瀑布的磅礴气势，体验水帘洞的神秘。', tag: '景区', likes: '5.2k', likeCount: 5200, img: `${import.meta.env.BASE_URL}图片/黄果树瀑布.jpg` },
+  { id: 5, title: '梵净山导览智能体', shortName: '梵净山', suggestedQuestion: '梵净山登山需要准备什么？', desc: '天空之城，佛教名山。为您提供最全的登山攻略。', tag: '景区', likes: '4.5k', likeCount: 4500, img: `${import.meta.env.BASE_URL}图片/梵净山.jpg` },
+  { id: 6, title: '西江千户苗寨智能体', shortName: '苗寨', suggestedQuestion: '苗寨夜景什么时候最美？', desc: '观赏震撼的苗寨夜景，体验长桌宴，了解苗族文化。', tag: '景区', likes: '4.8k', likeCount: 4800, img: `${import.meta.env.BASE_URL}图片/miao.png` },
 
-  { id: 7, title: '贵州饭店酒店智能体', shortName: '贵州饭店', suggestedQuestion: '贵州饭店有什么特色包房？', desc: '承载着贵州的历史与荣耀。为您提供私密尊贵的包房服务。', tag: '酒店', likes: '3.8k', likeCount: 3800, img: '/图片/贵州饭店.jpg' },
-  { id: 8, title: '桔子水晶酒店智能体', shortName: '桔子酒店', suggestedQuestion: '桔子水晶酒店周边有什么好玩的？', desc: '贵阳中心店，尽享城市繁华与宁静。', tag: '酒店', likes: '1.2k', likeCount: 1200, img: '/图片/桔子酒店.jpg' },
-  { id: 9, title: '柏联温泉酒店智能体', shortName: '柏联温泉', suggestedQuestion: '柏联温泉酒店有哪些温泉项目？', desc: '隐匿于山水间的奢华温泉度假体验。', tag: '酒店', likes: '4.1k', likeCount: 4100, img: '/图片/柏曼温泉酒店.jpg' },
+  { id: 7, title: '贵州饭店酒店智能体', shortName: '贵州饭店', suggestedQuestion: '贵州饭店有什么特色包房？', desc: '承载着贵州的历史与荣耀。为您提供私密尊贵的包房服务。', tag: '酒店', likes: '3.8k', likeCount: 3800, img: `${import.meta.env.BASE_URL}图片/贵州饭店.jpg` },
+  { id: 8, title: '桔子水晶酒店智能体', shortName: '桔子酒店', suggestedQuestion: '桔子水晶酒店周边有什么好玩的？', desc: '贵阳中心店，尽享城市繁华与宁静。', tag: '酒店', likes: '1.2k', likeCount: 1200, img: `${import.meta.env.BASE_URL}图片/桔子酒店.jpg` },
+  { id: 9, title: '柏联温泉酒店智能体', shortName: '柏联温泉', suggestedQuestion: '柏联温泉酒店有哪些温泉项目？', desc: '隐匿于山水间的奢华温泉度假体验。', tag: '酒店', likes: '4.1k', likeCount: 4100, img: `${import.meta.env.BASE_URL}图片/柏曼温泉酒店.jpg` },
 
-  { id: 10, title: '老凯俚酸汤鱼餐厅智能体', shortName: '酸汤鱼', suggestedQuestion: '老凯俚酸汤鱼有什么推荐菜品？', desc: '三十年传承，地道凯里风味，非遗美食。', tag: '餐厅', likes: '6.1k', likeCount: 6100, img: '/图片/凯里酸汤鱼.jpg' },
-  { id: 11, title: '丝恋红汤丝娃娃餐厅智能体', shortName: '丝娃娃', suggestedQuestion: '丝娃娃怎么吃最地道？', desc: '贵阳必吃榜，传统小吃新体验。', tag: '餐厅', likes: '5.5k', likeCount: 5500, img: '/图片/丝恋.jpg' },
+  { id: 10, title: '老凯俚酸汤鱼餐厅智能体', shortName: '酸汤鱼', suggestedQuestion: '老凯俚酸汤鱼有什么推荐菜品？', desc: '三十年传承，地道凯里风味，非遗美食。', tag: '餐厅', likes: '6.1k', likeCount: 6100, img: `${import.meta.env.BASE_URL}图片/凯里酸汤鱼.jpg` },
+  { id: 11, title: '丝恋红汤丝娃娃餐厅智能体', shortName: '丝娃娃', suggestedQuestion: '丝娃娃怎么吃最地道？', desc: '贵阳必吃榜，传统小吃新体验。', tag: '餐厅', likes: '5.5k', likeCount: 5500, img: `${import.meta.env.BASE_URL}图片/丝恋.jpg` },
 
-  { id: 12, title: '苗族文化数字导游', shortName: '苗族导游', suggestedQuestion: '给我讲讲苗族银饰文化', desc: '您的专属非遗文化讲解员。', tag: '数字分身', likes: '9.9k', likeCount: 9900, img: '/图片/导游.jpg' },
-  { id: 13, title: '非遗传承人王阿婆', shortName: '王阿婆', suggestedQuestion: '王阿婆的辣子鸡怎么做？', desc: '三十年秘制辣子鸡手艺，带你品尝最地道的贵州味道。', tag: '数字分身', likes: '8.2k', likeCount: 8200, img: '/图片/非遗传承人.png' },
+  { id: 12, title: '苗族文化数字导游', shortName: '苗族导游', suggestedQuestion: '给我讲讲苗族银饰文化', desc: '您的专属非遗文化讲解员。', tag: '数字分身', likes: '9.9k', likeCount: 9900, img: `${import.meta.env.BASE_URL}图片/导游.jpg` },
+  { id: 13, title: '非遗传承人王阿婆', shortName: '王阿婆', suggestedQuestion: '王阿婆的辣子鸡怎么做？', desc: '三十年秘制辣子鸡手艺，带你品尝最地道的贵州味道。', tag: '数字分身', likes: '8.2k', likeCount: 8200, img: `${import.meta.env.BASE_URL}图片/非遗传承人.png` },
   { id: 14, title: '地陪小刘', shortName: '小刘', suggestedQuestion: '贵阳有什么隐藏的宝藏街巷？', desc: '土生土长的贵州小伙，带你走街串巷，发现隐藏的宝藏风光。', tag: '数字分身', likes: '7.5k', likeCount: 7500, img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=800&h=1000' },
-  { id: 15, title: '旅拍张摄影', shortName: '张摄影', suggestedQuestion: '贵州哪里拍照最出片？', desc: '专业旅拍十年，为你记录在贵州的每一个绝美瞬间。', tag: '数字分身', likes: '6.8k', likeCount: 6800, img: '/图片/旅拍张摄影.png' },
+  { id: 15, title: '旅拍张摄影', shortName: '张摄影', suggestedQuestion: '贵州哪里拍照最出片？', desc: '专业旅拍十年，为你记录在贵州的每一个绝美瞬间。', tag: '数字分身', likes: '6.8k', likeCount: 6800, img: `${import.meta.env.BASE_URL}图片/旅拍张摄影.png` },
 ];
 
 const SUGGESTED_TASKS = [
@@ -61,6 +61,7 @@ const SUGGESTED_TASKS = [
   { title: '找服务', desc: '订购助手提供便捷的酒店景区预订服务', query: '帮我找附近的酒店和门票', icon: '📍', bg: 'bg-green-50' },
   { title: '写游记', desc: '旅行记录官生成专属游记与回忆', query: '帮我写一篇贵州旅行游记', icon: '✏️', bg: 'bg-yellow-50' },
   { title: '来旅居', desc: '旅居管家寻找舒适的旅居地点', query: '推荐一个贵州适合旅居的地方', icon: '🏠', bg: 'bg-purple-50' },
+  { title: '查赛事', desc: '专业赛事助手提供多维度跑者指南', query: '打开赛事助手', icon: '🏃', bg: 'bg-orange-50' },
 ];
 
 export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: any) => void }) {
@@ -125,7 +126,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
   return (
     <div className="h-full bg-gradient-to-b from-indigo-50 to-white flex flex-col relative overflow-hidden">
       {/* 渐变背景层 */}
-      <img src="/首页.jpg" alt="首页背景" className="absolute top-0 left-0 w-full h-[151px] object-cover z-0 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" />
+      <img src={`${import.meta.env.BASE_URL}首页.jpg`} alt="首页背景" className="absolute top-0 left-0 w-full h-[151px] object-cover z-0 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" />
       <div className="absolute top-0 left-0 w-full h-[151px] bg-gradient-to-b from-[rgba(119,134,252,0.5)] via-[rgba(119,134,252,0.2)] to-[rgba(119,134,252,0)] pointer-events-none z-10" />
       
       {/* Header & Unified Notification */}
@@ -145,7 +146,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
                   <h1 className="text-2xl font-bold text-gray-900">黄小西</h1>
                   <p className="text-sm text-gray-500">您的AI文旅助手</p>
                 </div>
-                <img src="/IP_1.png" alt="趴着的黄小西" className="w-24 h-18 object-contain scale-x-[-1]" />
+                <img src={`${import.meta.env.BASE_URL}IP_1.png`} alt="趴着的黄小西" className="w-24 h-18 object-contain scale-x-[-1]" />
               </div>
               
               <button
@@ -169,7 +170,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.2 }}
             >
-              <img src="/张手跑.png" alt="站着的黄小西" className="w-16 h-24 object-contain flex-shrink-0" />
+              <img src={`${import.meta.env.BASE_URL}张手跑.png`} alt="站着的黄小西" className="w-16 h-24 object-contain flex-shrink-0" />
               <div className="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-indigo-50 relative overflow-hidden min-h-[100px]">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -333,7 +334,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
           }}
           className="bg-green-50 border border-green-100 text-green-600 px-3 py-1.5 rounded-xl flex items-center justify-center flex-shrink-0"
         >
-          <img src="/icno/首页icon/中英.svg" alt="翻译" className="w-6 h-6" />
+          <img src={`${import.meta.env.BASE_URL}icno/首页icon/中英.svg`} alt="翻译" className="w-6 h-6" />
         </button>
       </div>
 
@@ -367,7 +368,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
                 exit={{ opacity: 0, scale: 0.9 }}
                 className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md rounded-[2rem] border border-white/60 shadow-sm z-50"
               >
-                <img src="/IP_1.png" alt="黄小西招手" className="w-28 h-28 object-contain animate-bounce mb-4 drop-shadow-lg" />
+                <img src={`${import.meta.env.BASE_URL}IP_1.png`} alt="黄小西招手" className="w-28 h-28 object-contain animate-bounce mb-4 drop-shadow-lg" />
                 <div className="flex items-center gap-2 text-[#7786FC] font-bold text-lg tracking-wide">
                   <div className="w-5 h-5 rounded-full border-[3px] border-[#7786FC] border-t-transparent animate-spin" />
                   黄小西正在赶来...
@@ -383,7 +384,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
                 className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md rounded-[2rem] border border-white/60 shadow-sm z-50"
               >
                 <motion.img 
-                  src="/张手跑.png" 
+                  src={`${import.meta.env.BASE_URL}张手跑.png`} 
                   alt="敬请期待" 
                   className="w-28 h-28 object-contain opacity-90 mb-4 drop-shadow-md"
                   animate={{ y: [0, -8, 0] }}
@@ -509,7 +510,14 @@ export default function Home({ onNavigate }: { onNavigate: (page: Page, data?: a
                 {SUGGESTED_TASKS.map((task, i) => (
                   <motion.div
                     key={i}
-                    onClick={() => { setIsTaskSquareOpen(false); onNavigate('chat', { query: task.query }); }}
+                    onClick={() => {
+                      setIsTaskSquareOpen(false);
+                      if (task.title === '查赛事') {
+                        onNavigate('sports-assistant');
+                      } else {
+                        onNavigate('chat', { query: task.query });
+                      }
+                    }}
                     className="bg-white border border-gray-100 rounded-2xl px-4 py-4 cursor-pointer hover:bg-gray-50 transition-colors flex items-center gap-4"
                     whileTap={{ scale: 0.98 }}
                   >

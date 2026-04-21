@@ -84,12 +84,12 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
 🌟 小贴士：贵州天气多变，建议携带雨具和防晒；自驾注意山区弯道，安全第一！`,
           hasTripPlan: true,
           cards: [
-            { type: '景点', title: '青岩古镇', img: 'https://picsum.photos/seed/qingyan/200/200', icon: <MapPin size={12}/> },
-            { type: '景点', title: '多彩贵州城', img: 'https://picsum.photos/seed/duocai/200/200', icon: <MapPin size={12}/> },
-            { type: '景点', title: '甲秀楼', img: 'https://picsum.photos/seed/jiaxiu/200/200', icon: <MapPin size={12}/> },
-            { type: '景点', title: '黔灵山公园', img: 'https://picsum.photos/seed/qianling/200/200', icon: <MapPin size={12}/> },
-            { type: '景点', title: '红飘带艺术馆', img: 'https://picsum.photos/seed/hongpiaodai/200/200', icon: <MapPin size={12}/> },
-            { type: '景点', title: '黄果树瀑布', img: 'https://picsum.photos/seed/waterfall/200/200', icon: <MapPin size={12}/> },
+            { type: '景点', title: '青岩古镇', img: `${import.meta.env.BASE_URL}图片/首页.jpg`, icon: <MapPin size={12}/> },
+            { type: '景点', title: '多彩贵州城', img: `${import.meta.env.BASE_URL}图片/凯里酸汤鱼.jpg`, icon: <MapPin size={12}/> },
+            { type: '景点', title: '甲秀楼', img: `${import.meta.env.BASE_URL}图片/小七孔.jpg`, icon: <MapPin size={12}/> },
+            { type: '景点', title: '黔灵山公园', img: `${import.meta.env.BASE_URL}图片/柏曼温泉酒店.jpg`, icon: <MapPin size={12}/> },
+            { type: '景点', title: '红飘带艺术馆', img: `${import.meta.env.BASE_URL}图片/旅行记录2.jpg`, icon: <MapPin size={12}/> },
+            { type: '景点', title: '黄果树瀑布', img: `${import.meta.env.BASE_URL}图片/黄果树瀑布.jpg`, icon: <MapPin size={12}/> },
           ]
         }]);
       } else {
@@ -99,8 +99,8 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
           text: `为您推荐【西江千户苗寨】！这里是目前中国乃至全世界最大的苗族聚居村寨。晚上可以入住【苗界酒店】，品尝地道的【酸汤鱼】。`,
           hasTripPlan: true,
           cards: [
-            { type: '景点', title: '西江千户苗寨', img: 'https://picsum.photos/seed/miao/200/200', icon: <MapPin size={12}/> },
-            { type: '酒店', title: '苗界酒店', img: 'https://picsum.photos/seed/hotel/200/200', icon: <Hotel size={12}/> },
+            { type: '景点', title: '西江千户苗寨', img: `${import.meta.env.BASE_URL}图片/miao.png`, icon: <MapPin size={12}/> },
+            { type: '酒店', title: '苗界酒店', img: `${import.meta.env.BASE_URL}图片/首页.jpg`, icon: <Hotel size={12}/> },
           ]
         }]);
       }
@@ -179,7 +179,7 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
         {messages.map(msg => (
           <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
             {msg.type === 'ai' && (
-              <img src="https://picsum.photos/seed/avatar/100/100" className="w-8 h-8 rounded-full mr-2 mt-1" />
+              <img src={`${import.meta.env.BASE_URL}图片/凯里酸汤鱼.jpg`} className="w-8 h-8 rounded-full mr-2 mt-1" />
             )}
             <div className={`max-w-[80%] ${msg.type === 'user' ? 'items-end' : 'items-start'} flex flex-col`}>
               <div className={`p-3 rounded-2xl text-sm whitespace-pre-wrap ${
@@ -253,7 +253,7 @@ export default function Chat({ onNavigate, agentTitle = '黄小西', data }: { o
         
         {isTyping && (
           <div className="flex justify-start">
-            <img src="https://picsum.photos/seed/avatar/100/100" className="w-8 h-8 rounded-full mr-2 mt-1" />
+            <img src={`${import.meta.env.BASE_URL}图片/小七孔.jpg`} className="w-8 h-8 rounded-full mr-2 mt-1" />
             <div className="bg-white p-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 flex gap-1 items-center">
               <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
               <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-1.5 h-1.5 bg-gray-400 rounded-full" />

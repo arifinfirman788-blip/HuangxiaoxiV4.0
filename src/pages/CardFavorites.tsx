@@ -3,9 +3,9 @@ import { ChevronLeft, MapPin, Heart } from 'lucide-react';
 import { Page } from '../types';
 
 const FAVORITE_CARDS = [
-  { id: 'c1', name: '阿黔导游', title: '本地地陪名片', tags: ['路线规划', '方言讲解'], cover: 'https://picsum.photos/seed/favcard1/300/180' },
-  { id: 'c2', name: '小苗旅拍', title: '旅拍摄影师名片', tags: ['旅拍打卡', '出片指导'], cover: 'https://picsum.photos/seed/favcard2/300/180' },
-  { id: 'c3', name: '老凯里味道', title: '美食达人名片', tags: ['本地餐馆', '避坑推荐'], cover: 'https://picsum.photos/seed/favcard3/300/180' },
+  { id: 'c1', name: '阿黔导游', title: '本地地陪名片', tags: ['路线规划', '方言讲解'], cover: `${import.meta.env.BASE_URL}图片/旅行记录2.jpg` },
+  { id: 'c2', name: '小苗旅拍', title: '旅拍摄影师名片', tags: ['旅拍打卡', '出片指导'], cover: `${import.meta.env.BASE_URL}图片/黄果树瀑布.jpg` },
+  { id: 'c3', name: '老凯里味道', title: '美食达人名片', tags: ['本地餐馆', '避坑推荐'], cover: `${import.meta.env.BASE_URL}图片/miao.png` },
 ];
 
 export default function CardFavorites({ onNavigate }: { onNavigate: (page: Page) => void }) {

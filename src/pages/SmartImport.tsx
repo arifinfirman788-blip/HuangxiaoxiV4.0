@@ -15,34 +15,34 @@ const DB_PLACES: Record<string, Partial<TripNode>> = {
     type: '景点',
     hasAgent: true,
     aiTips: '推荐品尝古镇特色卤猪脚和玫瑰糖，别忘了登上城墙俯瞰全景！',
-    imageUrl: 'https://picsum.photos/seed/qingyan/600/300',
+    imageUrl: `${import.meta.env.BASE_URL}图片/柏曼温泉酒店.jpg`,
     details: { rating: '4.7', price: '￥10门票', level: 'AAAAA', location: '贵阳市花溪区青岩镇' }
   },
   '甲秀楼': {
     type: '景点',
     hasAgent: true,
     aiTips: '甲秀楼夜景绝美，逛完去青云市集吃一碗手搓冰粉解暑~',
-    imageUrl: 'https://picsum.photos/seed/jiaxiu/600/300',
+    imageUrl: `${import.meta.env.BASE_URL}图片/旅行记录2.jpg`,
     details: { rating: '4.8', price: '免费', location: '贵阳市南明区翠微巷8号' }
   },
   '黄果树瀑布': {
     type: '景点',
     hasAgent: true,
     aiTips: '记得带雨衣穿越水帘洞，景区内步行较多，请穿舒适的运动鞋！',
-    imageUrl: 'https://picsum.photos/seed/waterfall/600/300',
+    imageUrl: `${import.meta.env.BASE_URL}图片/黄果树瀑布.jpg`,
     details: { rating: '5.0', price: '￥160门票', level: 'AAAAA', location: '安顺市镇宁布依族苗族自治县' }
   },
   '豆米火锅': {
     type: '美食',
     hasAgent: true,
     aiTips: '麻辣咸香的贵州特色火锅，豆香浓郁，非常下饭！',
-    imageUrl: 'https://picsum.photos/seed/hotpot/600/300',
+    imageUrl: `${import.meta.env.BASE_URL}图片/miao.png`,
     details: { rating: '4.9', price: '￥68/人', tags: ['贵州特色', '老字号'], location: '贵阳市南明区护国路', level: '黑珍珠一钻' }
   },
   '如家精选酒店': {
     type: '酒店',
     hasAgent: true,
-    imageUrl: 'https://picsum.photos/seed/hotel1/600/300',
+    imageUrl: `${import.meta.env.BASE_URL}图片/首页.jpg`,
     details: { level: '舒适型', location: '贵阳市云岩区延安西路地铁站店' }
   }
 };
@@ -95,7 +95,7 @@ export default function SmartImport({ onNavigate }: { onNavigate: (page: Page) =
           originalText: '百里杜鹃',
           category: '景点',
           address: '毕节市百里杜鹃管理区普底乡大荒村',
-          imageUrl: 'https://picsum.photos/seed/dujuan/100/100',
+          imageUrl: `${import.meta.env.BASE_URL}图片/凯里酸汤鱼.jpg`,
           selected: true 
         },
         { 
@@ -104,7 +104,7 @@ export default function SmartImport({ onNavigate }: { onNavigate: (page: Page) =
           originalText: '鸳鸯湖',
           category: '景点',
           address: '黔南布依族苗族自治州荔波县小七孔镇景区路6号',
-          imageUrl: 'https://picsum.photos/seed/xiaoqikong/100/100',
+          imageUrl: `${import.meta.env.BASE_URL}图片/小七孔.jpg`,
           selected: true 
         },
         { 
@@ -113,7 +113,7 @@ export default function SmartImport({ onNavigate }: { onNavigate: (page: Page) =
           originalText: '住宿...',
           category: '住宿',
           address: '黔南布依族苗族自治州荔波县朝阳镇板麦桥南20米',
-          imageUrl: 'https://picsum.photos/seed/minsu/100/100',
+          imageUrl: `${import.meta.env.BASE_URL}图片/柏曼温泉酒店.jpg`,
           selected: true 
         },
         { 
@@ -122,7 +122,7 @@ export default function SmartImport({ onNavigate }: { onNavigate: (page: Page) =
           originalText: '稻田',
           category: '其他',
           address: '贵阳市云岩区中坝路49号',
-          imageUrl: 'https://picsum.photos/seed/daotian/100/100',
+          imageUrl: `${import.meta.env.BASE_URL}图片/旅行记录2.jpg`,
           selected: true 
         }
       ];
@@ -157,7 +157,7 @@ export default function SmartImport({ onNavigate }: { onNavigate: (page: Page) =
       originalText: '手动添加',
       category: '其他',
       address: '自定义地址',
-      imageUrl: '/图片/custom_activity_default.svg',
+      imageUrl: `${import.meta.env.BASE_URL}图片/custom_activity_default.svg`,
       selected: true
     };
     setPlaces([...places, newPlace]);
@@ -222,7 +222,7 @@ export default function SmartImport({ onNavigate }: { onNavigate: (page: Page) =
         status: '计划中',
         startTime: new Date().toISOString().split('T')[0],
         days: 1,
-        imageUrl: 'https://picsum.photos/seed/guiyang/800/600',
+        imageUrl: `${import.meta.env.BASE_URL}图片/黄果树瀑布.jpg`,
         tripDays: [
           {
             id: 'day1',
@@ -326,7 +326,7 @@ export default function SmartImport({ onNavigate }: { onNavigate: (page: Page) =
             
             {node.aiTips && (
               <div className="bg-orange-50 rounded-xl p-3 flex items-start gap-3 mb-4">
-                <img alt="AI" className="w-8 h-8 rounded-full object-cover bg-white" src="/IP_1.png" />
+                <img alt="AI" className="w-8 h-8 rounded-full object-cover bg-white" src={`${import.meta.env.BASE_URL}IP_1.png`} />
                 <div className="text-sm text-orange-800">
                   <span className="font-bold">黄小西 TIPS:</span> {node.aiTips}
                 </div>
@@ -336,21 +336,21 @@ export default function SmartImport({ onNavigate }: { onNavigate: (page: Page) =
             <div className="flex overflow-x-auto gap-2 mt-4 scrollbar-hide pb-1">
               <button className="flex flex-col items-center justify-center py-3 flex-1 min-w-[72px] rounded-2xl gap-1.5 bg-blue-50 text-blue-600">
                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
-                  <img className="w-[18px] h-[18px]" alt="查看地图" src="/icno/行程icon/查看地图.svg" />
+                  <img className="w-[18px] h-[18px]" alt="查看地图" src={`${import.meta.env.BASE_URL}icno/行程icon/查看地图.svg`} />
                 </div>
                 <span className="text-[10px] font-medium">查看地图</span>
               </button>
               {node.hasAgent ? (
                 <button className="flex flex-col items-center justify-center py-3 flex-1 min-w-[72px] rounded-2xl gap-1.5 bg-indigo-50 text-indigo-600">
                   <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <img className="w-[18px] h-[18px]" alt="智能服务" src="/icno/行程icon/智能体.svg" />
+                    <img className="w-[18px] h-[18px]" alt="智能服务" src={`${import.meta.env.BASE_URL}icno/行程icon/智能体.svg`} />
                   </div>
                   <span className="text-[10px] font-medium">智能服务</span>
                 </button>
               ) : (
                 <button className="flex flex-col items-center justify-center py-3 flex-1 min-w-[72px] rounded-2xl gap-1.5 bg-gray-50 text-gray-600">
                   <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <img className="w-[18px] h-[18px]" alt="定制服务" src="/icno/行程icon/智能体.svg" />
+                    <img className="w-[18px] h-[18px]" alt="定制服务" src={`${import.meta.env.BASE_URL}icno/行程icon/智能体.svg`} />
                   </div>
                   <span className="text-[10px] font-medium">定制服务</span>
                 </button>
@@ -468,7 +468,7 @@ export default function SmartImport({ onNavigate }: { onNavigate: (page: Page) =
             >
               {/* Source Post Info */}
               <div className="px-2 py-2 flex items-center gap-3">
-                <img src="/图片/行程-首页背景.jpg" className="w-16 h-12 object-cover rounded-md shadow-sm" />
+                <img src={`${import.meta.env.BASE_URL}图片/行程-首页背景.jpg`} className="w-16 h-12 object-cover rounded-md shadow-sm" />
                 <div className="font-bold text-gray-900 text-sm line-clamp-2">
                   贵州不赶路指南 | 私人定制游请查收✅
                 </div>

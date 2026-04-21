@@ -109,20 +109,20 @@ export default function TripList({ onNavigate }: { onNavigate: (page: Page) => v
     <div className="min-h-full bg-gray-50 pb-24">
       {/* Header Banner */}
       <div className="relative h-64 overflow-hidden rounded-b-[2.5rem]">
-        <img src="/图片/行程-首页背景.jpg" alt="行程背景" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={`${import.meta.env.BASE_URL}图片/行程-首页背景.jpg`} alt="行程背景" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-transparent" />
         
         <div className="relative pt-12 px-6 flex flex-col items-center">
           <h1 className="text-white text-2xl font-bold tracking-widest flex items-center gap-2">
-            <img src="/left pic.png" alt="left" className="h-6 object-contain" />
+            <img src={`${import.meta.env.BASE_URL}left pic.png`} alt="left" className="h-6 object-contain" />
             精选线路
-            <img src="/right pic.png" alt="right" className="h-6 object-contain" />
+            <img src={`${import.meta.env.BASE_URL}right pic.png`} alt="right" className="h-6 object-contain" />
           </h1>
           
           {/* Horizontal Scroll Items */}
           <div className="w-full mt-8 flex gap-4 overflow-x-auto scrollbar-hide px-2">
             <div className="flex-shrink-0 w-64 bg-white/20 backdrop-blur-md rounded-full p-2 flex items-center gap-3 border border-white/30">
-              <img src="https://picsum.photos/seed/hg/100/100" className="w-12 h-12 rounded-full object-cover" />
+              <img src={`${import.meta.env.BASE_URL}图片/首页.jpg`} className="w-12 h-12 rounded-full object-cover" />
               <div className="text-white">
                 <div className="font-bold text-sm">黄果树瀑布深度游</div>
                 <div className="text-[10px] text-white/80 flex items-center gap-1">
@@ -132,7 +132,7 @@ export default function TripList({ onNavigate }: { onNavigate: (page: Page) => v
               </div>
             </div>
             <div className="flex-shrink-0 w-16 h-16 rounded-full overflow-hidden border-2 border-white/30">
-              <img src="https://picsum.photos/seed/miao3/100/100" className="w-full h-full object-cover" />
+              <img src={`${import.meta.env.BASE_URL}图片/凯里酸汤鱼.jpg`} className="w-full h-full object-cover" />
             </div>
           </div>
         </div>

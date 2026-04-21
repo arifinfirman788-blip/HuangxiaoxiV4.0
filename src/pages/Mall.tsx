@@ -18,7 +18,7 @@ export default function Mall({ onNavigate }: { onNavigate: (page: Page) => void 
 
       <div className="px-6 mt-4">
         <div className="w-full h-32 bg-indigo-500 rounded-2xl overflow-hidden relative mb-6 shadow-sm">
-          <img src="https://picsum.photos/seed/tea/800/400" className="w-full h-full object-cover opacity-80" />
+          <img src={`${import.meta.env.BASE_URL}图片/首页.jpg`} className="w-full h-full object-cover opacity-80" />
           <div className="absolute inset-0 p-4 flex flex-col justify-center">
             <h2 className="text-white font-bold text-xl">都匀毛尖 春茶上新</h2>
             <p className="text-white/80 text-sm">限时 8 折优惠</p>
@@ -40,7 +40,7 @@ export default function Mall({ onNavigate }: { onNavigate: (page: Page) => void 
         <div className="grid grid-cols-2 gap-4">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm pb-3">
-              <img src={`https://picsum.photos/seed/product${i}/400/400`} className="w-full aspect-square object-cover" />
+              <img src={`${import.meta.env.BASE_URL}图片/凯里酸汤鱼.jpg`} className="w-full aspect-square object-cover" />
               <div className="px-3 mt-2">
                 <div className="text-sm font-medium line-clamp-2 mb-1 text-gray-800">贵州老干妈风味豆豉辣椒酱礼盒装</div>
                 <div className="flex items-center justify-between">

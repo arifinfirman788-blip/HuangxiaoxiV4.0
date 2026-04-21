@@ -20,7 +20,7 @@ export default function Profile({ onNavigate, hasDigitalAvatar = false }: { onNa
         <div className="flex items-start justify-between relative z-10 mt-6">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 bg-white rounded-full p-1 shadow-sm">
-              <img src="https://picsum.photos/seed/user2/200/200" className="w-full h-full rounded-full object-cover opacity-80" alt="Avatar" />
+              <img src={`${import.meta.env.BASE_URL}图片/小七孔.jpg`} className="w-full h-full rounded-full object-cover opacity-80" alt="Avatar" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">yee</h1>

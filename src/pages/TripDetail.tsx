@@ -49,7 +49,7 @@ const INITIAL_DAYS: TripDay[] = [
         status: '进行中',
         hasAgent: true,
         aiTips: '推荐品尝古镇特色卤猪脚和玫瑰糖，别忘了登上城墙俯瞰全景！',
-        imageUrl: 'https://picsum.photos/seed/qingyan/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/miao.png`,
         details: { rating: '4.7', price: '￥10门票', level: 'AAAAA', location: '贵阳市花溪区青岩镇' }
       },
       {
@@ -59,7 +59,7 @@ const INITIAL_DAYS: TripDay[] = [
         title: '青岩特色小吃',
         status: '未开始',
         hasAgent: false,
-        imageUrl: 'https://picsum.photos/seed/food1/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/首页.jpg`,
         details: { rating: '4.8', price: '￥45/人', tags: ['卤猪脚', '糕粑稀饭', '豆腐圆子'], location: '青岩古镇内' }
       },
       {
@@ -79,7 +79,7 @@ const INITIAL_DAYS: TripDay[] = [
         status: '未开始',
         hasAgent: true,
         aiTips: '麻辣咸香的贵州特色火锅，豆香浓郁，非常下饭！',
-        imageUrl: 'https://picsum.photos/seed/hotpot/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/凯里酸汤鱼.jpg`,
         details: { rating: '4.9', price: '￥68/人', tags: ['贵州特色', '老字号'], location: '贵阳市南明区护国路', level: '黑珍珠一钻' }
       },
       {
@@ -90,7 +90,7 @@ const INITIAL_DAYS: TripDay[] = [
         status: '未开始',
         hasAgent: true,
         aiTips: '甲秀楼夜景绝美，逛完去青云市集吃一碗手搓冰粉解暑~',
-        imageUrl: 'https://picsum.photos/seed/jiaxiu/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/小七孔.jpg`,
         details: { rating: '4.8', price: '免费', location: '贵阳市南明区翠微巷8号' }
       },
       {
@@ -100,7 +100,7 @@ const INITIAL_DAYS: TripDay[] = [
         title: '如家精选酒店',
         status: '未开始',
         hasAgent: true,
-        imageUrl: 'https://picsum.photos/seed/hotel1/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/柏曼温泉酒店.jpg`,
         details: { level: '舒适型', location: '贵阳市云岩区延安西路地铁站店' }
       }
     ]
@@ -127,7 +127,7 @@ const INITIAL_DAYS: TripDay[] = [
         status: '未开始',
         hasAgent: true,
         aiTips: '“黔南第一山”，小心野生猕猴，不要把食物拿在手上哦！',
-        imageUrl: 'https://picsum.photos/seed/qianling/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/旅行记录2.jpg`,
         details: { rating: '4.8', price: '￥5门票', level: 'AAAA', location: '贵阳市云岩区枣山路187号' }
       },
       {
@@ -156,7 +156,7 @@ const INITIAL_DAYS: TripDay[] = [
         status: '未开始',
         hasAgent: true,
         aiTips: '沉浸式光影体验，重温长征历史，非常震撼！',
-        imageUrl: 'https://picsum.photos/seed/redribbon/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/黄果树瀑布.jpg`,
         details: { rating: '4.9', price: '￥128', location: '贵阳市双龙航空港经济区' }
       },
       {
@@ -193,7 +193,7 @@ const INITIAL_DAYS: TripDay[] = [
         status: '未开始',
         hasAgent: true,
         aiTips: '记得带雨衣穿越水帘洞，景区内步行较多，请穿舒适的运动鞋！',
-        imageUrl: 'https://picsum.photos/seed/waterfall/600/300',
+        imageUrl: `${import.meta.env.BASE_URL}图片/miao.png`,
         details: { rating: '5.0', price: '￥160门票', level: 'AAAAA', location: '安顺市镇宁布依族苗族自治县' }
       },
       {
@@ -241,12 +241,12 @@ const getDefaultImage = (type: NodeType) => {
 };
 
 const OVERVIEW_FILTERS = [
-  { id: '全部', label: '全部', iconActive: '/icno/tab/选中状态/全部.png', iconInactive: '/icno/tab/未选中状态/全部.png', labelColor: 'text-blue-600' },
-  { id: '交通', label: '交通', iconActive: '/icno/tab/选中状态/交通.png', iconInactive: '/icno/tab/未选中状态/交通.png', labelColor: 'text-indigo-600' },
-  { id: '美食', label: '美食', iconActive: '/icno/tab/选中状态/餐饮.png', iconInactive: '/icno/tab/未选中状态/餐饮.png', labelColor: 'text-orange-600' },
-  { id: '景点', label: '景点', iconActive: '/icno/tab/选中状态/景点.png', iconInactive: '/icno/tab/未选中状态/景点.png', labelColor: 'text-red-600' },
-  { id: '酒店', label: '住宿', iconActive: '/icno/tab/选中状态/住宿.png', iconInactive: '/icno/tab/未选中状态/住宿.png', labelColor: 'text-rose-600' },
-  { id: '自定义活动', label: '自定义', iconActive: '/icno/tab/选中状态/自定义.png', iconInactive: '/icno/tab/未选中状态/自定义.png', labelColor: 'text-gray-800' },
+  { id: '全部', label: '全部', iconActive: `${import.meta.env.BASE_URL}icno/tab/选中状态/全部.png`, iconInactive: `${import.meta.env.BASE_URL}icno/tab/未选中状态/全部.png`, labelColor: 'text-blue-600' },
+  { id: '交通', label: '交通', iconActive: `${import.meta.env.BASE_URL}icno/tab/选中状态/交通.png`, iconInactive: `${import.meta.env.BASE_URL}icno/tab/未选中状态/交通.png`, labelColor: 'text-indigo-600' },
+  { id: '美食', label: '美食', iconActive: `${import.meta.env.BASE_URL}icno/tab/选中状态/餐饮.png`, iconInactive: `${import.meta.env.BASE_URL}icno/tab/未选中状态/餐饮.png`, labelColor: 'text-orange-600' },
+  { id: '景点', label: '景点', iconActive: `${import.meta.env.BASE_URL}icno/tab/选中状态/景点.png`, iconInactive: `${import.meta.env.BASE_URL}icno/tab/未选中状态/景点.png`, labelColor: 'text-red-600' },
+  { id: '酒店', label: '住宿', iconActive: `${import.meta.env.BASE_URL}icno/tab/选中状态/住宿.png`, iconInactive: `${import.meta.env.BASE_URL}icno/tab/未选中状态/住宿.png`, labelColor: 'text-rose-600' },
+  { id: '自定义活动', label: '自定义', iconActive: `${import.meta.env.BASE_URL}icno/tab/选中状态/自定义.png`, iconInactive: `${import.meta.env.BASE_URL}icno/tab/未选中状态/自定义.png`, labelColor: 'text-gray-800' },
 ];
 
 export default function TripDetail({ onNavigate, isPreview = false, fromChat = false }: { onNavigate: (page: Page) => void, isPreview?: boolean, fromChat?: boolean }) {
@@ -543,7 +543,7 @@ export default function TripDetail({ onNavigate, isPreview = false, fromChat = f
 
               {node.aiTips && (
                 <div className="bg-orange-50 rounded-xl p-3 flex items-start gap-3 mb-4">
-                  <img src="/IP_1.png" alt="AI" className="w-8 h-8 rounded-full object-cover bg-white" />
+                  <img src={`${import.meta.env.BASE_URL}IP_1.png`} alt="AI" className="w-8 h-8 rounded-full object-cover bg-white" />
                   <div className="text-sm text-orange-800">
                     <span className="font-bold">黄小西 TIPS:</span> {node.aiTips}
                   </div>
@@ -555,51 +555,51 @@ export default function TripDetail({ onNavigate, isPreview = false, fromChat = f
                 {/* 交通 */}
                 {node.type === '交通' && (
                   <>
-                    <ActionButton icon={<img src="/icno/行程icon/一键导航.svg" className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/值机选座.svg" className="w-[18px] h-[18px]" alt="值机选座" />} label="值机选座" color="bg-green-50 text-green-600" onClick={() => onNavigate('chat')} />
-                    <ActionButton icon={<img src="/icno/行程icon/改签退票.svg" className="w-[18px] h-[18px]" alt="改签退票" />} label="改签退票" color="bg-red-50 text-red-600" onClick={() => onNavigate('chat')} />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/一键导航.svg`} className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/值机选座.svg`} className="w-[18px] h-[18px]" alt="值机选座" />} label="值机选座" color="bg-green-50 text-green-600" onClick={() => onNavigate('chat')} />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/改签退票.svg`} className="w-[18px] h-[18px]" alt="改签退票" />} label="改签退票" color="bg-red-50 text-red-600" onClick={() => onNavigate('chat')} />
                   </>
                 )}
                 {/* 景点 */}
                 {node.type === '景点' && (
                   <>
-                    <ActionButton icon={<img src="/icno/行程icon/购买门票.svg" className="w-[18px] h-[18px]" alt="购买门票" />} label="购买门票" color="bg-green-50 text-green-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/一键导航.svg" className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/电话咨询.svg" className="w-[18px] h-[18px]" alt="电话咨询" />} label="电话咨询" color="bg-red-50 text-red-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/智能导览.svg" className="w-[18px] h-[18px]" alt="游玩攻略" />} label="游玩攻略" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/购买门票.svg`} className="w-[18px] h-[18px]" alt="购买门票" />} label="购买门票" color="bg-green-50 text-green-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/一键导航.svg`} className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/电话咨询.svg`} className="w-[18px] h-[18px]" alt="电话咨询" />} label="电话咨询" color="bg-red-50 text-red-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/智能导览.svg`} className="w-[18px] h-[18px]" alt="游玩攻略" />} label="游玩攻略" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
                   </>
                 )}
                 {/* 美食 - 无智能体 */}
                 {node.type === '美食' && !node.hasAgent && (
                   <>
-                    <ActionButton icon={<img src="/icno/行程icon/餐厅推荐.svg" className="w-[18px] h-[18px]" alt="餐厅推荐" />} label="餐厅推荐" color="bg-orange-50 text-orange-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/餐厅推荐.svg`} className="w-[18px] h-[18px]" alt="餐厅推荐" />} label="餐厅推荐" color="bg-orange-50 text-orange-600" />
                   </>
                 )}
                 {/* 美食 - 有智能体 */}
                 {node.type === '美食' && node.hasAgent && (
                   <>
-                    <ActionButton icon={<img src="/icno/行程icon/一键导航.svg" className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/电话咨询.svg" className="w-[18px] h-[18px]" alt="电话咨询" />} label="电话咨询" color="bg-red-50 text-red-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/预定包厢.svg" className="w-[18px] h-[18px]" alt="预定包厢" />} label="预定包厢" color="bg-indigo-50 text-indigo-600" onClick={() => onNavigate('chat')} />
-                    <ActionButton icon={<img src="/icno/行程icon/查看菜单.svg" className="w-[18px] h-[18px]" alt="查看菜单" />} label="查看菜单" color="bg-indigo-50 text-indigo-600" onClick={() => onNavigate('chat')} />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/一键导航.svg`} className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/电话咨询.svg`} className="w-[18px] h-[18px]" alt="电话咨询" />} label="电话咨询" color="bg-red-50 text-red-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/预定包厢.svg`} className="w-[18px] h-[18px]" alt="预定包厢" />} label="预定包厢" color="bg-indigo-50 text-indigo-600" onClick={() => onNavigate('chat')} />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/查看菜单.svg`} className="w-[18px] h-[18px]" alt="查看菜单" />} label="查看菜单" color="bg-indigo-50 text-indigo-600" onClick={() => onNavigate('chat')} />
                   </>
                 )}
                 {/* 酒店 */}
                 {node.type === '酒店' && (
                   <>
-                    <ActionButton icon={<img src="/icno/行程icon/在线选座.svg" className="w-[18px] h-[18px]" alt="酒店订房" />} label="酒店订房" color="bg-green-50 text-green-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/一键导航.svg" className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/联系前台.svg" className="w-[18px] h-[18px]" alt="联系前台" />} label="联系前台" color="bg-red-50 text-red-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/设施问询.svg" className="w-[18px] h-[18px]" alt="酒店服务" />} label="酒店服务" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
-                    <ActionButton icon={<img src="/icno/行程icon/客房服务.svg" className="w-[18px] h-[18px]" alt="客房服务" />} label="客房服务" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
-                    <ActionButton icon={<img src="/icno/行程icon/周边推荐.svg" className="w-[18px] h-[18px]" alt="周边推荐" />} label="周边推荐" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/在线选座.svg`} className="w-[18px] h-[18px]" alt="酒店订房" />} label="酒店订房" color="bg-green-50 text-green-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/一键导航.svg`} className="w-[18px] h-[18px]" alt="一键导航" />} label="一键导航" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/联系前台.svg`} className="w-[18px] h-[18px]" alt="联系前台" />} label="联系前台" color="bg-red-50 text-red-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/设施问询.svg`} className="w-[18px] h-[18px]" alt="酒店服务" />} label="酒店服务" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/客房服务.svg`} className="w-[18px] h-[18px]" alt="客房服务" />} label="客房服务" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/周边推荐.svg`} className="w-[18px] h-[18px]" alt="周边推荐" />} label="周边推荐" color="bg-indigo-50 text-indigo-600" onClick={() => node.hasAgent ? onNavigate('chat') : handleCustomAction()} />
                   </>
                 )}
                 {/* 自定义活动 */}
                 {node.type === '自定义活动' && (
                   <>
-                    <ActionButton icon={<img src="/icno/行程icon/查看地图.svg" className="w-[18px] h-[18px]" alt="查看地图" />} label="查看地图" color="bg-blue-50 text-blue-600" />
-                    <ActionButton icon={<img src="/icno/行程icon/智能体.svg" className="w-[18px] h-[18px]" alt="定制服务" />} label="定制服务" color="bg-gray-50 text-gray-600" onClick={handleCustomAction} />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/查看地图.svg`} className="w-[18px] h-[18px]" alt="查看地图" />} label="查看地图" color="bg-blue-50 text-blue-600" />
+                    <ActionButton icon={<img src={`${import.meta.env.BASE_URL}icno/行程icon/智能体.svg`} className="w-[18px] h-[18px]" alt="定制服务" />} label="定制服务" color="bg-gray-50 text-gray-600" onClick={handleCustomAction} />
                   </>
                 )}
               </div>
@@ -1046,7 +1046,7 @@ function DayHeader({ title, date }: { title: string, date: string }) {
       
       <div className="relative z-10 flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-[#F27D59] flex items-center justify-center shadow-sm">
-          <img src="/icno/行程icon/爱心-实心.svg" alt="heart" className="w-4 h-4" />
+          <img src={`${import.meta.env.BASE_URL}icno/行程icon/爱心-实心.svg`} alt="heart" className="w-4 h-4" />
         </div>
         <span className="text-xl font-bold text-gray-800">{title}</span>
       </div>

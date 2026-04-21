@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import DigitalAvatar from './pages/DigitalAvatar';
 import DigitalCard from './pages/DigitalCard';
 import CardFavorites from './pages/CardFavorites';
+import SportsAssistant from './pages/SportsAssistant';
 import AddSheet from './components/AddSheet';
 import OnboardingGuide from './components/OnboardingGuide';
 import SmartImport from './pages/SmartImport';
@@ -84,6 +85,7 @@ export default function App() {
       case 'digital-card': return <DigitalCard onNavigate={handleNavigate} />;
       case 'card-favorites': return <CardFavorites onNavigate={handleNavigate} />;
       case 'smart-import': return <SmartImport onNavigate={handleNavigate} />;
+      case 'sports-assistant': return <SportsAssistant onNavigate={handleNavigate} />;
       default: return <HomePage onNavigate={handleNavigate} />;
     }
   };

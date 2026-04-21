@@ -43,7 +43,7 @@ export default function DigitalAvatar({ onNavigate, onAvatarGenerated, hasDigita
                     <span className="text-[10px] text-indigo-500 font-medium">生成中...</span>
                   </div>
                 ) : (
-                  <img src="https://picsum.photos/seed/avatar3d/200/200" alt="Digital Avatar" className="w-full h-full object-cover" />
+                  <img src={`${import.meta.env.BASE_URL}图片/柏曼温泉酒店.jpg`} alt="Digital Avatar" className="w-full h-full object-cover" />
                 )}
               </div>
             </div>

@@ -16,7 +16,7 @@ export default function DigitalCard({ onNavigate }: { onNavigate: (page: Page) =
       <div className="flex-1 overflow-y-auto p-5 space-y-4">
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-indigo-50">
           <div className="flex items-center gap-3">
-            <img src="https://picsum.photos/seed/avatar3d/200/200" alt="Digital Avatar" className="w-16 h-16 rounded-full object-cover border-2 border-indigo-100" />
+            <img src={`${import.meta.env.BASE_URL}图片/旅行记录2.jpg`} alt="Digital Avatar" className="w-16 h-16 rounded-full object-cover border-2 border-indigo-100" />
             <div>
               <h2 className="text-base font-bold text-gray-900 flex items-center gap-1">
                 yee 的数字分身
